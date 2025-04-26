@@ -1,0 +1,223 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\UrbanIntel\\UrbanIntelAPI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|c:\\urbanintel\\urbanintelapi\\urbanintelapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|solutionrelative:urbanintelapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|c:\\urbanintel\\urbanintelapi\\urbanintelapi\\services\\usuarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|solutionrelative:urbanintelapi\\services\\usuarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|c:\\urbanintel\\urbanintelapi\\urbanintelapi\\models\\usuariotest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|solutionrelative:urbanintelapi\\models\\usuariotest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|c:\\urbanintel\\urbanintelapi\\urbanintelapi\\dto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|solutionrelative:urbanintelapi\\dto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|c:\\urbanintel\\urbanintelapi\\urbanintelapi\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|solutionrelative:urbanintelapi\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|c:\\urbanintel\\urbanintelapi\\urbanintelapi\\urbanintelapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|solutionrelative:urbanintelapi\\urbanintelapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|c:\\urbanintel\\urbanintelapi\\urbanintelapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{3BA1F51D-83C8-4605-A8F0-51502D8C7CED}|UrbanIntelAPI\\UrbanIntelAPI.csproj|solutionrelative:urbanintelapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 26,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:138:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:139:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1691438692:0:{bf84ea66-d821-4dba-b1b1-2777d8574775}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:222044033:0:{bf84ea66-d821-4dba-b1b1-2777d8574775}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:11:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:12:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:136:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:137:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "LoginDto.cs",
+              "DocumentMoniker": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Dto\\LoginDto.cs",
+              "RelativeDocumentMoniker": "UrbanIntelAPI\\Dto\\LoginDto.cs",
+              "ToolTip": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Dto\\LoginDto.cs",
+              "RelativeToolTip": "UrbanIntelAPI\\Dto\\LoginDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-26T01:42:26.348Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "UrbanIntelAPI\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "UrbanIntelAPI\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAmwCUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-26T01:37:12.207Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "UrbanIntelAPI",
+              "DocumentMoniker": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\UrbanIntelAPI.csproj",
+              "RelativeDocumentMoniker": "UrbanIntelAPI\\UrbanIntelAPI.csproj",
+              "ToolTip": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\UrbanIntelAPI.csproj",
+              "RelativeToolTip": "UrbanIntelAPI\\UrbanIntelAPI.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-04-26T01:31:37.504Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UsuarioService.cs",
+              "DocumentMoniker": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Services\\UsuarioService.cs",
+              "RelativeDocumentMoniker": "UrbanIntelAPI\\Services\\UsuarioService.cs",
+              "ToolTip": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Services\\UsuarioService.cs",
+              "RelativeToolTip": "UrbanIntelAPI\\Services\\UsuarioService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-26T01:27:57.39Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UsuarioTest.cs",
+              "DocumentMoniker": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Models\\UsuarioTest.cs",
+              "RelativeDocumentMoniker": "UrbanIntelAPI\\Models\\UsuarioTest.cs",
+              "ToolTip": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Models\\UsuarioTest.cs",
+              "RelativeToolTip": "UrbanIntelAPI\\Models\\UsuarioTest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-26T01:25:27.839Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Program.cs",
+              "RelativeDocumentMoniker": "UrbanIntelAPI\\Program.cs",
+              "ToolTip": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\Program.cs",
+              "RelativeToolTip": "UrbanIntelAPI\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADAAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-26T01:00:12.022Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "UrbanIntelAPI\\appsettings.json",
+              "ToolTip": "C:\\UrbanIntel\\UrbanIntelAPI\\UrbanIntelAPI\\appsettings.json",
+              "RelativeToolTip": "UrbanIntelAPI\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-04-26T00:57:08.5Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
