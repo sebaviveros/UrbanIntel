@@ -1,0 +1,11 @@
+CREATE TABLE Auditoria (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    rut_usuario VARCHAR(12),
+    accion_id INT,
+    modulo_id INT,
+    fecha DATETIME,
+    descripcion TEXT,
+    FOREIGN KEY (rut_usuario) REFERENCES Usuario(rut),
+    FOREIGN KEY (accion_id) REFERENCES Accion(id),
+    FOREIGN KEY (modulo_id) REFERENCES Modulo(id)
+);

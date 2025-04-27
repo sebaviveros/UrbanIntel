@@ -1,0 +1,7 @@
+CREATE TABLE MenuRol (
+    id_menu INT,
+    id_rol INT,
+    PRIMARY KEY (id_menu, id_rol),
+    FOREIGN KEY (id_menu) REFERENCES MenuApp(id_menu),
+    FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
+);
