@@ -1,1 +1,173 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+  --primary-color: #FFFFFF; 
+  --primary-color-dark: #BC5F04;
+
+}
+
+
+
+body {
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(
+    to bottom,
+    #010001 0%,
+    #0C0605 36%,
+    #25150E 100%
+  );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    img {
+      height: 40px;
+    }
+
+    span {
+      font-size: 1.2rem;
+      color: #d86e12; 
+      font-weight: bold;
+      line-height: 1.1;
+    }
+  }
+  .logo,
+  .spacer {
+    flex: 1; // Mismo ancho para equilibrar
+  }
+
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 10rem;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+
+    li {
+      a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        position: relative;
+        transition: color 0.3s ease;
+
+        .arrow {
+          font-size: 0.8rem;
+          color: #d86e12; // Flechita naranja
+          margin-left: 0.3rem;
+        }
+
+        &:hover {
+          color: #d86e12;
+        }
+      }
+    }
+  }
+}
+
+.header{
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 5rem;
+  text-align: center;
+}
+
+.header__container {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.header__container h1{
+  margin-top: 0;
+  font-size: 4rem;
+  font-weight: 600;
+  color: var(--primary-color-dark);
+  line-height: 5rem;
+  align-items: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.header__container h2{
+  margin-bottom: 0.25rem;
+  font-size: 3rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  line-height: 5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.header__container p {
+  margin-bottom: 5rem;
+  font-size: 1.5rem;
+  font-family: var(--header-font);
+  color: var(--primary-color);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.header__container form {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  gap: 1rem;
+ 
+}
+
+.header__container .input__group {
+  display: flex;
+  align-items: center;
+  background-color: var(--primary-color);
+  width: auto; 
+  background-color: transparent;
+}
+
+
+.header__container .input__group span {
+  padding: 6px 10px;
+  font-size: 1.25rem;
+  color: var(--primary-color-dark);
+  background-color: var(--primary-color-dark);
+}
+
+.header__container .btn {
+  padding: 0.75rem 2rem;
+  background-color: var(--primary-color-dark);
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  white-space: nowrap; 
+}
+
+.header__container .btn:hover {
+  background-color: #ff6600; // o cualquier color destacado que combine
+  transform: translateY(-2px);
+}
+
+.header__container .btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
