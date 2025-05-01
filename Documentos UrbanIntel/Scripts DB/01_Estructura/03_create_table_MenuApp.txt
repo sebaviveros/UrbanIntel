@@ -1,0 +1,6 @@
+CREATE TABLE MenuApp (
+    id_menu INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    url_menu VARCHAR(255) NOT NULL,
+    orden_menu INT
+);

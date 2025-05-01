@@ -1,0 +1,4 @@
+CREATE TABLE TipoReparacion (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100)
+);
