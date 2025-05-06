@@ -1,0 +1,171 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    background-color: transparent;
+  
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+  
+      img {
+        height: 100px;
+      }
+  
+      span {
+        font-size: 1.2rem;
+        color: #d86e12;
+        font-weight: bold;
+        line-height: 1.1;
+      }
+    }
+  
+    .logo,
+    .spacer {
+      flex: 1;
+    }
+  
+    .menu-toggle {
+      display: none;
+      font-size: 2rem;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+  
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 10rem;
+      margin: 0;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+  
+      li {
+        a {
+          color: white;
+          text-decoration: none;
+          font-weight: bold;
+          position: relative;
+          transition: color 0.3s ease;
+  
+          .arrow {
+            font-size: 0.8rem;
+            color: #d86e12;
+            margin-left: 0.3rem;
+          }
+  
+          &:hover {
+            color: #d86e12;
+          }
+        }
+      }
+    }
+  
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+  
+      .nav-links {
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #111;
+        gap: 2rem;
+        padding: 1.5rem 2rem;
+        display: none; // Oculto por defecto
+      }
+  
+      .nav-links.active {
+        display: flex;
+      }
+    }
+  }
+
+
+*{
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box; 
+}
+
+.header, .footer{
+   color: white;
+   height: 200px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.card {
+    width: 100vw;
+    height: 100vh;
+   
+    color: white;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    position: sticky;
+    top:0;
+}
+
+#card1{
+    background: linear-gradient(
+        to top,
+        #010001 0%,
+        #0C0605 36%,
+        
+      );
+}
+
+#card2{
+    background: linear-gradient(
+        to bottom,
+        #010001 0%,
+        #0C0605 36%,
+        
+      );
+}
+
+
+
+#card3{
+    background: linear-gradient(
+        to top,
+        #010001 0%,
+        #0C0605 36%,
+        
+      );
+}
+
+#card4{
+    background: linear-gradient(
+        to bottom,
+        #010001 0%,
+        #0C0605 36%,
+        
+      );
+}
+
+#card5{
+    background: linear-gradient(
+        to top,
+        #010001 0%,
+        #0C0605 36%,
+        
+      );
+}
+
+.footer{
+    background-color: #010001;
+}
