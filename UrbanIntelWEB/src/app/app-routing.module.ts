@@ -5,23 +5,26 @@ import { HomeComponent } from './views/home/home.component';
 import { LayoutComponent } from './views/layout/layout.component';
 
 const routes: Routes = [
+  // redirecciona al login si la url está vacía
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  // ruta para login
   { path: 'login', component: LoginComponent },
-   // Rutas con sidebar
-   {
+
+  // rutas protegidas que usan layout (sidebar)
+  {
     path: '',
     component: LayoutComponent,
     children: [
       { path: 'home', component: HomeComponent },
-      { path: 'layout', component: LayoutComponent },//no es necesario que este definida como ruta visible
-      // rutas que requieran sidebar
+      // puedes agregar más rutas hijas aquí
     ]
   },
 
-  { path: 'home', component: HomeComponent },
-  { path: '', redirectTo: 'login', pathMatch: 'full' }, // cuando se levanta el sistema, dirige a este path  ej: http://localhost:4200/ --> http://localhost:4200/login
-  { path: '**', redirectTo: 'login' } // ruta comodín
-  // Aquí irán las rutas como { path: 'login', component: LoginComponent }
+  // ruta comodín para rutas no encontradas
+  { path: '**', redirectTo: 'login' }
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
