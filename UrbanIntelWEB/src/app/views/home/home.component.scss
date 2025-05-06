@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body{
+    font-family: 'Poppins', sans-serif;
+}
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #2d1d13;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    position: relative;
+}
+  
+.nav {
+    ul {
+    list-style: none;
+    padding: 0;
+  
+    li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+
+    span,
+    ion-icon {
+          color: white;
+          transition: color 0.3s ease; 
+        }
+  
+        &:hover {
+        background-color: #3e2b1e;
+
+        span,
+    ion-icon {
+      color: orangered;
+    }
+    }
+
+        .icon {
+        width: 150px;
+        text-align: center;
+        }
+  
+        span {
+        font-size: 1rem;
+        }
+    }
+    }
+}
+
+
+.logo-sidebar {
+    width: 80%;           
+    max-width: 180px;    
+    height: auto;         
+    display: block;
+    margin: 0 auto 0.5rem auto; 
+}
+
+.divider {
+    border: none;
+    height: 1px;
+    background-color: orange;
+    margin: 0.5rem 0;
+    opacity: 0.6; // opcional: hace que se vea más suave
+  }
+
+/* Este div contendrá el mapa a la derecha */
+#map {
+    flex-grow: 1;
+    height: 100vh;
+    margin: 0;
+    margin: 4rem; // separa el mapa de los bordes
+  border-radius: 12px; // bordes redondeados
+  overflow: hidden; // evita que el contenido sobresalga de los bordes redondeados
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); // sombra sutil para que resalte
+  }
+
+  .main-layout {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    margin-top: -1120px;
+  }
+  
+
+
+  
+  
+  
+  
