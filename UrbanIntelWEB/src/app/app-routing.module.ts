@@ -3,6 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './views/login/login.component'; // <-- importa el componente
 import { HomeComponent } from './views/home/home.component';
 import { LayoutComponent } from './views/layout/layout.component';
+import { LandingPageComponent } from './views/landing-page/landing-page.component';
+import { QuienesSomosComponent } from './views/quienes-somos/quienes-somos.component';
+import { ManualComponent } from './views/manual/manual.component';
 
 const routes: Routes = [
   // redirecciona al login si la url está vacía
@@ -10,7 +13,9 @@ const routes: Routes = [
 
   // ruta para login
   { path: 'login', component: LoginComponent },
-
+  { path: 'landing-page', component: LandingPageComponent},
+  {path: 'quienes-somos', component: QuienesSomosComponent},
+  {path:'manual', component: ManualComponent},
   // rutas protegidas que usan layout (sidebar)
   {
     path: '',

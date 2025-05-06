@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>UrbanIntel</title>
+  <link rel="stylesheet" href="./landing-page.component.scss">
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/imagenes/7cff6bf4-c274-4c75-be64-e9b65939ffd4-removebg-preview.png" alt="Urban Intel Logo">
+    </div>
+    <button class="menu-toggle" id="menu-toggle">&#9776;</button> <!-- este e el icono burger pa cuando la pagina se ponga modo responsiva jeje -->
+    <ul class="nav-links" id="nav-links">
+      <li><a href="landing-page">INICIO <span class="arrow">▼</span></a></li>
+      <li><a href="quienes-somos">QUIENES SOMOS <span class="arrow">▼</span></a></li>
+      <li><a href="manual">¿CÓMO SE USA? <span class="arrow">▼</span></a></li>
+    </ul>
+    <div class="spacer"></div> 
+  </nav>
+ <header class="header" id="home">
+  <div class="section__container header__container">
+    <h2 class="titulo1">SOLUCIONES RÁPIDAS<br /></h2>
+    <h1 class="titulo2">PARA UNA CIUDAD MEJOR</h1>
+    <p>Conectamos a los vecinos y su municipalidad en tiempo real. <br> Reporta, gestiona y soluciona problemas de forma rápida y transparente</p>
+   
+        <div class="input__group">
+          <button class="btn" (click)="scrollToFormulario()">Envía tu reporte</button>
+        </div>
+    
+    </div>
+</header>
+
+<div class="seccion-formulario" #seccionFormulario>
+<div class="contenedor-del-contenedor">
+<div class="tab-container">
+<button class="tab" [class.active]="activeTab === 'solicitudes'" (click)="setActiveTab('solicitudes')">
+  Realizar Solicitudes
+</button>
+<button class="tab" [class.active]="activeTab === 'consulta'" (click)="setActiveTab('consulta')">
+  Consultar Solicitud
+</button>
+</div>
+
+<div class="container-formulario">
+<!--CONTENIDO DE REALIZAR FORMULARIO-->
+<div *ngIf="activeTab === 'solicitudes'" class="tab-content active">
+
+
+  <div class="title">Formulario de Solicitud</div>
+  <div class="content">
+    <form action="#">
+      <div class="user-details">
+
+        <div class="input-box">
+          <span class="details">Nombre y Apellido</span>
+          <input type="text" placeholder="Ingrese su nombre y apellido" required>
+        </div>
+
+        <div class="input-box">
+          <span class="details">RUT</span>
+          <input type="text" placeholder="Ingrese su RUT. ej. 1234567-8" required>
+        </div>
+
+        <!-- Dirección con comunas de la V Región -->
+        <div class="input-box">
+          <span class="details">Comuna</span>
+          <select required>
+            <option value="">Seleccione su comuna</option>
+            <option>Valparaíso</option>
+            <option>Viña del Mar</option>
+            <option>Quilpué</option>
+            <option>Villa Alemana</option>
+            <option>Concón</option>
+            <option>San Antonio</option>
+            <option>Los Andes</option>
+            <option>Quillota</option>
+            <option>La Calera</option>
+            <option>San Felipe</option>
+          </select>
+        </div>
+
+        
+        <div class="input-box">
+          <span class="details">Dirección</span>
+          <input type="text" placeholder="Ingrese la dirección de la reparación" required>
+        </div>
+
+        <div class="input-box">
+          <span class="details">Correo Electrónico</span>
+          <input type="text" placeholder="Ingrese su correo electrónico" required>
+        </div>
+
+        <div class="input-box">
+          <span class="details">Celular</span>
+          <input type="text" placeholder="Ingrese su número de celular" required>
+        </div>
+
+        <!-- Descripción con campo amplio -->
+        <div class="input-box">
+          <span class="details">Descripción</span>
+          <textarea placeholder="Explique la situación de forma clara y concisa" rows="5" required></textarea>
+        </div>
+
+      </div>
+
+      <!-- Botón de envío -->
+      <div class="button">
+        <input type="submit" value="Enviar Reporte">
+      </div>
+    </form>
+  </div>
+</div>
+<!--CONTENIDO DE CONSULTAR SOLICITUD-->
+<div *ngIf="activeTab === 'consulta'" class="tab-content active">
+
+  <div class="user-details">
+  <div class="input-box">
+    <span class="details">INGRESE SU RUT</span>
+    <input type="text" placeholder="Ingrese su RUT. ej. 1234567-8" required>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+
+
+</div>
+</div>
+
+
+</body>
+</html>
+
