@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-
-import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/authService/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,33 +10,32 @@ import { HttpClient } from '@angular/common/http';
 export class LoginComponent {
   @ViewChild('wrapperRef') wrapperRef!: ElementRef;
 
-  // Variables conectadas a los inputs
   email: string = '';
   password: string = '';
+  loginError: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   toggleForm() {
     this.wrapperRef.nativeElement.classList.toggle('active');
   }
 
   onSubmit() {
-    const loginData = {
-      email: this.email,
-      password: this.password
-    };
+    this.loginError = ''; // limpiar mensaje anterior
 
-    // Llama al backend (reemplaza la URL con la real)
-    this.http.post('localhost:4200/login', loginData)
-      .subscribe({
-        next: (response) => {
-          console.log('Login exitoso', response);
-          // Aquí puedes redirigir o guardar el token, etc.
-        },
-        error: (error) => {
-          console.error('Error de login', error);
-          // Aquí puedes mostrar un mensaje de error al usuario
-        }
-      });
+    this.authService.login(this.email, this.password).subscribe({
+      next: (response) => {
+  
+        this.authService.guardarToken(response.token);
+  
+        // redireccionar al home
+        this.router.navigate(['/home']);
+      },
+      error: (error) => {
+        console.error('error al iniciar sesion', error);
+        this.loginError = 'Credenciales incorrectas. Intenta nuevamente.';
+      }
+    });
   }
+  
 }

@@ -1,0 +1,18 @@
+DELIMITER $$
+
+CREATE PROCEDURE sp_validarUsuario(
+    IN p_email VARCHAR(100),
+    IN p_password VARCHAR(100)
+)
+BEGIN
+    SELECT 
+        u.Id, u.Rut, u.Nombre, u.Email, u.Telefono, u.Direccion, u.Password,
+        r.Nombre AS Rol
+    FROM Usuario u
+    INNER JOIN RolUsuario ru ON ru.Rut = u.Rut
+    INNER JOIN Rol r ON r.Id_rol = ru.Id_rol
+    WHERE u.Email = p_email AND u.Password = p_password
+    LIMIT 1;
+END$$
+
+DELIMITER ;

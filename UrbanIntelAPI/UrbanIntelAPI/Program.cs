@@ -3,44 +3,65 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using UrbanIntelAPI.Services;
+using UrbanIntelDATA;
+using UrbanIntelDATA.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+// inyeccion de services
 builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<LoginService>();
 
-// Agregar controladores (API)
+// Agregar controladores (API)UrbanIntelData
 builder.Services.AddControllers();
 
 // Configurar Swagger para documentación
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// inyeccion de db context para ser reconocida en el resto del sistema
+builder.Services.AddScoped<UrbanIntelDBContext>();
+
+// configuracion cors
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 
 // Configurar Autenticación JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// obtenemos la seccion de configuracion jwt desde appsettings.json
+var jwtSettings = builder.Configuration.GetSection("Jwt");
 
-    // Configuramos el esquema JWT Bearer
+// extraemos la clave secreta
+var secretKey = jwtSettings["Key"];
+
+// configuramos el esquema de autenticacion jwt bearer
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        // Definimos las reglas para validar los tokens que recibimos
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            
-            ValidateIssuer = true, // ¿Validar quién emitió el token?
-            ValidateAudience = true, // ¿Validar para quién fue emitido el token (audiencia)?
-            ValidateLifetime = true, // ¿Validar que el token no esté expirado?
-            ValidateIssuerSigningKey = true, // ¿Validar la firma del token para asegurarnos que no fue alterado?           
-            ValidIssuer = "urbanintel", // Quién genera el token (tu servidor o aplicación)            
-            ValidAudience = "urbanintel", // Para quién está destinado el token (por ejemplo, tu aplicación cliente Angular)
+            ValidateIssuer = true, // valida quien emitio el token
+            ValidateAudience = true, // valida para quien esta destinado el token
+            ValidateLifetime = true, // valida que el token no este expirado
+            ValidateIssuerSigningKey = true, // valida que la firma del token sea correcta
 
-            // Clave secreta usada para firmar y validar el token (debe ser secreta y segura)
+            ValidIssuer = jwtSettings["Issuer"], // quien emite el token (definido en appsettings)
+            ValidAudience = jwtSettings["Audience"], // quien puede usar el token (cliente angular, etc)
+
+            // clave secreta usada para firmar el token
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("CLAVESECRETA12345")) // Convertimos la clave a bytes
+                Encoding.UTF8.GetBytes(secretKey)) // convertimos la clave a bytes para la firma
         };
     });
-
 
 var app = builder.Build();
 
@@ -53,6 +74,9 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "UrbanIntel.API v1");
     //c.RoutePrefix = string.Empty; // Swagger será la página principal
 });
+
+// habilitar cors
+app.UseCors();
 
 // Activar Autenticación (verifica tokens JWT)
 app.UseAuthentication();

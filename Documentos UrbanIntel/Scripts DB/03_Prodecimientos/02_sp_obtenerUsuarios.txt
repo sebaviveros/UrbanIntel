@@ -1,0 +1,16 @@
+DELIMITER $$
+
+CREATE PROCEDURE sp_obtenerUsuarios(
+	IN p_rut VARCHAR(20)
+)
+BEGIN
+    IF p_rut IS NULL OR p_rut = '' THEN
+        SELECT Id, Rut, Nombre, Email, Telefono, Direccion FROM Usuario;
+    ELSE
+        SELECT Id, Rut, Nombre, Email, Telefono, Direccion
+        FROM Usuario
+        WHERE Rut = p_rut;
+    END IF;
+END$$
+
+DELIMITER ;
