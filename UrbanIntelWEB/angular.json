@@ -29,7 +29,6 @@
             "assets": [
                  "src/favicon.ico",
                   "src/assets",
-                  "node_modules/mapbox-gl/dist/mapbox-gl.css",
               {
                 "glob": "**/*",
                 "input": "public"
