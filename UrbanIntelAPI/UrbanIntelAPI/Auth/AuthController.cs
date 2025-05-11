@@ -24,6 +24,10 @@ namespace UrbanIntelAPI.Auth
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
+            try
+            {
+
+            
             // Validar usuario contra base de datos usando LoginService
             var usuario = await _loginService.ValidarUsuarioAsync(dto.Email, dto.Password);
 
@@ -34,6 +38,12 @@ namespace UrbanIntelAPI.Auth
             var token = GenerarToken(usuario);
 
             return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                // mensaje al usuario en caso de no conectar con base de datos
+                return StatusCode(500, new { message = "Error en el servidor. Inténtelo más tarde." });
+            }
         }
 
         private string GenerarToken(Usuario usuario)

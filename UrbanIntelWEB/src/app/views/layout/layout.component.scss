@@ -1,75 +1,185 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-body{
+body {
     font-family: 'Poppins', sans-serif;
 }
 
+/* Botón de menú hamburguesa */
+.menu-toggle {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 2rem;
+    cursor: pointer;
+    color: white;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.menu-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Sidebar */
 .sidebar {
     width: 250px;
     height: 100vh;
-    background-color: #2d1d13;
+    background-color: #2d1d13e1;
     color: white;
     display: flex;
     flex-direction: column;
     padding: 1rem;
-}
-  
-.nav {
-    ul {
-    list-style: none;
-    padding: 0;
-  
-    li {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem;
-        cursor: pointer;
-        border-radius: 8px;
-        transition: background-color 0.2s ease;
-
-    span,
-    ion-icon {
-          color: white;
-          transition: color 0.3s ease; 
-        }
-  
-        &:hover {
-        background-color: #3e2b1e;
-
-        span,
-    ion-icon {
-      color: orangered;
-    }
-    }
-
-        .icon {
-        width: 150px;
-        text-align: center;
-        }
-  
-        span {
-        font-size: 1rem;
-        }
-    }
-    }
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translateX(-100%); /* Inicialmente oculto para móviles */
+    transition: transform 0.3s ease;
+    z-index: 999;
 }
 
+.sidebar.open {
+    transform: translateX(0); /* Aparece al abrir */
+}
+
+.sidebar.hover {
+    background-color: #2d1d13f5;
+}
+
+.sidebar .logo {
+    text-align: center;
+    margin-bottom: 1rem;
+}
 
 .logo-sidebar {
-    width: 80%;           
-    max-width: 180px;    
-    height: auto;         
+    width: 80%;
+    max-width: 180px;
+    height: auto;
     display: block;
-    margin: 0 auto 0.5rem auto; 
+    margin: 0 auto;
 }
 
+.nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Ítems del menú lateral */
+.nav li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav li:hover {
+    background-color: #3e2b1e;
+}
+
+.nav li.active {
+    background-color: #3e2b1e;
+}
+
+.nav li span,
+.nav li ion-icon {
+    color: white;
+    transition: color 0.3s ease;
+}
+
+.nav li:hover span,
+.nav li:hover ion-icon {
+    color: orangered;
+}
+
+.nav li.active span,
+.nav li.active ion-icon {
+    color: orange;
+}
+
+/* Alinear ícono y texto centrados */
+.nav li ion-icon {
+    font-size: 1.5rem;
+    margin-right: 8px;
+}
+
+.nav li span {
+    font-size: 1.1rem;
+    line-height: 1.2;
+}
+
+/* Separadores */
 .divider {
     border: none;
     height: 1px;
     background-color: orange;
     margin: 0.5rem 0;
-    opacity: 0.6; // opcional: hace que se vea más suave
-  }
-  
-  
+    opacity: 0.6;
+}
+
+/* Botón de Cerrar Sesión */
+.logout {
+    cursor: pointer;
+    color: #ff4d4f;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.logout:hover {
+    background-color: #4b2e26;
+}
+
+.logout ion-icon {
+    margin-right: 8px;
+}
+
+/* Contenido principal */
+.main-content {
+    margin-left: 250px;
+    padding: 1rem;
+    transition: margin-left 0.3s ease;
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        z-index: 1000;
+    }
+
+    .sidebar {
+        width: 200px;
+        transform: translateX(-100%); /* Inicialmente oculto en móviles */
+    }
+
+    .sidebar.open {
+        transform: translateX(0); /* Muestra el menú al abrir */
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .sidebar.open ~ .main-content {
+        margin-left: 200px;
+    }
+
+    .nav li {
+        justify-content: flex-start;
+    }
+}
+
+/* Animación al cerrar el menú */
+.sidebar.close {
+    transform: translateX(-100%);
+}

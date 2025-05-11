@@ -1,51 +1,61 @@
-<aside class="sidebar">
-    <div class="logo">
-      <img src="/assets/img/logo.png" alt="" class="logo-sidebar">
-    </div>
-  
-    <nav class="nav">
-      <ul>
-        <li routerLink="/home" routerLinkActive="active">
-            <ion-icon name="home-outline"></ion-icon>
-          <span>Home</span>
-        </li>
-        <hr class="divider">
-        <li routerLink="/home" routerLinkActive="active">
-            <ion-icon name="checkmark-done-circle-outline"></ion-icon>
-            <span>Aprobación</span>
-          </li>
-          <hr class="divider">
-          <li routerLink="/home" routerLinkActive="active">
-            <ion-icon name="document-text-outline"></ion-icon>
-            <span>Solicitudes</span>
-          </li>
-          <hr class="divider">
-          <li routerLink="/home" routerLinkActive="active">
-            <ion-icon name="bar-chart-outline"></ion-icon>
-            <span>Reportes</span>
-          </li>
-          <hr class="divider">
-          <li routerLink="/home" routerLinkActive="active">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span>Programación</span>
-          </li>
-          <hr class="divider">
-          <li routerLink="/home" routerLinkActive="active">
-            <ion-icon name="book-outline"></ion-icon>
-            <span>Auditoría</span>
-          </li>
-          <hr class="divider">
-          <li routerLink="/home" routerLinkActive="active">
-            <ion-icon name="people-circle-outline"></ion-icon>
-          <span>Gestión Cuentas</span>
-        </li>
-        <hr class="divider">
-      </ul>
-    </nav>
-  </aside>
+<!-- Botón de menú hamburguesa -->
+<div class="menu-toggle" (click)="toggleMenu()">
+  <ion-icon [name]="isMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
+</div>
 
-  <main class="main-content">
-    <router-outlet></router-outlet>
-  </main>
-  
+<!-- Menú lateral responsivo -->
+<aside class="sidebar" [ngClass]="{'open': isMenuOpen}">
+  <div class="logo">
+    <img src="/assets/img/logo.png" alt="Logo" class="logo-sidebar">
+  </div>
 
+  <nav class="nav">
+    <ul>
+      <li routerLink="/home" routerLinkActive="active">
+        <ion-icon name="home-outline"></ion-icon>
+        <span>Home</span>
+      </li>
+      <hr class="divider">
+      <li routerLink="/aprobacion" routerLinkActive="active">
+        <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+        <span>Aprobación</span>
+      </li>
+      <hr class="divider">
+      <li routerLink="/solicitudes" routerLinkActive="active">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <span>Solicitudes</span>
+      </li>
+      <hr class="divider">
+      <li routerLink="/reportes" routerLinkActive="active">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        <span>Reportes</span>
+      </li>
+      <hr class="divider">
+      <li routerLink="/programacion" routerLinkActive="active">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <span>Programación</span>
+      </li>
+      <hr class="divider">
+      <li routerLink="/auditoria" routerLinkActive="active">
+        <ion-icon name="book-outline"></ion-icon>
+        <span>Auditoría</span>
+      </li>
+      <hr class="divider">
+      <li routerLink="/gestion-cuentas" routerLinkActive="active">
+        <ion-icon name="people-circle-outline"></ion-icon>
+        <span>Gestión Cuentas</span>
+      </li>
+      <hr class="divider">
+      <!-- Botón de Cerrar Sesión -->
+      <li (click)="logout()" class="logout">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Cerrar Sesión</span>
+      </li>
+      <hr class="divider">
+    </ul>
+  </nav>
+</aside>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>

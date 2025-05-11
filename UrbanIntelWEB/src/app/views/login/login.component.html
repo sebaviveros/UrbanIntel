@@ -9,7 +9,7 @@
   <div class="wrapper" #wrapperRef>
     <img src="assets/img/logo.png" alt="">
     <div class="form-wrapper login">
-      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <form (ngSubmit)="loginBtn()" #loginForm="ngForm">
         <h2>LOGIN</h2>
 
         <div class="input-box">
@@ -32,13 +32,13 @@
             required>
         </div>
 
+        <button type="submit">Iniciar Sesión</button>
+
         <div class="forgot-pass">
           <a href="#">Olvidó su contraseña?</a>
         </div>
 
-        <button type="submit">Iniciar Sesión</button>
-
-        <div *ngIf="loginError" class="alert alert-danger">
+        <div *ngIf="loginError" class="login-error">
           {{ loginError }}
         </div>
       </form>

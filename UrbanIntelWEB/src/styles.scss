@@ -18,3 +18,86 @@ body {
   background-attachment: fixed;
   font-family: 'Poppins', sans-serif;
 }
+
+
+// Estilo global para sweetalert2
+
+/* Estilo general del popup */
+.swal2-popup {
+  background-color: #96612ce3 !important;
+  color: #ecf0f1 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Título del modal */
+.swal2-title {
+  color: #ecf0f1 !important;
+  font-size: 1.5rem !important;
+  font-weight: bold !important;
+}
+
+/* Contenedor del mensaje */
+.swal2-html-container {
+  color: #bdc3c7 !important;
+  font-size: 1rem !important;
+}
+
+/* Íconos de advertencia */
+.swal2-icon.swal2-warning {
+  color: #e74c3c !important;
+  border-color: #e74c3c !important;
+}
+
+/* Íconos de éxito */
+.swal2-icon.swal2-success {
+  color: #27ae60 !important;
+  border-color: #27ae60 !important;
+}
+
+/* Íconos de error */
+.swal2-icon.swal2-error {
+  color: #e74c3c !important;
+  border-color: #e74c3c !important;
+}
+
+/* Botón de confirmación */
+.swal2-confirm {
+  background-color: #3498db !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 5px !important;
+  padding: 10px 20px !important;
+  font-weight: bold !important;
+}
+
+/* Botón de cancelación */
+.swal2-cancel {
+  background-color: #e74c3c !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 5px !important;
+  padding: 10px 20px !important;
+  font-weight: bold !important;
+}
+
+/* Contenedor de acciones (botones) */
+.swal2-actions {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 10px !important;
+}
+
+/* Botones al pasar el ratón */
+.swal2-confirm:hover,
+.swal2-cancel:hover {
+  opacity: 0.8 !important;
+  transition: opacity 0.2s !important;
+}
+
+/* Fondo opaco detrás del modal */
+.swal2-backdrop {
+  background-color: rgba(44, 62, 80, 0.8) !important;
+}
+
+// Fin estilo global sweetalert2

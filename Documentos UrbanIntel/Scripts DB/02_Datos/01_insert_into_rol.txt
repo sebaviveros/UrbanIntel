@@ -1,5 +1,5 @@
 INSERT INTO rol (nombre)
-VALUES ('Administrador')
+VALUES ('Administrador');
 
 INSERT INTO rol (nombre)
-VALUES ('Funcionario Municipal')
+VALUES ('Funcionario Municipal');
