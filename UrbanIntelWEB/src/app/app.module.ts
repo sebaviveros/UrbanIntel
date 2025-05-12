@@ -17,6 +17,9 @@ import { LandingPageComponent } from './views/landing-page/landing-page.componen
 import { QuienesSomosComponent } from './views/quienes-somos/quienes-somos.component';
 import { ManualComponent } from './views/manual/manual.component';
 
+import { DataTablesModule } from "angular-datatables";
+import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component'; // datatables de angular
+
 
 @NgModule({
   declarations: [
@@ -26,11 +29,13 @@ import { ManualComponent } from './views/manual/manual.component';
     LayoutComponent,
     LandingPageComponent,
     QuienesSomosComponent,
-    ManualComponent 
+    ManualComponent,
+    GestionCuentasComponent 
     // Agregarás más componentes aquí luego
   ],
   imports: [
     BrowserModule,
+    DataTablesModule,
     AppRoutingModule,
     FormsModule,         // formulario
     HttpClientModule, 

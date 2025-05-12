@@ -6,3 +6,6 @@ VALUES (2,'20476925-7');
 
 INSERT INTO RolUsuario (id_rol , rut)
 VALUES (2,'20834198-7');
+
+INSERT INTO RolUsuario (id_rol , rut)
+VALUES (1,'21834498-k');

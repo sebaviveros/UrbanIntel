@@ -6,7 +6,7 @@ CREATE PROCEDURE sp_validarUsuario(
 )
 BEGIN
     SELECT 
-        u.Id, u.Rut, u.Nombre, u.Email, u.Telefono, u.Direccion, u.Password,
+        u.Id, u.Rut, u.Nombre, u.Apellido, u.Email, u.Telefono, u.Direccion, u.Password,
         r.Nombre AS Rol
     FROM Usuario u
     INNER JOIN RolUsuario ru ON ru.Rut = u.Rut

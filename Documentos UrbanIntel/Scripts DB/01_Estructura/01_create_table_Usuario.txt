@@ -2,8 +2,9 @@ CREATE TABLE Usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     rut VARCHAR(12) NOT NULL UNIQUE,
     nombre VARCHAR(150) NOT NULL,
-    email VARCHAR(100),
-    telefono VARCHAR(50),
-    direccion VARCHAR(255),
+	apellido VARCHAR(150) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    telefono VARCHAR(50) NOT NULL,
+    direccion VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
 );

@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './views/login/login.component'; // <-- importa el componente
+import { LoginComponent } from './views/login/login.component'; // importa el componente
 import { HomeComponent } from './views/home/home.component';
 import { LayoutComponent } from './views/layout/layout.component';
 import { LandingPageComponent } from './views/landing-page/landing-page.component';
 import { QuienesSomosComponent } from './views/quienes-somos/quienes-somos.component';
 import { ManualComponent } from './views/manual/manual.component';
+import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
 
 const routes: Routes = [
   // redirecciona al login si la url está vacía
@@ -22,6 +23,7 @@ const routes: Routes = [
     component: LayoutComponent,
     children: [
       { path: 'home', component: HomeComponent },
+      { path: 'gestion-cuentas', component: GestionCuentasComponent }
       // puedes agregar más rutas hijas aquí
     ]
   },

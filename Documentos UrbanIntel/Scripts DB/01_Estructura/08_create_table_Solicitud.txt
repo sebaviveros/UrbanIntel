@@ -7,6 +7,8 @@ CREATE TABLE Solicitud (
     fecha_aprobacion DATETIME,                           -- Cuando un funcionario la aprueba
     fecha_asignacion DATETIME,                           -- Cuando se asigna a reparacion
     rut_ciudadano VARCHAR(12), 
+	nombre_ciudadano VARCHAR(150),
+	apellido_ciudadano VARCHAR(150),
 	telefono_ciudadano VARCHAR(20),
     email_ciudadano VARCHAR(100),
     tipo_reparacion_id INT,

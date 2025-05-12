@@ -101,3 +101,50 @@ body {
 }
 
 // Fin estilo global sweetalert2
+
+
+// Estilo global para datatables
+/* Personalizar el texto fuera de la tabla */
+.dataTables_wrapper .dataTables_length label,
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+  color: white !important;  /* Cambiar color del texto */
+  font-weight: bold !important; /* Opcional: hacer el texto más grueso */
+}
+
+/* Ajuste específico para la etiqueta de "Entries per page" */
+.dt-container .dt-length label {
+  color: white !important;
+  text-align: left !important;
+}
+
+/* Estilo para el label "Search:" */
+.dt-container .dt-search label {
+  color: white !important;
+  text-align: left !important;
+}
+
+/* Ajuste específico para el texto "Showing X to Y of Z entries" */
+.dt-info {
+  color: white !important;
+}
+
+/* Botones de paginación */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background-color: #343a40 !important;
+  color: white !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background-color: #495057 !important;
+  color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background-color: #007bff !important;
+  color: #fff !important;
+}
+
+// Fin estilo global datatables
+

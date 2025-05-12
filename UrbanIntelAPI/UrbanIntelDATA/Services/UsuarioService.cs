@@ -42,9 +42,11 @@ namespace UrbanIntelDATA.Services
                     Id = reader.GetInt32("Id"),
                     Rut = reader.GetString("Rut"),
                     Nombre = reader.GetString("Nombre"),
+                    Apellido = reader.GetString("Apellido"),
                     Email = reader.GetString("Email"),
                     Telefono = reader.GetString("Telefono"),
-                    Direccion = reader.GetString("Direccion")
+                    Direccion = reader.GetString("Direccion"),
+                    Rol = reader.GetString("Rol")
                 });
             }
 
