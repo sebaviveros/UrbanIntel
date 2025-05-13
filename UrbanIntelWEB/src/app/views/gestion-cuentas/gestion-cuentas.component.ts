@@ -73,7 +73,8 @@ export class GestionCuentasComponent implements OnInit, OnDestroy {
       columns: [
         { data: 'id', title: 'ID' },
         { data: 'rut', title: 'RUT' },
-        { data: 'nombre', title: 'Nombre Completo' },
+        { data: 'nombre', title: 'Nombre' },
+        { data: 'apellido', title: 'Apellido' },
         { data: 'email', title: 'E-Mail' },
         { data: 'telefono', title: 'Teléfono' },
         { data: 'direccion', title: 'Dirección' },
