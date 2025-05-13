@@ -1,0 +1,58 @@
+DELIMITER //
+
+CREATE PROCEDURE sp_modificarUsuario(
+    IN p_rut VARCHAR(12),
+    IN p_nombre VARCHAR(150),
+    IN p_apellido VARCHAR(150),
+    IN p_email VARCHAR(100),
+    IN p_telefono VARCHAR(50),
+    IN p_direccion VARCHAR(150),
+    IN p_rol VARCHAR(50)
+)
+BEGIN
+    DECLARE rol_id INT;
+    DECLARE current_rol_id INT;
+    
+    -- Verificar si el usuario existe
+    IF NOT EXISTS (SELECT 1 FROM usuario WHERE rut = p_rut) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El usuario con el RUT proporcionado no existe.';
+    END IF;
+    
+    -- Determinar el ID del rol según el valor de p_rol
+    IF p_rol = 'Administrador' THEN
+        SET rol_id = 1;
+    ELSEIF p_rol = 'Funcionario Municipal' THEN
+        SET rol_id = 2;
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Rol no válido.';
+    END IF;
+
+    -- Actualizar los datos del usuario
+    UPDATE usuario
+    SET 
+        nombre = IF(p_nombre <> '', p_nombre, nombre),
+        apellido = IF(p_apellido <> '', p_apellido, apellido),
+        email = IF(p_email <> '', p_email, email),
+        telefono = IF(p_telefono <> '', p_telefono, telefono),
+        direccion = IF(p_direccion <> '', p_direccion, direccion)
+    WHERE rut = p_rut;
+
+    -- Obtener el ID de rol actual
+    SELECT id_rol INTO current_rol_id
+    FROM rolusuario
+    WHERE rut = p_rut;
+
+    -- Actualizar el rol solo si ha cambiado
+    IF current_rol_id <> rol_id THEN
+        UPDATE rolusuario
+        SET id_rol = rol_id
+        WHERE rut = p_rut;
+    END IF;
+
+    -- Confirmación de éxito
+    SELECT 'Usuario modificado exitosamente' AS mensaje;
+END //
+
+DELIMITER ;

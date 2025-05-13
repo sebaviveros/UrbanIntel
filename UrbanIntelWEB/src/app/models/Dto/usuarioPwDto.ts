@@ -1,12 +1,12 @@
-export class Usuario {
+export class UsuarioPwDto {
   constructor(
-    public id: number,
     public rut: string,
     public nombre: string,
     public apellido: string,
     public email: string,
     public telefono: string,
     public direccion: string,
-    public rol: string
+    public rol: string,
+    public password: string
   ) {}
 }

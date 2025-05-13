@@ -1,0 +1,22 @@
+DELIMITER //
+
+CREATE PROCEDURE sp_eliminarUsuario(
+    IN p_rut VARCHAR(12)
+)
+BEGIN
+    -- verificar si el usuario existe
+    IF NOT EXISTS (SELECT 1 FROM usuario WHERE rut = p_rut) THEN
+        -- lanzar un error personalizado si el usuario no existe
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El usuario con el RUT proporcionado no existe.';
+    ELSE
+        -- eliminar el rol del usuario en rolusuario
+        DELETE FROM rolusuario WHERE rut = p_rut;
+
+        -- eliminar el usuario de la tabla usuario
+        DELETE FROM usuario WHERE rut = p_rut;
+
+    END IF;
+END //
+
+DELIMITER ;

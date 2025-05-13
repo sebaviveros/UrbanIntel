@@ -3,12 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Usuario } from '../../models/usuario.model';
 import { environment } from '../../../environments/environment';  
+import { UsuarioPwDto } from '../../models/Dto/usuarioPwDto';
+
+interface ApiResponse {
+  success: boolean;
+  message: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
   private apiUrl = `${environment.apiUrl}/Usuario`;
+  
 
   constructor(private http: HttpClient) { }
 
@@ -23,18 +30,18 @@ export class UsuarioService {
   }
 
   // Crear un nuevo usuario
-  crearUsuario(usuario: Usuario): Observable<Usuario> {
-    return this.http.post<Usuario>(this.apiUrl, usuario);
+  crearUsuario(usuarioDto: UsuarioPwDto): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(this.apiUrl, usuarioDto);
   }
 
-  // Actualizar un usuario existente
-  actualizarUsuario(id: number, usuario: Usuario): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.apiUrl}/${id}`, usuario);
-  }
+  // modificar un usuario existente por RUT
+  modificarUsuario(rut: string, usuario: Usuario): Observable<ApiResponse> {
+  return this.http.put<ApiResponse>(`${this.apiUrl}/${rut}`, usuario);
+}
 
-  // Eliminar un usuario
-  eliminarUsuario(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  // eliminar un usuario por RUT
+  eliminarUsuario(rut: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.apiUrl}/${rut}`);
   }
 }
 

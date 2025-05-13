@@ -1,0 +1,42 @@
+DELIMITER //
+
+CREATE PROCEDURE sp_crearUsuario(
+    IN p_rut VARCHAR(12),
+    IN p_nombre VARCHAR(150),
+    IN p_apellido VARCHAR(150),
+    IN p_email VARCHAR(100),
+    IN p_telefono VARCHAR(50),
+    IN p_direccion VARCHAR(150),
+    IN p_rol VARCHAR(100),
+    IN p_password VARCHAR(100)
+)
+BEGIN
+    DECLARE rol_id INT;
+
+    -- determinar el ID del rol segun el valor de p_rol
+    IF p_rol = 'Administrador' THEN
+        SET rol_id = 1;
+    ELSEIF p_rol = 'Funcionario Municipal' THEN
+        SET rol_id = 2;
+    ELSE
+        -- si el rol no es valido, usar un ID por defecto (opcional)
+        SET rol_id = 2;
+    END IF;
+
+    -- verificar si el RUT ya existe en la tabla usuario
+    IF EXISTS (SELECT 1 FROM usuario WHERE rut = p_rut) THEN
+        -- lanzar un error personalizado para capturarlo en el backend
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'El usuario con el RUT proporcionado ya existe.';
+    ELSE
+        -- insertar el nuevo usuario
+        INSERT INTO usuario (rut, nombre, apellido, email, telefono, direccion, password)
+        VALUES (p_rut, p_nombre, p_apellido, p_email, p_telefono, p_direccion, p_password);
+
+        -- insertar en la tabla rolusuario el id_rol y el rut
+        INSERT INTO rolusuario (id_rol, rut)
+        VALUES (rol_id, p_rut);
+    END IF;
+END //
+
+DELIMITER ;
