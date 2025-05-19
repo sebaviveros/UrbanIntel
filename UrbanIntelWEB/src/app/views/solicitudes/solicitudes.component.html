@@ -1,0 +1,30 @@
+ <div class="content">
+    <h2>SOLICITUDES</h2>
+    <button class="btn-crear">CREAR SOLICITUD</button>
+    
+    <div class="filter-section">
+      <input type="text" placeholder="Buscar" class="search-input" />
+      <button class="btn-filter">Filtrar</button>
+      <select class="status-select">
+        <option>PENDIENTE</option>
+        <option>APROBADA</option>
+        <option>RECHAZADA</option>
+      </select>
+    </div>
+
+    <div class="solicitud-list">
+      <div *ngFor="let solicitud of solicitudes" class="solicitud-card">
+        <div class="solicitud-info">
+          <p><strong>Nombre:</strong> {{ solicitud.nombre }}</p>
+          <p><strong>Dirección:</strong> {{ solicitud.direccion }}</p>
+          <p><strong>Descripción:</strong> {{ solicitud.descripcion }}</p>
+        </div>
+        <div class="solicitud-image">
+          <img [src]="solicitud.imagenUrl" alt="Evidencia" />
+        </div>
+        <div class="solicitud-actions">
+          <button (click)="modificarSolicitud(solicitud)">MODIFICAR</button>
+          <button (click)="descargarPDF(solicitud)">DESCARGAR PDF</button>
+        </div>
+      </div>
+    </div>

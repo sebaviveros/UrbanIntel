@@ -7,6 +7,8 @@ import { LandingPageComponent } from './views/landing-page/landing-page.componen
 import { QuienesSomosComponent } from './views/quienes-somos/quienes-somos.component';
 import { ManualComponent } from './views/manual/manual.component';
 import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
+import { SolicitudesComponent } from './views/solicitudes/solicitudes.component';
+
 
 const routes: Routes = [
   // redirecciona al login si la url está vacía
@@ -23,6 +25,7 @@ const routes: Routes = [
     component: LayoutComponent,
     children: [
       { path: 'home', component: HomeComponent },
+      { path: 'solicitudes', component: SolicitudesComponent },
       { path: 'gestion-cuentas', component: GestionCuentasComponent }
       // puedes agregar más rutas hijas aquí
     ]

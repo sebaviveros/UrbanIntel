@@ -419,3 +419,61 @@ form .button input:hover {
 .tab-content.active {
   display: block;
 }
+
+  .custom-file-upload {
+        display: inline-block;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 12px;
+        background-color: #d35400;
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+        margin: 10px 0;
+        transition: background-color 0.3s ease;
+        border: none;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #e67e22;
+    }
+
+    .file-upload input[type="file"] {
+        display: inline-block;
+        margin-top: 8px;
+    }
+
+    .file-name {
+        margin-top: 5px;
+        font-size: 14px;
+        color: #555;
+        display: block;
+    }
+
+
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.file-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+}
+
+.file-name {
+  font-size: 0.9rem;
+}
+
+.remove-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 2px 5px;
+  cursor: pointer;
+  border-radius: 3px;
+}

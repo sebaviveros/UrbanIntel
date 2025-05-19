@@ -1,19 +1,21 @@
-//en Program.cs va toda la configuracion globa de servicios y middlewares del sistema
+// en Program.cs va toda la configuracion global de servicios y middlewares del sistema
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using UrbanIntelAPI.Services;
 using UrbanIntelDATA;
 using UrbanIntelDATA.Services;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
 // inyeccion de services
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<SolicitudService>();
 
-// Agregar controladores (API)UrbanIntelData
+// Agregar controladores (API) UrbanIntelData
 builder.Services.AddControllers();
 
 // Configurar Swagger para documentación
@@ -34,49 +36,59 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-
 // Configurar Autenticación JWT
-// obtenemos la seccion de configuracion jwt desde appsettings.json
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-
-// extraemos la clave secreta
 var secretKey = jwtSettings["Key"];
 
-// configuramos el esquema de autenticacion jwt bearer
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true, // valida quien emitio el token
-            ValidateAudience = true, // valida para quien esta destinado el token
-            ValidateLifetime = true, // valida que el token no este expirado
-            ValidateIssuerSigningKey = true, // valida que la firma del token sea correcta
-
-            ValidIssuer = jwtSettings["Issuer"], // quien emite el token (definido en appsettings)
-            ValidAudience = jwtSettings["Audience"], // quien puede usar el token (cliente angular, etc)
-
-            // clave secreta usada para firmar el token
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(secretKey)) // convertimos la clave a bytes para la firma
+                Encoding.UTF8.GetBytes(secretKey))
         };
     });
 
 var app = builder.Build();
 
-// Configuración del pipeline de middlewares
+// Crear la carpeta 'uploads' justo antes de usar el middleware estático
+var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+try
+{
+    if (!Directory.Exists(uploadsPath))
+    {
+        Directory.CreateDirectory(uploadsPath);
+        Console.WriteLine($"Carpeta 'uploads' creada en: {uploadsPath}");
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error al crear la carpeta 'uploads': {ex.Message}");
+}
 
-// Activar Swagger SIEMPRE 
+// Activar Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "UrbanIntel.API v1");
-    //c.RoutePrefix = string.Empty; // Swagger será la página principal
 });
 
 // habilitar cors
 app.UseCors();
+
+// Configurar la carpeta 'uploads' como pública
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
 
 // Activar Autenticación (verifica tokens JWT)
 app.UseAuthentication();

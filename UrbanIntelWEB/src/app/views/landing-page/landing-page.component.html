@@ -48,61 +48,63 @@
 <div class="container-formulario">
 <!--CONTENIDO DE REALIZAR FORMULARIO-->
 <div *ngIf="activeTab === 'solicitudes'" class="tab-content active">
-
-
   <div class="title">Formulario de Solicitud</div>
   <div class="content">
-    <form action="#">
+    <form  [formGroup]="solicitudForm" (ngSubmit)="enviarSolicitud()" >
       <div class="user-details">
 
         <div class="input-box">
-          <span class="details">Nombre y Apellido</span>
-          <input type="text" placeholder="Ingrese su nombre y apellido" required>
+          <span class="details">Nombre</span>
+          <input type="text"   placeholder="Ingrese su nombre" required>
+        </div>
+
+        <div class="input-box">
+          <span class="details">Apellido</span>
+          <input type="text"   placeholder="Ingrese su apellido" required>
         </div>
 
         <div class="input-box">
           <span class="details">RUT</span>
-          <input type="text" placeholder="Ingrese su RUT. ej. 1234567-8" required>
+          <input type="text"  placeholder="Ingrese su RUT. ej. 1234567-8" required>
         </div>
 
-        <!-- Dirección con comunas de la V Región -->
-        <div class="input-box">
-          <span class="details">Comuna</span>
-          <select required>
-            <option value="">Seleccione su comuna</option>
-            <option>Valparaíso</option>
-            <option>Viña del Mar</option>
-            <option>Quilpué</option>
-            <option>Villa Alemana</option>
-            <option>Concón</option>
-            <option>San Antonio</option>
-            <option>Los Andes</option>
-            <option>Quillota</option>
-            <option>La Calera</option>
-            <option>San Felipe</option>
-          </select>
-        </div>
-
-        
         <div class="input-box">
           <span class="details">Dirección</span>
-          <input type="text" placeholder="Ingrese la dirección de la reparación" required>
+          <input type="text"  placeholder="Ingrese la dirección de la reparación" required>
         </div>
 
         <div class="input-box">
           <span class="details">Correo Electrónico</span>
-          <input type="text" placeholder="Ingrese su correo electrónico" required>
+          <input type="text"  placeholder="Ingrese su correo electrónico" required>
         </div>
 
         <div class="input-box">
           <span class="details">Celular</span>
-          <input type="text" placeholder="Ingrese su número de celular" required>
+          <input type="text"  placeholder="Ingrese su número de celular" required>
         </div>
+
+         <!-- Botón para adjuntar imagen -->
+        <div class="input-box file-upload">
+  <button type="button" class="custom-file-upload" (click)="fileInput.click()">
+    Adjuntar Imágenes 
+  </button>
+  <p>(Máximo 3 permitidas)</p>
+  <input #fileInput type="file" (change)="onFilesSelected($event)" accept="image/png, image/jpeg" multiple style="display: none;">
+  
+  <div *ngIf="fileLimitExceeded" class="error-message">
+    Máximo 3 imágenes permitidas.
+  </div>
+  
+  <div *ngFor="let file of selectedFiles; let i = index" class="file-preview">
+    <span class="file-name">{{ file.name }}</span>
+    <button type="button" class="remove-button" (click)="removeFile(i)">X</button>
+  </div>
+</div>
 
         <!-- Descripción con campo amplio -->
         <div class="input-box">
           <span class="details">Descripción</span>
-          <textarea placeholder="Explique la situación de forma clara y concisa" rows="5" required></textarea>
+          <textarea  placeholder="Explique la situación de forma clara y concisa" rows="5" required></textarea>
         </div>
 
       </div>
@@ -112,8 +114,8 @@
         <input type="submit" value="Enviar Reporte">
       </div>
     </form>
-  </div>
-</div>
+    </div>
+      </div>
 <!--CONTENIDO DE CONSULTAR SOLICITUD-->
 <div *ngIf="activeTab === 'consulta'" class="tab-content active">
 

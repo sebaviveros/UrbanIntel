@@ -7,6 +7,8 @@ import { FormsModule } from '@angular/forms';
 //  Importación del módulo para hacer peticiones HTTP (API REST)
 import { HttpClientModule } from '@angular/common/http';
 
+import { ReactiveFormsModule } from '@angular/forms';
+
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -18,7 +20,8 @@ import { QuienesSomosComponent } from './views/quienes-somos/quienes-somos.compo
 import { ManualComponent } from './views/manual/manual.component';
 
 import { DataTablesModule } from "angular-datatables";
-import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component'; // datatables de angular
+import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
+import { SolicitudesComponent } from './views/solicitudes/solicitudes.component'; // datatables de angular
 
 
 @NgModule({
@@ -30,14 +33,16 @@ import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas
     LandingPageComponent,
     QuienesSomosComponent,
     ManualComponent,
-    GestionCuentasComponent 
+    GestionCuentasComponent,
+    SolicitudesComponent 
     // Agregarás más componentes aquí luego
   ],
   imports: [
     BrowserModule,
-    DataTablesModule,
+    DataTablesModule,  
     AppRoutingModule,
-    FormsModule,         // formulario
+    ReactiveFormsModule,
+    FormsModule,       // formulario
     HttpClientModule, 
        // Api Rest 
   ],
