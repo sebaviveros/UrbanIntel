@@ -7,24 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dto\**" />
     <Compile Remove="NewFolder\**" />
+    <Content Remove="Dto\**" />
     <Content Remove="NewFolder\**" />
+    <EmbeddedResource Remove="Dto\**" />
     <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="Dto\**" />
     <None Remove="NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
-    <PackageReference Include="MySql.Data" Version="9.3.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\UrbanIntelDATA\UrbanIntelDATA.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Dto\" />
   </ItemGroup>
 
 </Project>

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using UrbanIntelAPI.Services;
 using UrbanIntelDATA;
 using UrbanIntelDATA.Services;
 

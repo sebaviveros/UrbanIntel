@@ -4,9 +4,9 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using Microsoft.Extensions.Configuration;
 using UrbanIntelDATA.Models;
+using Microsoft.Data.SqlClient;
 
 
 namespace UrbanIntelDATA
@@ -20,9 +20,9 @@ namespace UrbanIntelDATA
             _connectionString = configuration.GetConnectionString("CntnString");
         }
 
-        public MySqlConnection CreateConnection()
+        public SqlConnection CreateConnection()
         {
-            return new MySqlConnection(_connectionString);
+            return new SqlConnection(_connectionString);
         }
     }
 }

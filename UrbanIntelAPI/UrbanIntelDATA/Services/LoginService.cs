@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.Data.SqlClient;
 using System.Data;
 using UrbanIntelDATA.Models;
 
@@ -23,32 +23,40 @@ namespace UrbanIntelDATA.Services
             await connection.OpenAsync();
 
             // se prepara el comando para ejecutar el procedimiento almacenado
-            using var command = new MySqlCommand("sp_validarUsuario", connection);
+            using var command = new SqlCommand("sp_validarUsuario", connection);
             command.CommandType = CommandType.StoredProcedure;
 
             // se agregan los parametros necesarios al procedimiento
             command.Parameters.AddWithValue("@p_email", email);
             command.Parameters.AddWithValue("@p_password", password);
 
-            //  se ejecuta el procedimiento y se lee el resultado
-            using var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
+            try
             {
-                // si existe un usuario valido, se crea y retorna el objeto usuario
-                return new Usuario
+                using var reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                 {
-                    Id = reader.GetInt32("Id"),
-                    Rut = reader.GetString("Rut"),
-                    Nombre = reader.GetString("Nombre"),
-                    Apellido = reader.GetString("Apellido"),
-                    Email = reader.GetString("Email"),
-                    Telefono = reader.GetString("Telefono"),
-                    Direccion = reader.GetString("Direccion"),
-                    Rol = reader.GetString("Rol")
-                };
+                    return new Usuario
+                    {
+                        Id = reader.GetInt32("Id"),
+                        Rut = reader.GetString("Rut"),
+                        Nombre = reader.GetString("Nombre"),
+                        Apellido = reader.GetString("Apellido"),
+                        Email = reader.GetString("Email"),
+                        Telefono = reader.GetString("Telefono"),
+                        Direccion = reader.GetString("Direccion"),
+                        Rol = reader.GetString("Rol")
+                    };
+                }
+            }
+            catch (SqlException ex) when (ex.Number == 50005) // Usuario no encontrado
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error en la base de datos: {ex.Message}");
             }
 
-            // si no se encontro un usuario valido, se retorna null
             return null;
         }
     }

@@ -1,9 +1,10 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.Data.SqlClient;
 using System.Data;
 using UrbanIntelDATA.Models;
-using UrbanIntelDATA;
+using Microsoft.AspNetCore.Http; //paquete que contiene IFormFile
 
-namespace UrbanIntelAPI.Services
+
+namespace UrbanIntelDATA.Services
 {
     public class SolicitudService
     {
@@ -19,11 +20,14 @@ namespace UrbanIntelAPI.Services
         {
             using var connection = _context.CreateConnection();
             await connection.OpenAsync();
-            using var transaction = await connection.BeginTransactionAsync();
+
+            // Convertir explícitamente a SqlTransaction
+            using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
 
             try
             {
-                using var command = new MySqlCommand("sp_crearSolicitud", connection, transaction);
+                using var command = new SqlCommand("sp_crearSolicitud", connection);
+                command.Transaction = transaction;  // Asignar la transacción
                 command.CommandType = CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@p_nombre", solicitud.NombreCiudadano);
@@ -50,7 +54,8 @@ namespace UrbanIntelAPI.Services
                     using var fileStream = new FileStream(filePath, FileMode.Create);
                     await imagen.CopyToAsync(fileStream);
 
-                    using var imgCommand = new MySqlCommand("sp_crearImagenSolicitud", connection, transaction);
+                    using var imgCommand = new SqlCommand("sp_crearImagenSolicitud", connection);
+                    imgCommand.Transaction = transaction;  // Asignar la transacción
                     imgCommand.CommandType = CommandType.StoredProcedure;
                     imgCommand.Parameters.AddWithValue("@p_solicitudId", solicitudId);
                     imgCommand.Parameters.AddWithValue("@p_url", fileName);
@@ -75,7 +80,7 @@ namespace UrbanIntelAPI.Services
             using var connection = _context.CreateConnection();
             await connection.OpenAsync();
 
-            using var command = new MySqlCommand("sp_obtenerSolicitudes", connection);
+            using var command = new SqlCommand("sp_obtenerSolicitudes", connection);
             command.CommandType = CommandType.StoredProcedure;
 
             using var reader = await command.ExecuteReaderAsync();

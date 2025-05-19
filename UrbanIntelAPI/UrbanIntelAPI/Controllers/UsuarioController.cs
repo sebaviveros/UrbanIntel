@@ -19,8 +19,19 @@ namespace UrbanIntelAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string? rut)
         {
-            var usuarios = await _usuarioService.ObtenerUsuariosAsync(rut);
-            return Ok(usuarios);
+            try
+            {
+                var usuarios = await _usuarioService.ObtenerUsuariosAsync(rut);
+
+                if (usuarios == null || usuarios.Count == 0)
+                    return NotFound(new { success = false, message = "Usuario no encontrado." });
+
+                return Ok(new { success = true, usuarios });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = $"Error del servidor: {ex.Message}" });
+            }
         }
 
         [HttpPost]
@@ -37,6 +48,10 @@ namespace UrbanIntelAPI.Controllers
                 else if (resultado.Contains("El usuario con el RUT proporcionado ya existe"))
                 {
                     return BadRequest(new { success = false, message = resultado });
+                }
+                else if (resultado.Contains("Error al crear el usuario"))
+                {
+                    return StatusCode(500, new { success = false, message = resultado });
                 }
                 else if (resultado.Contains("Error en la base de datos"))
                 {
@@ -63,6 +78,9 @@ namespace UrbanIntelAPI.Controllers
                 if (resultado.Contains("exitosamente"))
                     return Ok(new { success = true, message = resultado });
 
+                if (resultado.Contains("no existe"))
+                    return NotFound(new { success = false, message = resultado });
+
                 return BadRequest(new { success = false, message = resultado });
             }
             catch (Exception ex)
@@ -70,6 +88,7 @@ namespace UrbanIntelAPI.Controllers
                 return StatusCode(500, new { success = false, message = $"Error del servidor: {ex.Message}" });
             }
         }
+
 
         [HttpPut("{rut}")]
         public async Task<IActionResult> ModificarUsuario(string rut, [FromBody] Usuario usuario)
@@ -82,6 +101,12 @@ namespace UrbanIntelAPI.Controllers
                 if (resultado.Contains("exitosamente"))
                     return Ok(new { success = true, message = resultado });
 
+                if (resultado.Contains("no existe"))
+                    return NotFound(new { success = false, message = resultado });
+
+                if (resultado.Contains("no es válido"))
+                    return BadRequest(new { success = false, message = resultado });
+
                 return BadRequest(new { success = false, message = resultado });
             }
             catch (Exception ex)
@@ -89,7 +114,6 @@ namespace UrbanIntelAPI.Controllers
                 return StatusCode(500, new { success = false, message = $"Error del servidor: {ex.Message}" });
             }
         }
-
 
     }
 }

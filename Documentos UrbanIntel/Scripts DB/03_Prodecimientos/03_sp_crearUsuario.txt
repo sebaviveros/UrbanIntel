@@ -1,42 +1,42 @@
-DELIMITER //
-
-CREATE PROCEDURE sp_crearUsuario(
-    IN p_rut VARCHAR(12),
-    IN p_nombre VARCHAR(150),
-    IN p_apellido VARCHAR(150),
-    IN p_email VARCHAR(100),
-    IN p_telefono VARCHAR(50),
-    IN p_direccion VARCHAR(150),
-    IN p_rol VARCHAR(100),
-    IN p_password VARCHAR(100)
-)
+CREATE PROCEDURE sp_crearUsuario
+    @p_rut VARCHAR(12),
+    @p_nombre VARCHAR(150),
+    @p_apellido VARCHAR(150),
+    @p_email VARCHAR(100),
+    @p_telefono VARCHAR(50),
+    @p_direccion VARCHAR(150),
+    @p_rol VARCHAR(100),
+    @p_password VARCHAR(100)
+AS
 BEGIN
-    DECLARE rol_id INT;
+    DECLARE @rol_id INT;
 
-    -- determinar el ID del rol segun el valor de p_rol
-    IF p_rol = 'Administrador' THEN
-        SET rol_id = 1;
-    ELSEIF p_rol = 'Funcionario Municipal' THEN
-        SET rol_id = 2;
-    ELSE
-        -- si el rol no es valido, usar un ID por defecto (opcional)
-        SET rol_id = 2;
-    END IF;
+    -- Determinar el ID del rol según el valor de @p_rol
+    IF @p_rol = 'Administrador' 
+        SET @rol_id = 1;
+    ELSE IF @p_rol = 'Funcionario Municipal' 
+        SET @rol_id = 2;
+    ELSE 
+        SET @rol_id = 2;
 
-    -- verificar si el RUT ya existe en la tabla usuario
-    IF EXISTS (SELECT 1 FROM usuario WHERE rut = p_rut) THEN
-        -- lanzar un error personalizado para capturarlo en el backend
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'El usuario con el RUT proporcionado ya existe.';
-    ELSE
-        -- insertar el nuevo usuario
-        INSERT INTO usuario (rut, nombre, apellido, email, telefono, direccion, password)
-        VALUES (p_rut, p_nombre, p_apellido, p_email, p_telefono, p_direccion, p_password);
+    -- Verificar si el RUT ya existe en la tabla Usuario
+    IF EXISTS (SELECT 1 FROM Usuario WHERE Rut = @p_rut)
+    BEGIN
+        RAISERROR('El usuario con el RUT proporcionado ya existe.', 16, 50002);
+        RETURN;
+    END
 
-        -- insertar en la tabla rolusuario el id_rol y el rut
-        INSERT INTO rolusuario (id_rol, rut)
-        VALUES (rol_id, p_rut);
-    END IF;
-END //
+    BEGIN TRY
+        -- Insertar el nuevo usuario
+        INSERT INTO Usuario (Rut, Nombre, Apellido, Email, Telefono, Direccion, Password)
+        VALUES (@p_rut, @p_nombre, @p_apellido, @p_email, @p_telefono, @p_direccion, @p_password);
 
-DELIMITER ;
+        -- Insertar en la tabla RolUsuario
+        INSERT INTO RolUsuario (id_rol, rut)
+        VALUES (@rol_id, @p_rut);
+    END TRY
+    BEGIN CATCH
+        RAISERROR('Error al crear el usuario.', 16, 50003);
+        RETURN;
+    END CATCH
+END;

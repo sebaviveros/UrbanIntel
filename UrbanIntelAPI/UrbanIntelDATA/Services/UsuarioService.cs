@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.Data.SqlClient;
 using System.Data;
 using UrbanIntelDATA.Models;
 using UrbanIntelDATA.Dto;
@@ -27,30 +27,41 @@ namespace UrbanIntelDATA.Services
             await connection.OpenAsync();
 
             // creamos el comando que ejecutará el procedimiento almacenado
-            using var command = new MySqlCommand("sp_obtenerUsuarios", connection);
+            using var command = new SqlCommand("sp_obtenerUsuarios", connection);
             command.CommandType = CommandType.StoredProcedure;
 
             // agregamos el parámetro al SP (si no viene un RUT, se pasa un string vacío)
             command.Parameters.AddWithValue("@p_rut", rut ?? "");
 
-            // ejecutamos el SP y leemos los resultados con un DataReader
-            using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            try
             {
-
-                usuarios.Add(new Usuario
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    Id = reader.GetInt32("Id"),
-                    Rut = reader.GetString("Rut"),
-                    Nombre = reader.GetString("Nombre"),
-                    Apellido = reader.GetString("Apellido"),
-                    Email = reader.GetString("Email"),
-                    Telefono = reader.GetString("Telefono"),
-                    Direccion = reader.GetString("Direccion"),
-                    Rol = reader.GetString("Rol")
-                });
-            }
+                    usuarios.Add(new Usuario
+                    {
+                        Id = reader.GetInt32("Id"),
+                        Rut = reader.GetString("Rut"),
+                        Nombre = reader.GetString("Nombre"),
+                        Apellido = reader.GetString("Apellido"),
+                        Email = reader.GetString("Email"),
+                        Telefono = reader.GetString("Telefono"),
+                        Direccion = reader.GetString("Direccion"),
+                        Rol = reader.GetString("Rol")
+                    });
+                }
 
+                if (usuarios.Count == 0 && rut != null) // Si no hay usuarios y se buscó por RUT
+                    throw new Exception("Usuario no encontrado.");
+            }
+            catch (SqlException ex) when (ex.Number == 50006) // Usuario no encontrado
+            {
+                throw new Exception("Usuario no encontrado.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener usuarios: {ex.Message}");
+            }
 
             return usuarios;
         }
@@ -62,7 +73,7 @@ namespace UrbanIntelDATA.Services
                 using var connection = _context.CreateConnection();
                 await connection.OpenAsync();
 
-                using var command = new MySqlCommand("sp_crearUsuario", connection);
+                using var command = new SqlCommand("sp_crearUsuario", connection);
                 command.CommandType = CommandType.StoredProcedure;
 
                 // parametros del SP
@@ -78,19 +89,20 @@ namespace UrbanIntelDATA.Services
                 await command.ExecuteNonQueryAsync();
                 return "Usuario creado exitosamente";
             }
-            catch (MySqlException ex) when (ex.Number == 1644) // error de existencia (SQLSTATE '45000')
+            catch (SqlException ex) when (ex.Number == 50002) // usuario ya existe
             {
-                // usuario ya existe
                 return "El usuario con el RUT proporcionado ya existe.";
             }
-            catch (MySqlException ex)
+            catch (SqlException ex) when (ex.Number == 50003) // error al crear usuario
             {
-                // otro error de MySQL
+                return "Error al crear el usuario en la base de datos.";
+            }
+            catch (SqlException ex)
+            {
                 return $"Error en la base de datos: {ex.Message}";
             }
             catch (Exception ex)
             {
-                // error generico del servidor
                 return $"Error del servidor: {ex.Message}";
             }
         }
@@ -102,28 +114,28 @@ namespace UrbanIntelDATA.Services
                 using var connection = _context.CreateConnection();
                 await connection.OpenAsync();
 
-                using var command = new MySqlCommand("sp_eliminarUsuario", connection);
+                using var command = new SqlCommand("sp_eliminarUsuario", connection);
                 command.CommandType = CommandType.StoredProcedure;
 
-                
                 command.Parameters.AddWithValue("@p_rut", rut);
 
                 await command.ExecuteNonQueryAsync();
                 return "Usuario eliminado exitosamente";
             }
-            catch (MySqlException ex) when (ex.Number == 1644) // error lanzado por el SP cuando el usuario no existe
+            catch (SqlException ex) when (ex.Number == 50004) // usuario no existe
             {
-                // usuario no existe
                 return "El usuario con el RUT proporcionado no existe.";
             }
-            catch (MySqlException ex)
+            catch (SqlException ex) when (ex.Number == 50005) // error al eliminar usuario
             {
-                // otro error de MySQL
+                return "Error al eliminar el usuario en la base de datos.";
+            }
+            catch (SqlException ex)
+            {
                 return $"Error en la base de datos: {ex.Message}";
             }
             catch (Exception ex)
             {
-                // error genérico del servidor
                 return $"Error del servidor: {ex.Message}";
             }
         }
@@ -136,7 +148,7 @@ namespace UrbanIntelDATA.Services
                 using var connection = _context.CreateConnection();
                 await connection.OpenAsync();
 
-                using var command = new MySqlCommand("sp_modificarUsuario", connection);
+                using var command = new SqlCommand("sp_modificarUsuario", connection);
                 command.CommandType = CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@p_rut", usuario.Rut);
@@ -150,22 +162,26 @@ namespace UrbanIntelDATA.Services
                 await command.ExecuteNonQueryAsync();
                 return "Usuario modificado exitosamente";
             }
-            catch (MySqlException ex) when (ex.Number == 1644) // error lanzado por el SP cuando el usuario no existe
+            catch (SqlException ex) when (ex.Number == 50006) // usuario no existe
             {
-                // usuario no existe
                 return "El usuario con el RUT proporcionado no existe.";
             }
-            catch (MySqlException ex)
+            catch (SqlException ex) when (ex.Number == 50007) // rol no válido
             {
-                // otro error de MySQL
+                return "El rol proporcionado no es válido.";
+            }
+            catch (SqlException ex) when (ex.Number == 50008) // error al modificar usuario
+            {
+                return "Error al modificar el usuario en la base de datos.";
+            }
+            catch (SqlException ex)
+            {
                 return $"Error en la base de datos: {ex.Message}";
             }
             catch (Exception ex)
             {
-                // error genérico del servidor
                 return $"Error del servidor: {ex.Message}";
             }
         }
-
     }
 }

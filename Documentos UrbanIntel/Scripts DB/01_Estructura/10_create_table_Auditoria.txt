@@ -1,5 +1,5 @@
 CREATE TABLE Auditoria (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY IDENTITY(1,1),
     rut_usuario VARCHAR(12),
     accion_id INT,
     modulo_id INT,

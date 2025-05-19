@@ -4,7 +4,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using UrbanIntelDATA.Models;
-using UrbanIntelDATA.Services; 
+using UrbanIntelDATA.Services;
+using UrbanIntelDATA.Dto;
 
 namespace UrbanIntelAPI.Auth
 {

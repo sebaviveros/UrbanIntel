@@ -1,15 +1,15 @@
 CREATE TABLE Solicitud (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY IDENTITY(1,1),
     rut_usuario VARCHAR(12),         
     direccion TEXT NOT NULL,
     descripcion TEXT NOT NULL,
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,  -- Se genera al crear la solicitud
-    fecha_aprobacion DATETIME,                           -- Cuando un funcionario la aprueba
-    fecha_asignacion DATETIME,                           -- Cuando se asigna a reparacion
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_aprobacion DATETIME,
+    fecha_asignacion DATETIME,
     rut_ciudadano VARCHAR(12), 
-	nombre_ciudadano VARCHAR(150),
-	apellido_ciudadano VARCHAR(150),
-	telefono_ciudadano VARCHAR(20),
+    nombre_ciudadano VARCHAR(150),
+    apellido_ciudadano VARCHAR(150),
+    telefono_ciudadano VARCHAR(20),
     email_ciudadano VARCHAR(100),
     tipo_reparacion_id INT,
     prioridad_id INT,
@@ -20,4 +20,3 @@ CREATE TABLE Solicitud (
     FOREIGN KEY (prioridad_id) REFERENCES Prioridad(id),
     FOREIGN KEY (estado_id) REFERENCES EstadoSolicitud(id)
 );
-

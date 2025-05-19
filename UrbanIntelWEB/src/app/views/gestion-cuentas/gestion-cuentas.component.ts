@@ -146,74 +146,72 @@ export class GestionCuentasComponent implements OnInit, OnDestroy {
 
   guardarUsuario(): void {
     if (this.modoEdicion) {
-      // Actualizar usuario
-      this.usuarioService.modificarUsuario(this.usuario.rut, this.usuario).subscribe({
-        next: (response) => {
-          if (response.success) {
-            Swal.fire('Usuario Actualizado', response.message, 'success');
-            this.cerrarModal();
-            $('#DataTables_Table_1').DataTable().ajax.reload();
-          } else {
-            Swal.fire('Error', response.message, 'error');
-          }
-        },
-        error: (err) => {
-          console.error('Error al modificar usuario:', err);
-          Swal.fire('Error', 'No se pudo modificar el usuario.', 'error');
-        }
-      });
+      // Modificar usuario
+        this.usuarioService.modificarUsuario(this.usuario.rut, this.usuario).subscribe({
+            next: (response) => {
+                if (response.success) {
+                    Swal.fire('Usuario Actualizado', response.message, 'success');
+                    this.cerrarModal();
+                    $('#DataTables_Table_1').DataTable().ajax.reload();
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: (err) => {
+                console.error('Error al modificar usuario:', err);
+                const errorMessage = err.error?.message || 'No se pudo modificar el usuario.';
+                Swal.fire('Error', errorMessage, 'error');
+            }
+        });
     } else {
-      // Crear usuario
-      this.usuarioService.crearUsuario(this.usuarioDto).subscribe({
-        next: (response) => {
-          if (response.success) {
-            Swal.fire('Usuario Creado', response.message, 'success');
-            this.cerrarModal();
-            $('#DataTables_Table_1').DataTable().ajax.reload();
-          } else {
-            Swal.fire('Error', response.message, 'error');
-          }
-        },
-        error: (err) => {
-          console.error('Error al crear usuario:', err);
-          Swal.fire('Error', 'No se pudo crear el usuario.', 'error');
-        }
-      });
+        // Crear usuario
+        this.usuarioService.crearUsuario(this.usuarioDto).subscribe({
+            next: (response) => {
+                if (response.success) {
+                    Swal.fire('Usuario Creado', response.message, 'success');
+                    this.cerrarModal();
+                    $('#DataTables_Table_1').DataTable().ajax.reload();
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: (err) => {
+                console.error('Error al crear usuario:', err);
+                const errorMessage = err.error?.message || 'No se pudo crear el usuario.';
+                Swal.fire('Error', errorMessage, 'error');
+            }
+        });
     }
-  }
-
+}
 
   eliminarUsuario(rut: string): void {
     Swal.fire({
-      title: `¿Está seguro de eliminar el usuario con RUT ${rut}?`,
-      text:'Esta decisión no se puede deshacer.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+        title: `¿Está seguro de eliminar el usuario con RUT ${rut}?`,
+        text: 'Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
     }).then((result) => {
-      if (result.isConfirmed) {
-        // Uso de la URL desde el environment
-        const apiUrl = `${environment.apiUrl}/Usuario/${rut}`;
-        fetch(apiUrl, {
-          method: 'DELETE'
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              Swal.fire('Usuario Eliminado', data.message, 'success');
-              $('#DataTables_Table_1').DataTable().ajax.reload();
-            } else {
-              Swal.fire('Error', data.message, 'error');
-            }
-          })
-          .catch(error => {
-            console.error('Error al eliminar usuario:', error);
-            Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
-          });
-      }
+        if (result.isConfirmed) {
+            this.usuarioService.eliminarUsuario(rut).subscribe({
+                next: (response) => {
+                    if (response.success) {
+                        Swal.fire('Usuario Eliminado', response.message, 'success');
+                        $('#DataTables_Table_1').DataTable().ajax.reload();
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: (err) => {
+                    console.error('Error al eliminar usuario:', err);
+                    const errorMessage = err.error?.message || 'Error al eliminar el usuario.';
+                    Swal.fire('Error', errorMessage, 'error');
+                }
+            });
+        }
     });
-  }
+}
 
   togglePasswordVisibility(): void {
     this.mostrarPassword = !this.mostrarPassword;
