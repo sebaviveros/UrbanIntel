@@ -1,7 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
 using UrbanIntelDATA.Models;
-using Microsoft.AspNetCore.Http; //paquete que contiene IFormFile
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 
 namespace UrbanIntelDATA.Services
@@ -9,65 +10,75 @@ namespace UrbanIntelDATA.Services
     public class SolicitudService
     {
         private readonly UrbanIntelDBContext _context;
+        private readonly AzureBlobService _blobService;
 
-        public SolicitudService(UrbanIntelDBContext context)
+        public SolicitudService(UrbanIntelDBContext context, AzureBlobService blobService)
         {
             _context = context;
+            _blobService = blobService;
         }
 
         // Método para crear una solicitud con imágenes
-        public async Task CrearSolicitudAsync(SolicitudCiudadana solicitud, List<IFormFile> imagenes)
+        public async Task CrearSolicitudCiudadanaAsync(SolicitudCiudadana solicitud, List<IFormFile> imagenes)
         {
             using var connection = _context.CreateConnection();
             await connection.OpenAsync();
 
-            // Convertir explícitamente a SqlTransaction
+            // Iniciar transacción
             using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
 
             try
             {
-                using var command = new SqlCommand("sp_crearSolicitud", connection);
-                command.Transaction = transaction;  // Asignar la transacción
-                command.CommandType = CommandType.StoredProcedure;
+                int solicitudId;
 
-                command.Parameters.AddWithValue("@p_nombre", solicitud.NombreCiudadano);
-                command.Parameters.AddWithValue("@p_apellido", solicitud.ApellidoCiudadano);
-                command.Parameters.AddWithValue("@p_rut", solicitud.RutCiudadano);
-                command.Parameters.AddWithValue("@p_direccion", solicitud.Direccion);
-                command.Parameters.AddWithValue("@p_correo", solicitud.EmailCiudadano);
-                command.Parameters.AddWithValue("@p_celular", solicitud.TelefonoCiudadano);
-                command.Parameters.AddWithValue("@p_descripcion", solicitud.Descripcion);
-
-                var solicitudId = Convert.ToInt32(await command.ExecuteScalarAsync());
-
-                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-                if (!Directory.Exists(directoryPath))
+                // Guardar la solicitud en la base de datos y obtener el ID generado
+                using (var command = new SqlCommand("sp_crearSolicitudCiudadana", connection, transaction))
                 {
-                    Directory.CreateDirectory(directoryPath);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@p_nombre", solicitud.NombreCiudadano);
+                    command.Parameters.AddWithValue("@p_apellido", solicitud.ApellidoCiudadano);
+                    command.Parameters.AddWithValue("@p_rut", solicitud.RutCiudadano);
+                    command.Parameters.AddWithValue("@p_direccion", solicitud.Direccion);
+                    command.Parameters.AddWithValue("@p_correo", solicitud.EmailCiudadano);
+                    command.Parameters.AddWithValue("@p_celular", solicitud.TelefonoCiudadano);
+                    command.Parameters.AddWithValue("@p_descripcion", solicitud.Descripcion);
+                    command.Parameters.AddWithValue("@p_comuna", solicitud.Comuna);
+
+                    // Ejecutar el comando y obtener el ID de la solicitud creada
+                    solicitudId = Convert.ToInt32(await command.ExecuteScalarAsync());
                 }
 
+                // Subir cada imagen a Azure Blob Storage y guardar la URL
                 foreach (var imagen in imagenes)
                 {
-                    var fileName = $"{Guid.NewGuid()}_{imagen.FileName}";
-                    var filePath = Path.Combine("uploads", fileName);
+                    try
+                    {
+                        var imageUrl = await _blobService.UploadImageAsync(imagen);
 
-                    using var fileStream = new FileStream(filePath, FileMode.Create);
-                    await imagen.CopyToAsync(fileStream);
+                        // Guardar la URL de la imagen en la base de datos
+                        using var imgCommand = new SqlCommand("sp_crearImagenSolicitud", connection, transaction);
+                        imgCommand.CommandType = CommandType.StoredProcedure;
+                        imgCommand.Parameters.AddWithValue("@p_solicitudId", solicitudId);
+                        imgCommand.Parameters.AddWithValue("@p_url", imageUrl);
 
-                    using var imgCommand = new SqlCommand("sp_crearImagenSolicitud", connection);
-                    imgCommand.Transaction = transaction;  // Asignar la transacción
-                    imgCommand.CommandType = CommandType.StoredProcedure;
-                    imgCommand.Parameters.AddWithValue("@p_solicitudId", solicitudId);
-                    imgCommand.Parameters.AddWithValue("@p_url", fileName);
-
-                    await imgCommand.ExecuteNonQueryAsync();
+                        await imgCommand.ExecuteNonQueryAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error al subir la imagen {imagen.FileName}: {ex.Message}");
+                        throw;
+                    }
                 }
 
+                // Confirmar la transacción
                 await transaction.CommitAsync();
+                Console.WriteLine($"Solicitud creada correctamente con ID: {solicitudId}");
             }
-            catch
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+                Console.WriteLine($"Error al crear la solicitud: {ex.Message}");
                 throw;
             }
         }
@@ -95,7 +106,8 @@ namespace UrbanIntelDATA.Services
                     Direccion = reader.GetString("Direccion"),
                     EmailCiudadano = reader.GetString("Correo"),
                     TelefonoCiudadano = reader.GetString("Celular"),
-                    Descripcion = reader.GetString("Descripcion")
+                    Descripcion = reader.GetString("Descripcion"),
+                    Comuna = reader.GetString("Comuna")
                 });
             }
 

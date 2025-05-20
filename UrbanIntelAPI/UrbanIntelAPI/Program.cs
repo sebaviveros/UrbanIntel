@@ -1,7 +1,6 @@
 // en Program.cs va toda la configuracion global de servicios y middlewares del sistema
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using UrbanIntelDATA;
@@ -13,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<SolicitudService>();
+builder.Services.AddScoped<AzureBlobService>();
 
 // Agregar controladores (API) UrbanIntelData
 builder.Services.AddControllers();
@@ -57,23 +57,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-// Crear la carpeta 'uploads' justo antes de usar el middleware estático
-var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-try
-{
-    if (!Directory.Exists(uploadsPath))
-    {
-        Directory.CreateDirectory(uploadsPath);
-        Console.WriteLine($"Carpeta 'uploads' creada en: {uploadsPath}");
-    }
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Error al crear la carpeta 'uploads': {ex.Message}");
-}
-
 // Activar Swagger
 app.UseSwagger();
+
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "UrbanIntel.API v1");
@@ -81,13 +67,6 @@ app.UseSwaggerUI(c =>
 
 // habilitar cors
 app.UseCors();
-
-// Configurar la carpeta 'uploads' como pública
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(uploadsPath),
-    RequestPath = "/uploads"
-});
 
 // Activar Autenticación (verifica tokens JWT)
 app.UseAuthentication();

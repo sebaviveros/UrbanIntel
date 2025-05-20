@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class SolicitudService {
-  private apiUrl = `${environment.apiUrl}/api/Solicitud`;
+  private apiUrl = `${environment.apiUrl}/Solicitud`;
 
   constructor(private http: HttpClient) {}
 

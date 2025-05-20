@@ -16,6 +16,7 @@ namespace UrbanIntelDATA.Models
         public string ApellidoCiudadano { get; set; }
         public string TelefonoCiudadano { get; set; }
         public string EmailCiudadano { get; set; }
+        public string Comuna { get; set; }
 
     }
 }

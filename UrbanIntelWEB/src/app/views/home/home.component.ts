@@ -1,6 +1,7 @@
-import { Component, AfterViewInit } from '@angular/core';
-import * as mapboxgl from 'mapbox-gl';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { GoogleMapsPlatformService } from '../../services/mapService/google-maps-platform.service';
 
+declare var google: any;
 
 @Component({
   selector: 'app-home',
@@ -8,21 +9,46 @@ import * as mapboxgl from 'mapbox-gl';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements AfterViewInit {
-  map!: mapboxgl.Map;
+  @ViewChild('map', { static: false }) mapElement!: ElementRef;
+  map!: google.maps.Map;
+
+  constructor(private googleMapsService: GoogleMapsPlatformService) {}
 
   ngAfterViewInit(): void {
-    this.map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [-71.537451, -33.046225],
-      zoom: 12,
-      accessToken: 'pk.eyJ1IjoiZGllZ29kZ2FldGUiLCJhIjoiY21hYzRvMXBmMDBodDJrb2ZoNWRjODc4diJ9.PZWoFlc_AgPi9Vd8D4wc4g' // dentro del config
-    }); 
+    this.googleMapsService.loadApi()
+      .then(() => {
+        this.initializeMap();
+      })
+      .catch(error => console.error('Error al cargar Google Maps API:', error));
+  }
 
-    // ajuste de tamaño del mapa al cargar
-    this.map.on('load', () => {
-      this.map.resize();
+  initializeMap(): void {
+    // Coordenadas del centro de Villa Alemana
+    const center = { lat: -33.0425, lng: -71.3732 };
+
+    // Inicializar el mapa en modo híbrido
+    this.map = new google.maps.Map(this.mapElement.nativeElement, {
+      center: center,
+      zoom: 16, // Zoom más cercano para ver detalles
+      mapTypeId: 'hybrid', // Modo híbrido: satélite + calles
+      tilt: 45 // Vista en 3D
+    });
+
+    // Añadir un marcador en el centro de Villa Alemana
+    new google.maps.Marker({
+      position: center,
+      map: this.map,
+      title: 'Centro de Villa Alemana'
+    });
+
+    // Ajuste del tamaño del mapa al cambiar el tamaño de la ventana
+    google.maps.event.addListenerOnce(this.map, 'idle', () => {
+      this.map.setZoom(16);
+    });
+
+    // Ajustar tamaño al cambiar el tamaño de la ventana
+    window.addEventListener('resize', () => {
+      google.maps.event.trigger(this.map, 'resize');
     });
   }
-  
 }

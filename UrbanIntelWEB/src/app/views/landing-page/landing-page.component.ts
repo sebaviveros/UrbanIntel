@@ -1,6 +1,8 @@
-import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitudService/solicitud.service';
+import { ComunaService } from '../../services/comunaService/comuna.service';
+import { GoogleMapsPlatformService } from '../../services/mapService/google-maps-platform.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -10,6 +12,7 @@ import { SolicitudService } from '../../services/solicitudService/solicitud.serv
 export class LandingPageComponent implements AfterViewInit {
 
   @ViewChild('seccionFormulario', { static: false }) seccionFormulario!: ElementRef;
+  @ViewChild('direccionInput', { static: false }) direccionInput!: ElementRef;
 
   // Formulario reactivo
   solicitudForm: FormGroup;
@@ -19,15 +22,26 @@ export class LandingPageComponent implements AfterViewInit {
   selectedFiles: File[] = [];
   fileLimitExceeded: boolean = false;
 
+   // Regiones y Comunas
+  regiones: any[] = [];
+  comunas: string[] = [];
+  regionSeleccionada: string = '';
+  comunaSeleccionada: string = '';
+
   constructor(
     private fb: FormBuilder,
-    private solicitudService: SolicitudService
+    private solicitudService: SolicitudService,
+    private comunaService: ComunaService,
+    private googleMapsService: GoogleMapsPlatformService
   ) {
-    // Inicialización del formulario
+
+    // Inicialización del formulario reactivo
     this.solicitudForm = this.fb.group({
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       rut: ['', Validators.required],
+      region: ['', Validators.required],
+      comuna: ['', Validators.required],
       direccion: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       celular: ['', Validators.required],
@@ -35,14 +49,55 @@ export class LandingPageComponent implements AfterViewInit {
     });
   }
 
-  // Configuración del menú de navegación (Modo Responsive)
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
+    this.comunaService.obtenerComunas().subscribe({
+      next: (data) => {
+        this.regiones = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar comunas:', err); // Mostrar error si falla
+      }
+    });
+  }
+
+   onRegionChange(): void {
+    const region = this.solicitudForm.get('region')?.value;
+    const regionEncontrada = this.regiones.find((r: any) => r.region === region);
+    this.comunas = regionEncontrada ? regionEncontrada.comunas : [];
+    this.solicitudForm.get('comuna')?.setValue('');
+  }
+
+
+    //Configuración del menú de navegación (Modo Responsive)
+    ngAfterViewInit(): void {
     const menuToggle = document.getElementById('menu-toggle');
     const navLinks = document.getElementById('nav-links');
 
     if (menuToggle && navLinks) {
       menuToggle.addEventListener('click', () => {
         navLinks.classList.toggle('active');
+      });
+    }
+
+    this.googleMapsService.loadApi().then(() => {
+      this.initializeGoogleAutocomplete();
+    }).catch((err) => {
+      console.error('Error al cargar Google Maps:', err);
+    });
+  }
+
+  initializeGoogleAutocomplete(): void {
+    if (typeof google !== 'undefined' && google.maps) {
+      const autocomplete = new google.maps.places.Autocomplete(this.direccionInput.nativeElement, {
+        componentRestrictions: { country: 'cl' },
+        fields: ['formatted_address', 'geometry'],
+        types: ['address']
+      });
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place && place.formatted_address) {
+          this.solicitudForm.patchValue({ direccion: place.formatted_address });
+        }
       });
     }
   }
@@ -82,39 +137,40 @@ export class LandingPageComponent implements AfterViewInit {
 
   // Enviar el formulario al backend
   enviarSolicitud(): void {
+    console.log('Formulario:', this.solicitudForm.value);  // Ver el valor de cada campo
+    console.log('Errores:', this.solicitudForm.errors);    // Ver si el formulario tiene errores
+    console.log('Estado de validez:', this.solicitudForm.valid); // Ver el estado de validez
     if (this.solicitudForm.valid) {
-      const formValues = this.solicitudForm.value;
+        const formValues = this.solicitudForm.value;
+        const formData = new FormData();
 
-      // Crear objeto FormData para enviar los datos
-      const formData = new FormData();
-      formData.append('nombre', formValues.nombre);
-      formData.append('apellido', formValues.apellido);
-      formData.append('rut', formValues.rut);
-      formData.append('direccion', formValues.direccion);
-      formData.append('correo', formValues.correo);
-      formData.append('celular', formValues.celular);
-      formData.append('descripcion', formValues.descripcion);
+        // Añadir solo los campos requeridos por el backend
+        formData.append('NombreCiudadano', formValues.nombre);
+        formData.append('ApellidoCiudadano', formValues.apellido);
+        formData.append('RutCiudadano', formValues.rut);
+        formData.append('Comuna', formValues.comuna);
+        formData.append('Direccion', formValues.direccion);
+        formData.append('EmailCiudadano', formValues.correo);
+        formData.append('TelefonoCiudadano', formValues.celular);
+        formData.append('Descripcion', formValues.descripcion);
 
-      // Agregar imágenes al FormData
-      this.selectedFiles.forEach((file, index) => {
-        formData.append(`imagen${index + 1}`, file);
-      });
+        // Adjuntar las imágenes con el nombre adecuado
+        this.selectedFiles.forEach((file) => {
+            formData.append('imagenes', file);
+        });
 
-      // Llamar al servicio para enviar la solicitud
-      this.solicitudService.crearSolicitud(formData).subscribe(
-        response => {
-          console.log('Solicitud enviada con éxito:', response);
-          alert('Solicitud enviada correctamente');
-          this.solicitudForm.reset();
-          this.selectedFiles = [];
-        },
-        error => {
-          console.error('Error al enviar la solicitud:', error);
-          alert('Hubo un problema al enviar la solicitud');
-        }
-      );
+        this.solicitudService.crearSolicitud(formData).subscribe(
+            response => {
+                alert('Solicitud enviada correctamente');
+                this.solicitudForm.reset();
+                this.selectedFiles = [];
+            },
+            error => {
+                alert('Hubo un problema al enviar la solicitud');
+            }
+        );
     } else {
-      alert('Por favor, complete todos los campos correctamente.');
+        alert('Por favor, complete todos los campos correctamente.');
     }
-  }
+}
 }

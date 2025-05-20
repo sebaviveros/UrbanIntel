@@ -2,7 +2,6 @@
 using UrbanIntelDATA.Services;
 using UrbanIntelDATA.Models;
 
-
 namespace UrbanIntelAPI.Controllers
 {
     [ApiController]
@@ -16,19 +15,13 @@ namespace UrbanIntelAPI.Controllers
             _solicitudService = solicitudService;
         }
 
-        // Método para recibir la solicitud con imágenes
+        // Método para crear una solicitud ciudadana
         [HttpPost("crear")]
         public async Task<IActionResult> CrearSolicitud([FromForm] SolicitudCiudadana solicitud, [FromForm] List<IFormFile> imagenes)
         {
             try
             {
-                // Validación de archivos
-                if (imagenes == null || imagenes.Count == 0)
-                    return BadRequest("No se adjuntaron imágenes.");
-
-                // Guardar la solicitud y las imágenes
-                await _solicitudService.CrearSolicitudAsync(solicitud, imagenes);
-
+                await _solicitudService.CrearSolicitudCiudadanaAsync(solicitud, imagenes);
                 return Ok(new { message = "Solicitud creada exitosamente" });
             }
             catch (Exception ex)
@@ -38,12 +31,18 @@ namespace UrbanIntelAPI.Controllers
         }
 
         // Método para obtener todas las solicitudes
-        [HttpGet]
+        [HttpGet("listar")]
         public async Task<IActionResult> ObtenerSolicitudes()
         {
-            var solicitudes = await _solicitudService.ObtenerSolicitudesAsync();
-            return Ok(solicitudes);
+            try
+            {
+                var solicitudes = await _solicitudService.ObtenerSolicitudesAsync();
+                return Ok(solicitudes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al obtener solicitudes: {ex.Message}" });
+            }
         }
     }
 }
-

@@ -1,10 +1,26 @@
 .map-container {
-    width: 100%;
-    height: calc(100vh - 60px); /* Ajusta según el tamaño del menú */
-    position: relative;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
 }
 
 #map {
+  height: 100%;
+  width: 100%;
+}
+
+/* Mapa responsivo con menú lateral */
+@media (min-width: 768px) {
+  .map-container.collapsed {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+  }
+}
+
+@media (max-width: 767px) {
+  .map-container {
+    margin-left: 0;
     width: 100%;
-    height: 100%;
+  }
 }

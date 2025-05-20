@@ -38,7 +38,7 @@
 <div class="contenedor-del-contenedor">
 <div class="tab-container">
 <button class="tab" [class.active]="activeTab === 'solicitudes'" (click)="setActiveTab('solicitudes')">
-  Realizar Solicitudes
+  Realizar Solicitud
 </button>
 <button class="tab" [class.active]="activeTab === 'consulta'" (click)="setActiveTab('consulta')">
   Consultar Solicitud
@@ -55,56 +55,74 @@
 
         <div class="input-box">
           <span class="details">Nombre</span>
-          <input type="text"   placeholder="Ingrese su nombre" required>
+          <input type="text" formControlName="nombre" placeholder="Ingrese su nombre" required>
         </div>
 
         <div class="input-box">
           <span class="details">Apellido</span>
-          <input type="text"   placeholder="Ingrese su apellido" required>
+          <input type="text" formControlName="apellido" placeholder="Ingrese su apellido" required>
         </div>
 
         <div class="input-box">
           <span class="details">RUT</span>
-          <input type="text"  placeholder="Ingrese su RUT. ej. 1234567-8" required>
+          <input type="text" formControlName="rut" placeholder="Ingrese su RUT. ej. 12345678-9" required>
+        </div>
+
+
+        <div class="input-box">
+          <span class="details">Región</span>
+          <select formControlName="region" (change)="onRegionChange()" required>
+            <option value="" disabled selected>Seleccione Región</option>
+            <option *ngFor="let region of regiones" [value]="region.region">{{ region.region }}</option>
+          </select>
+        </div>
+
+        <div class="input-box" *ngIf="comunas.length > 0">
+          <span class="details">Comuna</span>
+          <select formControlName="comuna" required>
+            <option value="" disabled selected>Seleccione Comuna</option>
+            <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
+          </select>
+        </div>
+
+        <div *ngIf="comunas.length === 0 && solicitudForm.get('region')?.value">
+          <p>No hay comunas disponibles para la región seleccionada.</p>
         </div>
 
         <div class="input-box">
           <span class="details">Dirección</span>
-          <input type="text"  placeholder="Ingrese la dirección de la reparación" required>
+          <input #direccionInput type="text" placeholder="Ingrese la dirección de la reparación" formControlName="direccion" required>
         </div>
 
         <div class="input-box">
           <span class="details">Correo Electrónico</span>
-          <input type="text"  placeholder="Ingrese su correo electrónico" required>
+          <input type="email" formControlName="correo" placeholder="Ingrese su correo electrónico" required>
         </div>
 
         <div class="input-box">
           <span class="details">Celular</span>
-          <input type="text"  placeholder="Ingrese su número de celular" required>
+          <input type="text" formControlName="celular" placeholder="Ingrese su número de celular" required>
         </div>
 
          <!-- Botón para adjuntar imagen -->
         <div class="input-box file-upload">
-  <button type="button" class="custom-file-upload" (click)="fileInput.click()">
-    Adjuntar Imágenes 
-  </button>
-  <p>(Máximo 3 permitidas)</p>
-  <input #fileInput type="file" (change)="onFilesSelected($event)" accept="image/png, image/jpeg" multiple style="display: none;">
-  
-  <div *ngIf="fileLimitExceeded" class="error-message">
-    Máximo 3 imágenes permitidas.
-  </div>
-  
-  <div *ngFor="let file of selectedFiles; let i = index" class="file-preview">
-    <span class="file-name">{{ file.name }}</span>
-    <button type="button" class="remove-button" (click)="removeFile(i)">X</button>
-  </div>
-</div>
+          <button type="button" class="custom-file-upload" (click)="fileInput.click()">
+            Adjuntar Imágenes 
+          </button>
+          <p>(Máximo 3 permitidas)</p>
+          <input #fileInput type="file" (change)="onFilesSelected($event)" accept="image/png, image/jpeg" multiple style="display: none;">
+          <div *ngIf="fileLimitExceeded" class="error-message">
+            Máximo 3 imágenes permitidas.
+          </div>
+          <div *ngFor="let file of selectedFiles; let i = index" class="file-preview">
+            <span class="file-name">{{ file.name }}</span>
+            <button type="button" class="remove-button" (click)="removeFile(i)">X</button>
+          </div>
+        </div>
 
-        <!-- Descripción con campo amplio -->
         <div class="input-box">
           <span class="details">Descripción</span>
-          <textarea  placeholder="Explique la situación de forma clara y concisa" rows="5" required></textarea>
+          <textarea formControlName="descripcion" placeholder="Explique la situación de forma clara y concisa" rows="5" required></textarea>
         </div>
 
       </div>
