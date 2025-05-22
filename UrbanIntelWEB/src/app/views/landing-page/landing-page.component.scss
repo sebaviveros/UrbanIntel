@@ -532,3 +532,36 @@ form .button input:hover {
   }
 }
 
+// boton variable estado
+.estado-btn {
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 12px;
+  color: #fff;
+  text-transform: capitalize;
+  font-size: 0.85rem;
+}
+
+// Estados específicos
+.estado-finalizada {
+  background-color: #28a745; // verde
+}
+
+.estado-pendiente {
+  background-color: #6c757d; // plomo (gris)
+}
+
+.estado-en-proceso {
+  background-color: #ffc107; // amarillo
+  color: #000; // mejor contraste
+}
+
+.estado-rechazada {
+  background-color: #dc3545; // rojo
+}
+
+.estado-na {
+  background-color: #999;
+}
+
