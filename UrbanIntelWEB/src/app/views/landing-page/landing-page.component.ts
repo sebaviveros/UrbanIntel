@@ -3,6 +3,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitudService/solicitud.service';
 import { ComunaService } from '../../services/comunaService/comuna.service';
 import { GoogleMapsPlatformService } from '../../services/mapService/google-maps-platform.service';
+import Swal from 'sweetalert2';
+import { of, forkJoin } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-landing-page',
@@ -27,6 +33,16 @@ export class LandingPageComponent implements AfterViewInit {
   comunas: string[] = [];
   regionSeleccionada: string = '';
   comunaSeleccionada: string = '';
+  
+  // Inputs de consulta ciudadana
+  rutConsulta: string = "";
+  idConsulta: string = "";
+  resultados: any[] = [];
+
+  // datos botones tabla consulta
+  descripcionSeleccionada: string = '';
+  imagenesSeleccionadas: string[] = [];
+
 
   constructor(
     private fb: FormBuilder,
@@ -137,9 +153,6 @@ export class LandingPageComponent implements AfterViewInit {
 
   // Enviar el formulario al backend
   enviarSolicitud(): void {
-    console.log('Formulario:', this.solicitudForm.value);  // Ver el valor de cada campo
-    console.log('Errores:', this.solicitudForm.errors);    // Ver si el formulario tiene errores
-    console.log('Estado de validez:', this.solicitudForm.valid); // Ver el estado de validez
     if (this.solicitudForm.valid) {
         const formValues = this.solicitudForm.value;
         const formData = new FormData();
@@ -172,5 +185,74 @@ export class LandingPageComponent implements AfterViewInit {
     } else {
         alert('Por favor, complete todos los campos correctamente.');
     }
+  }
+
+  buscarSolicitud(): void {
+  const rut = this.rutConsulta.trim();
+  const id = this.idConsulta.trim();
+
+  if (!rut && !id) {
+    Swal.fire('Error', 'Ingrese al menos el RUT o el ID de la solicitud.', 'warning');
+    return;
+  }
+
+  // Construcción dinámica de filtros
+  const filtros: any = {};
+  if (id) filtros.id = id;
+  if (rut) filtros.rutCiudadano = rut;
+
+  // Llamada al servicio
+  this.solicitudService.obtenerSolicitudPorFiltro(filtros).subscribe({
+    next: (solicitudes) => {
+      if (!solicitudes || solicitudes.length === 0) {
+        Swal.fire('Sin resultados', 'No se encontraron solicitudes con los datos ingresados.', 'info');
+        this.resultados = [];
+        return;
+      }
+
+      // Cargar imágenes para cada solicitud (cuando tengas implementado el endpoint)
+      const solicitudesConImagenes = solicitudes.map((solicitud: any) => {
+        return this.solicitudService.obtenerImagenesPorSolicitud(solicitud.id).pipe(
+          // Asignamos las imágenes al objeto solicitud
+          // Si falla, le asignamos un arreglo vacío
+          // Esto requiere que uses RxJS (forkJoin si quisieras paralelizar todos, opcional)
+          map(imagenes => {
+            solicitud.imagenes = imagenes;
+            return solicitud;
+          }),
+          catchError(() => {
+            solicitud.imagenes = [];
+            return of(solicitud);
+          })
+        );
+      });
+
+      // Esperar a que todas las solicitudes terminen de cargar sus imágenes
+      forkJoin(solicitudesConImagenes).subscribe({
+        next: (solicitudesFinales) => {
+          this.resultados = solicitudesFinales;
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudieron cargar las imágenes de algunas solicitudes.', 'warning');
+          this.resultados = solicitudes; // Muestra los datos sin imágenes
+        }
+      });
+    },
+    error: () => {
+      Swal.fire('Error', 'Hubo un problema al consultar las solicitudes.', 'error');
+    }
+  });
 }
+
+  abrirModalDescripcion(desc: string): void {
+    this.descripcionSeleccionada = desc;
+    const modal = new bootstrap.Modal(document.getElementById('modalDescripcion')!);
+    modal.show();
+  }
+
+  abrirModalEvidencia(imagenes: string[]): void {
+    this.imagenesSeleccionadas = imagenes;
+    const modal = new bootstrap.Modal(document.getElementById('modalEvidencia')!);
+    modal.show();
+  }
 }

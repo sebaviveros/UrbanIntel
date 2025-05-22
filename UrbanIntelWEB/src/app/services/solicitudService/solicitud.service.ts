@@ -21,8 +21,12 @@ export class SolicitudService {
     return this.http.get<any[]>(`${this.apiUrl}`);
   }
 
-  // Obtener una solicitud por ID
-  obtenerSolicitudPorId(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  //obtener solicitud por distintos tipos de filtro
+  obtenerSolicitudPorFiltro(filtros: any): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/filtrar`, { params: filtros });
+  }
+
+  obtenerImagenesPorSolicitud(id: number): Observable<string[]> {
+  return this.http.get<string[]>(`${this.apiUrl}/${id}/imagenes`);
   }
 }

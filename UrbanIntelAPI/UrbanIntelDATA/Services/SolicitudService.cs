@@ -3,6 +3,7 @@ using System.Data;
 using UrbanIntelDATA.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using UrbanIntelDATA.Dto;
 
 
 namespace UrbanIntelDATA.Services
@@ -18,20 +19,20 @@ namespace UrbanIntelDATA.Services
             _blobService = blobService;
         }
 
-        // Método para crear una solicitud con imágenes
+        // crear una solicitud con imagenes
         public async Task CrearSolicitudCiudadanaAsync(SolicitudCiudadana solicitud, List<IFormFile> imagenes)
         {
             using var connection = _context.CreateConnection();
             await connection.OpenAsync();
 
-            // Iniciar transacción
+            // iniciar transaccion
             using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
 
             try
             {
                 int solicitudId;
 
-                // Guardar la solicitud en la base de datos y obtener el ID generado
+                
                 using (var command = new SqlCommand("sp_crearSolicitudCiudadana", connection, transaction))
                 {
                     command.CommandType = CommandType.StoredProcedure;
@@ -45,7 +46,7 @@ namespace UrbanIntelDATA.Services
                     command.Parameters.AddWithValue("@p_descripcion", solicitud.Descripcion);
                     command.Parameters.AddWithValue("@p_comuna", solicitud.Comuna);
 
-                    // Ejecutar el comando y obtener el ID de la solicitud creada
+                    // ejecutar el comando y obtener el ID de la solicitud creada (en la base de datos es un SET @solicitudId = SCOPE_IDENTITY();)
                     solicitudId = Convert.ToInt32(await command.ExecuteScalarAsync());
                 }
 
@@ -113,5 +114,82 @@ namespace UrbanIntelDATA.Services
 
             return solicitudes;
         }
+
+        public async Task<List<Solicitud>> ObtenerSolicitudesPorFiltroAsync(SolicitudFiltroDto solicitudFiltroDto)
+        {
+            var solicitudes = new List<Solicitud>();
+
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("sp_filtrarSolicitudes", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@p_id", (object?)solicitudFiltroDto.Id ?? DBNull.Value);
+            command.Parameters.AddWithValue("@p_rut_usuario", (object?)solicitudFiltroDto.RutUsuario ?? DBNull.Value);
+            command.Parameters.AddWithValue("@p_rut_ciudadano", (object?)solicitudFiltroDto.RutCiudadano ?? DBNull.Value);
+            command.Parameters.AddWithValue("@p_fecha_creacion", (object?)solicitudFiltroDto.FechaCreacion ?? DBNull.Value);
+            command.Parameters.AddWithValue("@p_fecha_aprobacion", (object?)solicitudFiltroDto.FechaAprobacion ?? DBNull.Value);
+            command.Parameters.AddWithValue("@p_fecha_asignacion", (object?)solicitudFiltroDto.FechaAsignacion ?? DBNull.Value);
+            command.Parameters.AddWithValue("@p_tipo_reparacion_id", (object?)solicitudFiltroDto.TipoReparacionId ?? DBNull.Value);
+            command.Parameters.AddWithValue("@p_tipo_prioridad_id", (object?)solicitudFiltroDto.PrioridadId ?? DBNull.Value);
+            command.Parameters.AddWithValue("@p_estado_id", (object?)solicitudFiltroDto.EstadoId ?? DBNull.Value);
+            command.Parameters.AddWithValue("@p_comuna", (object?)solicitudFiltroDto.Comuna ?? DBNull.Value);
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                solicitudes.Add(new Solicitud
+                {
+                    Id = reader.GetInt32(reader.GetOrdinal("id")),
+                    RutUsuario = reader.IsDBNull(reader.GetOrdinal("rut_usuario")) ? null : reader.GetString(reader.GetOrdinal("rut_usuario")),
+                    Direccion = reader.GetString(reader.GetOrdinal("direccion")),
+                    Comuna = reader.GetString(reader.GetOrdinal("comuna")),
+                    Descripcion = reader.GetString(reader.GetOrdinal("descripcion")),
+                    FechaCreacion = reader.GetDateTime(reader.GetOrdinal("fecha_creacion")),
+                    FechaAprobacion = reader.IsDBNull(reader.GetOrdinal("fecha_aprobacion")) ? null : reader.GetDateTime(reader.GetOrdinal("fecha_aprobacion")),
+                    FechaAsignacion = reader.IsDBNull(reader.GetOrdinal("fecha_asignacion")) ? null : reader.GetDateTime(reader.GetOrdinal("fecha_asignacion")),
+
+                    RutCiudadano = reader.IsDBNull(reader.GetOrdinal("rut_ciudadano")) ? null : reader.GetString(reader.GetOrdinal("rut_ciudadano")),
+                    NombreCiudadano = reader.IsDBNull(reader.GetOrdinal("nombre_ciudadano")) ? null : reader.GetString(reader.GetOrdinal("nombre_ciudadano")),
+                    ApellidoCiudadano = reader.IsDBNull(reader.GetOrdinal("apellido_ciudadano")) ? null : reader.GetString(reader.GetOrdinal("apellido_ciudadano")),
+                    TelefonoCiudadano = reader.IsDBNull(reader.GetOrdinal("telefono_ciudadano")) ? null : reader.GetString(reader.GetOrdinal("telefono_ciudadano")),
+                    EmailCiudadano = reader.IsDBNull(reader.GetOrdinal("email_ciudadano")) ? null : reader.GetString(reader.GetOrdinal("email_ciudadano")),
+
+                    TipoReparacionId = reader.IsDBNull(reader.GetOrdinal("tipo_reparacion_id")) ? null : reader.GetInt32(reader.GetOrdinal("tipo_reparacion_id")),
+                    TipoReparacionNombre = reader.IsDBNull(reader.GetOrdinal("tipo_reparacion_nombre")) ? null : reader.GetString(reader.GetOrdinal("tipo_reparacion_nombre")),
+
+                    PrioridadId = reader.IsDBNull(reader.GetOrdinal("prioridad_id")) ? null : reader.GetInt32(reader.GetOrdinal("prioridad_id")),
+                    PrioridadNombre = reader.IsDBNull(reader.GetOrdinal("prioridad_nombre")) ? null : reader.GetString(reader.GetOrdinal("prioridad_nombre")),
+
+                    EstadoId = reader.IsDBNull(reader.GetOrdinal("estado_id")) ? null : reader.GetInt32(reader.GetOrdinal("estado_id")),
+                    EstadoNombre = reader.IsDBNull(reader.GetOrdinal("estado")) ? null : reader.GetString(reader.GetOrdinal("estado"))
+                });
+            }
+
+            return solicitudes;
+        }
+
+        public async Task<List<string>> ObtenerImagenesPorSolicitudIdAsync(int solicitudId)
+        {
+            var imagenes = new List<string>();
+
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("sp_obtenerImagenesSolicitud", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@p_solicitud_id", solicitudId);
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                imagenes.Add(reader.GetString(0));
+            }
+
+            return imagenes;
+        }
+
+
     }
 }

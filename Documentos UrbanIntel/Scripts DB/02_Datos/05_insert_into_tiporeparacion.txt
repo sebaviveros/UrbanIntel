@@ -1,0 +1,6 @@
+insert into TipoReparacion (nombre) values ('Vialidad');
+insert into TipoReparacion (nombre) values ('Alumbrado Público');
+insert into TipoReparacion (nombre) values ('Espacios Públicos');
+insert into TipoReparacion (nombre) values ('Áreas Verdes');
+insert into TipoReparacion (nombre) values ('Edificaciones municipales');
+insert into TipoReparacion (nombre) values ('Limpieza urbana');

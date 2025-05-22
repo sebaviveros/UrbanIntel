@@ -25,15 +25,15 @@ namespace UrbanIntelDATA.Services
                 var blobServiceClient = new BlobServiceClient(connectionString);
                 var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
-                await containerClient.CreateIfNotExistsAsync();
+                await containerClient.CreateIfNotExistsAsync(); //si el contenedor no existe lo crea
 
-                var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-                var blobClient = containerClient.GetBlobClient(fileName);
+                var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}"; //crea un nombre unico para el archivo usando un GUID (para evitar conflictos por nombres repetidos) + el nombre original del archivo
+                var blobClient = containerClient.GetBlobClient(fileName); //crea un cliente de blob que apunta al archivo que vas a subir dentro del contenedor.
 
-                using var stream = file.OpenReadStream();
-                await blobClient.UploadAsync(stream, overwrite: true);
+                using var stream = file.OpenReadStream(); //abre un stream de lectura del archivo enviado desde el frontend. IFormFile permite leerlo como un stream binario.
+                await blobClient.UploadAsync(stream, overwrite: true); //sube el archivo al contener en azure de forma asincrona, si existe un archivo con el mismo nombre lo sobreeescribe
 
-                // Retorna la URL pública de la imagen
+                // retorna la URL publica de la imagen
                 return blobClient.Uri.ToString();
             }
             catch (Exception ex)
