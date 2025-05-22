@@ -41,5 +41,30 @@ namespace UrbanIntelDATA.Services
                 throw new Exception($"Error al subir la imagen a Azure Blob Storage: {ex.Message}");
             }
         }
+        public async Task DeleteImageAsync(string imageUrl)
+        {
+            try
+            {
+                var blobServiceClient = new BlobServiceClient(connectionString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                var blobName = GetBlobNameFromUrl(imageUrl); 
+                var blobClient = containerClient.GetBlobClient(blobName);
+
+                await blobClient.DeleteIfExistsAsync(); 
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al eliminar imagen de Azure Blob Storage: {ex.Message}");
+            }
+        }
+
+        private string GetBlobNameFromUrl(string imageUrl)
+        {
+            return Path.GetFileName(new Uri(imageUrl).LocalPath); 
+        }
     }
 }
+
+
+

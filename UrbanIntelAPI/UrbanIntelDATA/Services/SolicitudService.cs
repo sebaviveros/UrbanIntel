@@ -190,6 +190,196 @@ namespace UrbanIntelDATA.Services
             return imagenes;
         }
 
+        public async Task ModificarSolicitudAsync(int id, Solicitud solicitud)
+        {
+            try
+            {
+                using var connection = _context.CreateConnection();
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_modificarSolicitud", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@p_id", id);
+                command.Parameters.AddWithValue("@p_direccion", solicitud.Direccion ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_descripcion", solicitud.Descripcion ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_comuna", solicitud.Comuna ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_tipo_reparacion_id", solicitud.TipoReparacionId ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_prioridad_id", solicitud.PrioridadId ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_estado_id", solicitud.EstadoId ?? (object)DBNull.Value);
+
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ModificarSolicitudAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+
+        public async Task ModificarCiudadanoAsync(int id, Solicitud solicitud)
+        {
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("sp_modificarCiudadanoSolicitud", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            command.Parameters.AddWithValue("@p_id", id);
+            command.Parameters.AddWithValue("@p_rut_ciudadano", solicitud.RutCiudadano ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@p_nombre_ciudadano", solicitud.NombreCiudadano ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@p_apellido_ciudadano", solicitud.ApellidoCiudadano ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@p_telefono_ciudadano", solicitud.TelefonoCiudadano ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@p_email_ciudadano", solicitud.EmailCiudadano ?? (object)DBNull.Value);
+
+            await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task EliminarSolicitudAsync(int id)
+        {
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            // Obtener imágenes ligadas
+            var imagenes = await ObtenerImagenesPorSolicitudIdAsync(id);
+            foreach (var url in imagenes)
+            {
+                await _blobService.DeleteImageAsync(url); // Elimina de Azure
+            }
+
+            // Eliminar imágenes de BD y solicitud
+            using var command = new SqlCommand("sp_eliminarSolicitud", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            command.Parameters.AddWithValue("@p_id", id);
+            await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task<List<GenericItem>> ObtenerTiposReparacionAsync()
+        {
+            var lista = new List<GenericItem>();
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("sp_obtenerTiposReparacion", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                lista.Add(new GenericItem
+                {
+                    Id = reader.GetInt32(0),
+                    Nombre = reader.GetString(1)
+                });
+            }
+
+            return lista;
+        }
+
+        public async Task<List<GenericItem>> ObtenerPrioridadesAsync()
+        {
+            var lista = new List<GenericItem>();
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("sp_obtenerPrioridades", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                lista.Add(new GenericItem
+                {
+                    Id = reader.GetInt32(0),
+                    Nombre = reader.GetString(1)
+                });
+            }
+
+            return lista;
+        }
+
+        public async Task<List<GenericItem>> ObtenerEstadosAsync()
+        {
+            var lista = new List<GenericItem>();
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("sp_obtenerEstados", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                lista.Add(new GenericItem
+                {
+                    Id = reader.GetInt32(0),
+                    Nombre = reader.GetString(1)
+                });
+            }
+
+            return lista;
+        }
+        public async Task<int> CrearSolicitudInternaAsync(Solicitud solicitud, List<IFormFile> imagenes)
+        {
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
+            try
+            {
+                int nuevaId;
+
+                using (var command = new SqlCommand("sp_crearSolicitud", connection, transaction))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@p_rut_usuario", solicitud.RutUsuario ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@p_direccion", solicitud.Direccion ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@p_descripcion", solicitud.Descripcion ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@p_comuna", solicitud.Comuna ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@p_tipo_reparacion_id", solicitud.TipoReparacionId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@p_prioridad_id", solicitud.PrioridadId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@p_estado_id", solicitud.EstadoId ?? (object)DBNull.Value);
+
+                    var outputId = new SqlParameter("@p_nueva_id", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(outputId);
+
+                    await command.ExecuteNonQueryAsync();
+                    nuevaId = (int)outputId.Value;
+                }
+
+                foreach (var imagen in imagenes)
+                {
+                    var url = await _blobService.UploadImageAsync(imagen);
+
+                    using var imgCommand = new SqlCommand("sp_crearImagenSolicitud", connection, transaction)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    imgCommand.Parameters.AddWithValue("@p_solicitudId", nuevaId);
+                    imgCommand.Parameters.AddWithValue("@p_url", url);
+                    await imgCommand.ExecuteNonQueryAsync();
+                }
+
+                await transaction.CommitAsync();
+                return nuevaId;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
 
     }
 }

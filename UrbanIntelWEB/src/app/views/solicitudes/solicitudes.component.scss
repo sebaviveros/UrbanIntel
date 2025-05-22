@@ -1,3 +1,22 @@
+//header
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: white;
+  }
+
+  h2 {
+    margin: 0;
+    color: white;
+  }
+}
+
+
 /* ==== CONTENEDOR PRINCIPAL ==== */
 .container {
   padding-bottom: 3rem;
@@ -194,6 +213,22 @@
   }
 }
 
+.btn-cafe {
+  background-color: #4E342E; // café oscuro
+  color: #fff;
+  border: none;
+
+  &:hover {
+    background-color: #3E2723;
+  }
+
+  &:disabled {
+    background-color: #a1887f;
+    cursor: not-allowed;
+  }
+}
+
+
 /* ==== MODAL PERSONALIZADO ==== */
 .custom-modal-backdrop {
   position: fixed;
@@ -322,4 +357,86 @@
   padding: 0.35rem 0.65rem;
 }
 
-//Borrar esto dps
+//Carrusel botones
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.6); // fondo para contraste
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  background-size: 60% 60%; // tamaño del ícono
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 8 8'%3E%3Cpath d='M5.5 0L4.78.72 1.5 4l3.28 3.28.72.72 1.5-1.5L3.94 4l3.06-3.06z'/%3E%3C/svg%3E");
+}
+
+.carousel-control-next-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 8 8'%3E%3Cpath d='M2.5 0L1.78.72 5.06 4l-3.28 3.28.72.72 1.5-1.5L4.06 4 2.5 2.5z'/%3E%3C/svg%3E");
+}
+
+//bar de herramientas
+/* Botones de acciones superiores */
+.btn-outline-primary,
+.btn-outline-secondary {
+  background-color: #f7941d;
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  padding: 0.45rem 1rem;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #e27a00;
+  }
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+/* Botón de limpiar (rojo con relleno) */
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #bb2d3b;
+  }
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+/* Asegura que los íconos estén bien visibles */
+button i.bi {
+  vertical-align: middle;
+}
+
+/* Color café claro para botones principales */
+.btn-cafe-claro {
+  background-color: #b87b4b;
+  color: white;
+  border: none;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.45rem 1rem;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+
+  &:hover {
+    background-color: #a6663a;
+  }
+
+  i {
+    font-size: 1.2rem;
+  }
+}
+
+

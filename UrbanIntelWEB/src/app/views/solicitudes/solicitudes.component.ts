@@ -1,18 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { SolicitudService } from '../../services/solicitudService/solicitud.service';
-//borrar esto dsps 
-interface Solicitud {
-  id: number;
-  direccion: string;
-  estado: string;
-  descripcion: string;
-  imagenes: string[];
-  fechaCreacion: string;
-  fechaAprobacion: string;
-  fechaAsignacion: string;
-  tipoReparacion: string;
-  prioridad: string;
-}
+import Swal from 'sweetalert2';
+import { Solicitud } from '../../models/solicitud.model';
+import { GenericItem } from '../../models/generic-item.model';
+import { firstValueFrom } from 'rxjs';
+
 
 @Component({
   selector: 'app-solicitudes',
@@ -25,34 +17,250 @@ export class SolicitudesComponent implements OnInit {
   currentPage: number = 1;
   pageSize: number = 15;
   totalPages: number = 0;
+  modalCiudadanoIndex: number | null = null;
+
+  filtrosVisibles: boolean = false;
+  filtro: {
+  id?: number | null;
+  comuna?: string | null;
+  estadoId?: number | null;
+  tipoReparacionId?: number | null;
+  prioridadId?: number | null;
+} = {
+  id: null,
+  comuna: null,
+  estadoId: null,
+  tipoReparacionId: null,
+  prioridadId: null
+};
+
+modalCrearVisible: boolean = false;
+
+nuevaSolicitud: {
+  direccion: string;
+  descripcion: string;
+  comuna: string;
+  tipoReparacionId: number | null;
+  prioridadId: number | null;
+  estadoId: number | null;
+  imagenes?: File[];
+} = {
+  direccion: '',
+  descripcion: '',
+  comuna: '',
+  tipoReparacionId: null,
+  prioridadId: null,
+  estadoId: null
+};
+
+imagenesAdjuntas: File[] = [];
+
 
   activeIndex: number | null = null;
   modalIndex: number | null = null; // ← Modal activo
   searchText: string = '';
   estadoSeleccionado: string = '';
 
+  tiposReparacion: GenericItem[] = [];
+  prioridades: GenericItem[] = [];
+  estados: GenericItem[] = [];
+
   constructor(private solicitudService: SolicitudService) {}
 
-  ngOnInit(): void {
-    // Datos simulados (reemplazar con datos reales desde el backend si es necesario)
-    this.solicitudes = Array.from({ length: 20 }).map((_, i) => ({
-      id: i + 1,
-      direccion: `Calle Falsa ${i + 1}`,
-      estado: '',
-      descripcion: `Descripción de la solicitud número ${i + 1}.`,
-      imagenes: [
-        'https://via.placeholder.com/600x300?text=Imagen+1',
-        'https://via.placeholder.com/600x300?text=Imagen+2'
-      ],
-      fechaCreacion: '2025-05-01',
-      fechaAprobacion: '2025-05-03',
-      fechaAsignacion: '2025-05-04',
-      tipoReparacion: i % 2 === 0 ? 'Bacheo' : 'Alumbrado',
-      prioridad: i % 3 === 0 ? 'Alta' : 'Media'
-    }));
+  async ngOnInit(): Promise<void> {
+  try {
+    // Cargar catálogos en paralelo
+    const [tipos, prioridades, estados] = await Promise.all([
+      firstValueFrom(this.solicitudService.obtenerTiposReparacion()),
+      firstValueFrom(this.solicitudService.obtenerPrioridades()),
+      firstValueFrom(this.solicitudService.obtenerEstados())
+    ]);
 
+    this.tiposReparacion = tipos;
+    this.prioridades = prioridades;
+    this.estados = estados;
+
+    // Obtener solicitudes filtradas (todas si se pasa objeto vacío)
+    const solicitudes = await firstValueFrom(this.solicitudService.obtenerSolicitudPorFiltro({}));
+
+    // Obtener imágenes de cada solicitud en paralelo
+    const solicitudesConImagenes = await Promise.all(
+      solicitudes.map(async (sol) => {
+        try {
+          const imagenes = await firstValueFrom(this.solicitudService.obtenerImagenesPorSolicitud(sol.id));
+          return { ...sol, imagenes };
+        } catch (error) {
+          console.error(`Error al obtener imágenes para solicitud ${sol.id}:`, error);
+          return { ...sol, imagenes: [] };
+        }
+      })
+    );
+
+    this.solicitudes = solicitudesConImagenes;
     this.totalPages = Math.ceil(this.solicitudes.length / this.pageSize);
     this.actualizarPagina();
+
+  } catch (error) {
+    console.error('Error durante la carga inicial:', error);
+  }
+}
+
+onImagenesSeleccionadas(event: any): void {
+  this.imagenesAdjuntas = Array.from(event.target.files);
+}
+
+abrirModalCrear(): void {
+  this.modalCrearVisible = true;
+  this.nuevaSolicitud = {
+    direccion: '',
+    descripcion: '',
+    comuna: '',
+    tipoReparacionId: null,
+    prioridadId: null,
+    estadoId: null
+  };
+  this.imagenesAdjuntas = [];
+}
+
+crearNuevaSolicitud(): void {
+  const formData = new FormData();
+
+  Object.entries(this.nuevaSolicitud).forEach(([key, value]) => {
+    if (value !== null && value !== undefined) {
+      formData.append(key, String(value));  // <- corregido: fuerza todo a string
+    }
+  });
+
+  this.imagenesAdjuntas.forEach(file => {
+    formData.append('imagenes', file);
+  });
+
+  this.solicitudService.crearSolicitudInterna(formData).subscribe({
+    next: (res) => {
+      Swal.fire('Solicitud creada', `Se ha creado la solicitud con ID #${res.id}`, 'success');
+      this.cerrarModalCrear();
+      this.ngOnInit(); // refrescar solicitudes
+    },
+    error: () => {
+      Swal.fire('Error', 'No se pudo crear la solicitud.', 'error');
+    }
+  });
+}
+
+
+
+
+cerrarModalCrear(): void {
+  this.modalCrearVisible = false;
+}
+
+  abrirModalCiudadano(index: number): void {
+  const solicitud = this.solicitudesPaginadas[index];
+  if (!solicitud.rutCiudadano) {
+    Swal.fire('Sin información', 'Esta solicitud no tiene datos del ciudadano.', 'info');
+    return;
+  }
+  this.modalCiudadanoIndex = index;
+}
+
+limpiarFiltros(): void {
+  this.filtro = {
+    id: null,
+    comuna: null,
+    estadoId: null,
+    tipoReparacionId: null,
+    prioridadId: null
+  };
+}
+
+
+  cerrarModalCiudadano(): void {
+  this.modalCiudadanoIndex = null;
+}
+
+  guardarInfoCiudadano(index: number): void {
+  const solicitud = this.solicitudesPaginadas[index];
+
+  Swal.fire({
+    title: '¿Guardar cambios?',
+    text: 'Se actualizarán los datos del ciudadano.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, guardar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.solicitudService.modificarCiudadano(solicitud.id, solicitud).subscribe({
+        next: () => {
+          Swal.fire('Actualizado', 'Datos del ciudadano modificados.', 'success');
+          this.cerrarModalCiudadano();
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudieron guardar los datos.', 'error');
+        }
+      });
+    }
+  });
+}
+
+  confirmarEliminar(id: number): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará la solicitud y sus imágenes asociadas.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.solicitudService.eliminarSolicitud(id).subscribe({
+          next: () => {
+            this.solicitudes = this.solicitudes.filter(s => s.id !== id);
+            this.actualizarPagina(); // para paginar correctamente después del borrado
+            Swal.fire('Eliminado', 'La solicitud fue eliminada correctamente.', 'success');
+          },
+          error: () => {
+            Swal.fire('Error', 'No se pudo eliminar la solicitud.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  guardarCambios(index: number): void {
+    const solicitud = this.solicitudesPaginadas[index];
+
+    Swal.fire({
+      title: '¿Guardar cambios?',
+      text: 'Se actualizará la información de la solicitud.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.solicitudService.modificarSolicitud(solicitud.id, solicitud).subscribe({
+          next: () => {
+            Swal.fire('Actualizado', 'La solicitud ha sido modificada.', 'success');
+            this.cerrarModal();
+            this.ngOnInit(); // Recarga la lista completa
+          },
+          error: () => {
+            Swal.fire('Error', 'No se pudo actualizar la solicitud.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  getEstadoBadgeClass(estado: string): string {
+    switch (estado) {
+      case 'Pendiente': return 'bg-pendiente';
+      case 'Finalizada': return 'bg-success';
+      case 'En proceso': return 'bg-warning text-dark';
+      case 'Rechazada': return 'bg-rechazada';
+      default: return 'bg-secondary';
+    }
   }
 
   actualizarPagina(): void {
@@ -71,35 +279,59 @@ export class SolicitudesComponent implements OnInit {
     this.activeIndex = this.activeIndex === index ? null : index;
   }
 
-  crearSolicitud(): void {
-    alert('Redirigir a crear solicitud');
+  abrirFiltro(): void {
+  this.filtrosVisibles = !this.filtrosVisibles;
   }
 
-  abrirFiltro(): void {
-    alert('Abrir panel de filtros');
+  async buscarPorFiltros(): Promise<void> {
+  try {
+    const filtrosLimpiados = Object.fromEntries(
+      Object.entries(this.filtro).filter(([_, v]) => v !== null && v !== '')
+    );
+
+    const solicitudes = await firstValueFrom(
+      this.solicitudService.obtenerSolicitudPorFiltro(filtrosLimpiados)
+    );
+
+    const solicitudesConImagenes = await Promise.all(
+      solicitudes.map(async (sol) => {
+        const imagenes = await firstValueFrom(this.solicitudService.obtenerImagenesPorSolicitud(sol.id));
+        return { ...sol, imagenes };
+      })
+    );
+
+    this.solicitudes = solicitudesConImagenes;
+    this.currentPage = 1;
+    this.totalPages = Math.ceil(this.solicitudes.length / this.pageSize);
+    this.actualizarPagina();
+    this.filtrosVisibles = false;
+  } catch (error) {
+    console.error('Error al buscar por filtros:', error);
   }
+}
+
 
   filtrarSolicitudes(): void {
     const texto = this.searchText.toLowerCase();
-    const estado = this.estadoSeleccionado;
-
-    const filtradas = this.solicitudes.filter(sol => {
-      const coincideTexto =
-        sol.descripcion.toLowerCase().includes(texto) ||
-        sol.direccion.toLowerCase().includes(texto);
-      const coincideEstado = estado ? sol.estado === estado : true;
-      return coincideTexto && coincideEstado;
-    });
+    const filtradas = this.solicitudes.filter(s =>
+      s.direccion?.toLowerCase().includes(texto) ||
+      s.descripcion?.toLowerCase().includes(texto) ||
+      s.comuna?.toLowerCase().includes(texto) ||
+      s.rutCiudadano?.toLowerCase().includes(texto) ||
+      s.nombreCiudadano?.toLowerCase().includes(texto) ||
+      s.apellidoCiudadano?.toLowerCase().includes(texto) ||
+      String(s.id).includes(texto)
+    );
 
     this.totalPages = Math.ceil(filtradas.length / this.pageSize);
-    this.currentPage = 1;
     this.solicitudesPaginadas = filtradas.slice(0, this.pageSize);
-  }
+    this.currentPage = 1;
+    this.activeIndex = null;
+    }
 
-  estadoCambiado(index: number): void {
-    const solicitud = this.solicitudesPaginadas[index];
-    console.log(`Nuevo estado asignado a solicitud ID ${solicitud.id}: ${solicitud.estado}`);
-  }
+    async actualizarSolicitudes(): Promise<void> {
+  await this.ngOnInit();
+}
 
   abrirModal(index: number): void {
     this.modalIndex = index;
@@ -109,13 +341,4 @@ export class SolicitudesComponent implements OnInit {
     this.modalIndex = null;
   }
 
-  guardarCambios(index: number): void {
-    const solicitud = this.solicitudesPaginadas[index];
-    console.log('Solicitud actualizada:', solicitud);
-
-    // Aquí podrías hacer una llamada al backend para persistir los cambios
-    // this.solicitudService.actualizarSolicitud(solicitud).subscribe(...);
-
-    this.modalIndex = null;
-  }
 }

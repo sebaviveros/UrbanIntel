@@ -34,7 +34,8 @@
                 "input": "public"
               }
             ],
-            "styles": [             
+            "styles": [          
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css",   
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css",
               "src/styles.scss"

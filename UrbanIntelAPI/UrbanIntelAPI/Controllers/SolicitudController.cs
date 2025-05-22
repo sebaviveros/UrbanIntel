@@ -31,6 +31,21 @@ namespace UrbanIntelAPI.Controllers
             }
         }
 
+        [HttpPost("crear-interna")]
+        public async Task<IActionResult> CrearSolicitudInterna([FromForm] Solicitud solicitud, [FromForm] List<IFormFile> imagenes)
+        {
+            try
+            {
+                var nuevaId = await _solicitudService.CrearSolicitudInternaAsync(solicitud, imagenes);
+                return Ok(new { message = "Solicitud creada exitosamente", id = nuevaId });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al crear la solicitud: {ex.Message}" });
+            }
+        }
+
+
         // Método para obtener todas las solicitudes
         [HttpGet("listar")]
         public async Task<IActionResult> ObtenerSolicitudes()
@@ -98,5 +113,71 @@ namespace UrbanIntelAPI.Controllers
                 return StatusCode(500, new { message = $"Error al obtener imágenes: {ex.Message}" });
             }
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ActualizarSolicitud(int id, [FromBody] Solicitud solicitud)
+        {
+            try
+            {
+                await _solicitudService.ModificarSolicitudAsync(id, solicitud);
+                return Ok(new { message = "Solicitud actualizada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al actualizar la solicitud: {ex.Message}" });
+            }
+        }
+
+        [HttpPut("{id}/ciudadano")]
+        public async Task<IActionResult> ActualizarCiudadanoSolicitud(int id, [FromBody] Solicitud solicitud)
+        {
+            try
+            {
+                await _solicitudService.ModificarCiudadanoAsync(id, solicitud);
+                return Ok(new { message = "Datos del ciudadano actualizados" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al actualizar datos del ciudadano: {ex.Message}" });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> EliminarSolicitud(int id)
+        {
+            try
+            {
+                await _solicitudService.EliminarSolicitudAsync(id);
+                return Ok(new { message = "Solicitud eliminada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al eliminar la solicitud: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("tipos-reparacion")]
+        public async Task<IActionResult> ObtenerTiposReparacion()
+        {
+            var data = await _solicitudService.ObtenerTiposReparacionAsync();
+            return Ok(data);
+        }
+
+        [HttpGet("prioridades")]
+        public async Task<IActionResult> ObtenerPrioridades()
+        {
+            var data = await _solicitudService.ObtenerPrioridadesAsync();
+            return Ok(data);
+        }
+
+        [HttpGet("estados")]
+        public async Task<IActionResult> ObtenerEstados()
+        {
+            var data = await _solicitudService.ObtenerEstadosAsync();
+            return Ok(data);
+        }
+
+
+
     }
 }

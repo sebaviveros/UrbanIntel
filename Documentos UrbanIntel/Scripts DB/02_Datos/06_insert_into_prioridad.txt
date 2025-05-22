@@ -1,0 +1,8 @@
+insert into Prioridad (nombre)
+values ('Alta');
+
+insert into Prioridad (nombre)
+values ('Media');
+
+insert into Prioridad (nombre)
+values ('Baja');

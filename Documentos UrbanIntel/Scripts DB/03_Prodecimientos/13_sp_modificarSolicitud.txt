@@ -1,0 +1,20 @@
+CREATE PROCEDURE sp_modificarSolicitud
+    @p_id INT,
+    @p_direccion NVARCHAR(255) = NULL,
+    @p_descripcion NVARCHAR(MAX) = NULL,
+    @p_comuna NVARCHAR(100) = NULL,
+    @p_tipo_reparacion_id INT = NULL,
+    @p_prioridad_id INT = NULL,
+    @p_estado_id INT = NULL
+AS
+BEGIN
+    UPDATE Solicitud
+    SET 
+        direccion = ISNULL(@p_direccion, direccion),
+        descripcion = ISNULL(@p_descripcion, descripcion),
+        comuna = ISNULL(@p_comuna, comuna),
+        tipo_reparacion_id = ISNULL(@p_tipo_reparacion_id, tipo_reparacion_id),
+        prioridad_id = ISNULL(@p_prioridad_id, prioridad_id),
+        estado_id = ISNULL(@p_estado_id, estado_id)
+    WHERE id = @p_id;
+END

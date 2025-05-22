@@ -1,165 +1,199 @@
-<!-- Borrar esto dpss -->
-<!-- Barra superior -->
+<div class="header-container">
+  <ion-icon name="document-text-outline"></ion-icon>
+  <h2>Solicitudes</h2>
+</div>
 
-<div class="d-flex justify-content-between align-items-center flex-wrap mb-4 px-2">
-  <!-- Título e ícono -->
-  <div class="d-flex align-items-center mb-2">
-    <ion-icon name="document-text-outline"></ion-icon>
-    <h3 class="m-0">SOLICITUDES</h3>
+<!-- Contenedor de acciones superiores -->
+<div class="row mb-4 align-items-center gx-2">
+  <!-- Botón Crear Solicitud -->
+  <div class="col-auto">
+    <button class="btn btn-cafe-claro d-flex align-items-center gap-2" (click)="abrirModalCrear()">
+  <i class="bi bi-plus-circle"></i> Crear Solicitud
+</button>
+
   </div>
 
-  <!-- Botón crear solicitud -->
-  <button class="btn btn-secondary mb-2 me-2" (click)="crearSolicitud()">CREAR SOLICITUD</button>
-
-  <!-- Búsqueda -->
-  <div class="input-group mb-2 me-2" style="max-width: 250px;">
-    <input type="text" class="form-control" [(ngModel)]="searchText" placeholder="Buscar..." (input)="filtrarSolicitudes()" />
-    <span class="input-group-text"><i class="bi bi-search"></i></span>
+  <!-- Buscador sensitivo -->
+  <div class="col-md-4">
+    <input type="text" class="form-control" [(ngModel)]="searchText" placeholder="Buscar por ID, dirección, descripción..." (input)="filtrarSolicitudes()">
   </div>
 
-  <!-- Botón de filtro -->
-  <button class="btn btn-outline-secondary mb-2 me-2" (click)="abrirFiltro()">
-    Filtrar <i class="bi bi-filter"></i>
+  <!-- Botón Filtros -->
+<div class="col-auto">
+  <button class="btn btn-cafe-claro d-flex align-items-center gap-1" (click)="abrirFiltro()">
+  <i class="bi bi-funnel"></i> Filtros
+</button>
+</div>
+
+
+  <!-- Botón Actualizar -->
+<div class="col-auto">
+  <button class="btn btn-cafe-claro d-flex align-items-center gap-2" (click)="actualizarSolicitudes()">
+    <i class="bi bi-arrow-clockwise fs-5"></i>
+    Actualizar
   </button>
-
-  <!-- Filtro por estado -->
-  <div class="mb-2">
-    <label for="estadoSelect" class="form-label mb-0">Estado</label>
-    <select id="estadoSelect" class="form-select" [(ngModel)]="estadoSeleccionado" (change)="filtrarSolicitudes()">
-      <option value="">Todos</option>
-      <option value="En proceso">En proceso</option>
-      <option value="Finalizado">Finalizado</option>
-      <option value="Pendiente">Pendiente</option>
-      <option value="Rechazada">Rechazada</option>
-    </select>
-  </div>
 </div>
 
-<!-- Acordeón de solicitudes -->
-<div class="container mt-4">
-  <div class="accordion" id="accordionSolicitudes">
-    <div class="accordion-item" *ngFor="let solicitud of solicitudesPaginadas; let i = index">
-      <h2 class="accordion-header">
-        <button
-          class="accordion-button d-flex justify-content-between align-items-center"
-          [ngClass]="{ collapsed: activeIndex !== i }"
-          (click)="toggleAcordeon(i)">
-
-          <!-- Información a la izquierda -->
-          <div class="d-flex flex-column align-items-start">
-            <span><strong>ID:</strong> {{ solicitud.id }}</span>
-            <span><strong>Dirección:</strong> {{ solicitud.direccion }}</span>
-          </div>
-
-          <!-- Estado alineado a la derecha -->
-          <span class="ms-auto badge"
-                [ngClass]="{
-                  'bg-warning text-dark': solicitud.estado === 'En proceso',
-                  'bg-success': solicitud.estado === 'Finalizado',
-                  'bg-pendiente': solicitud.estado === 'Pendiente',
-                  'bg-rechazada': solicitud.estado === 'Rechazada',
-                  'bg-secondary': !solicitud.estado
-                }">
-            {{ solicitud.estado || 'Sin estado' }}
-          </span>
-        </button>
-
-      </h2>
-
-      <div
-        class="accordion-collapse"
-        [ngClass]="{ 'collapse show': activeIndex === i, 'collapse': activeIndex !== i }">
-        <div class="accordion-body row">
-          <!-- Columna izquierda -->
-          <div class="col-md-8">
-            <p><strong>Descripción:</strong> {{ solicitud.descripcion }}</p>
-
-            <div *ngIf="solicitud.imagenes.length > 0" class="carousel slide">
-              <div class="carousel-inner">
-                <div class="carousel-item" *ngFor="let img of solicitud.imagenes; let j = index" [ngClass]="{ active: j === 0 }">
-                  <img [src]="img" class="d-block w-100" alt="Imagen {{ j + 1 }}">
-                </div>
-              </div>
-            </div>
-
-            <ul class="mt-3 list-group">
-              <li class="list-group-item"><strong>Fecha de Creación:</strong> {{ solicitud.fechaCreacion }}</li>
-              <li class="list-group-item"><strong>Fecha de Aprobación:</strong> {{ solicitud.fechaAprobacion }}</li>
-              <li class="list-group-item"><strong>Fecha de Asignación:</strong> {{ solicitud.fechaAsignacion }}</li>
-              <li class="list-group-item"><strong>Tipo Reparación:</strong> {{ solicitud.tipoReparacion }}</li>
-              <li class="list-group-item"><strong>Prioridad:</strong> {{ solicitud.prioridad }}</li>
-            </ul>
-          </div>
-
-          <!-- Columna derecha -->
-          <div class="col-md-4">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-  <strong>Estado:</strong>
-  <span class="badge"
-        [ngClass]="{
-          'bg-warning text-dark': solicitud.estado === 'En proceso',
-          'bg-success': solicitud.estado === 'Finalizado',
-          'bg-pendiente': solicitud.estado === 'Pendiente',
-          'bg-rechazada': solicitud.estado === 'Rechazada',
-          'bg-secondary': !solicitud.estado
-        }">
-    {{ solicitud.estado || 'Sin estado' }}
-  </span>
-</div>
-<br>
-<br>
-<button class="btn btn-accent w-100" (click)="abrirModal(i)">Modificar</button>
-
-
-          </div>
-        </div>
-      </div>
+<!-- Filtro desplegable -->
+<div *ngIf="filtrosVisibles" class="card mb-3 p-3 border border-primary bg-light mt-3">
+  <br>
+  <div class="row g-2">
+    <div class="col-md-2">
+      <input class="form-control" placeholder="ID" [(ngModel)]="filtro.id">
+    </div>
+    <div class="col-md-2">
+      <input class="form-control" placeholder="Comuna" [(ngModel)]="filtro.comuna">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" [(ngModel)]="filtro.estadoId">
+  <option [ngValue]="null" disabled selected>Estado...</option>
+  <option *ngFor="let estado of estados" [value]="estado.id">{{ estado.nombre }}</option>
+</select>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" [(ngModel)]="filtro.tipoReparacionId">
+  <option [ngValue]="null" disabled selected>Tipo reparación...</option>
+  <option *ngFor="let tipo of tiposReparacion" [value]="tipo.id">{{ tipo.nombre }}</option>
+</select>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" [(ngModel)]="filtro.prioridadId">
+  <option [ngValue]="null" disabled selected>Prioridad...</option>
+  <option *ngFor="let p of prioridades" [value]="p.id">{{ p.nombre }}</option>
+</select>
     </div>
   </div>
 
-  <!-- Modal global -->
+  <!-- Botones centrados -->
+  <div class="d-flex justify-content-center gap-3 mt-4">
+    <button class="btn btn-primary d-flex align-items-center gap-2" (click)="buscarPorFiltros()">
+      <i class="bi bi-search"></i> Buscar
+    </button>
+    <button class="btn btn-danger d-flex align-items-center gap-2" (click)="limpiarFiltros()">
+      <i class="bi bi-x-circle"></i> Limpiar
+    </button>
+  </div>
+</div>
+
+<!-- Modal Crear Solicitud -->
+<div *ngIf="modalCrearVisible" class="custom-modal-backdrop">
+  <div class="custom-modal">
+    <h5>Nueva Solicitud Interna</h5>
+
+    <div class="mb-2">
+      <label>Dirección</label>
+      <input class="form-control" [(ngModel)]="nuevaSolicitud.direccion" />
+    </div>
+
+    <div class="mb-2">
+      <label>Comuna</label>
+      <input class="form-control" [(ngModel)]="nuevaSolicitud.comuna" />
+    </div>
+
+    <div class="mb-2">
+      <label>Descripción</label>
+      <textarea class="form-control" [(ngModel)]="nuevaSolicitud.descripcion" rows="2"></textarea>
+    </div>
+
+    <div class="mb-2">
+      <label>Tipo Reparación</label>
+      <select class="form-select" [(ngModel)]="nuevaSolicitud.tipoReparacionId">
+        <option [ngValue]="null" disabled selected>Seleccione tipo...</option>
+        <option *ngFor="let tipo of tiposReparacion" [ngValue]="tipo.id">{{ tipo.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="mb-2">
+      <label>Prioridad</label>
+      <select class="form-select" [(ngModel)]="nuevaSolicitud.prioridadId">
+        <option [ngValue]="null" disabled selected>Seleccione prioridad...</option>
+        <option *ngFor="let p of prioridades" [ngValue]="p.id">{{ p.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="mb-2">
+      <label>Estado</label>
+      <select class="form-select" [(ngModel)]="nuevaSolicitud.estadoId">
+        <option [ngValue]="null" disabled selected>Seleccione estado...</option>
+        <option *ngFor="let e of estados" [ngValue]="e.id">{{ e.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Imágenes</label>
+      <input type="file" class="form-control" (change)="onImagenesSeleccionadas($event)" multiple />
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-outline-secondary" (click)="cerrarModalCrear()">Cancelar</button>
+      <button class="btn btn-success" (click)="crearNuevaSolicitud()">Crear</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal de Información del Ciudadano -->
+<div *ngIf="modalCiudadanoIndex !== null" class="custom-modal-backdrop">
+  <div class="custom-modal">
+    <h5>Ciudadano - Solicitud #{{ solicitudesPaginadas[modalCiudadanoIndex].id }}</h5>
+
+    <div class="mb-2"><label>RUT</label>
+      <input class="form-control" [(ngModel)]="solicitudesPaginadas[modalCiudadanoIndex].rutCiudadano" />
+    </div>
+    <div class="mb-2"><label>Nombre</label>
+      <input class="form-control" [(ngModel)]="solicitudesPaginadas[modalCiudadanoIndex].nombreCiudadano" />
+    </div>
+    <div class="mb-2"><label>Apellido</label>
+      <input class="form-control" [(ngModel)]="solicitudesPaginadas[modalCiudadanoIndex].apellidoCiudadano" />
+    </div>
+    <div class="mb-2"><label>Teléfono</label>
+      <input class="form-control" [(ngModel)]="solicitudesPaginadas[modalCiudadanoIndex].telefonoCiudadano" />
+    </div>
+    <div class="mb-3"><label>Email</label>
+      <input class="form-control" [(ngModel)]="solicitudesPaginadas[modalCiudadanoIndex].emailCiudadano" />
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-outline-secondary" (click)="cerrarModalCiudadano()">Cancelar</button>
+      <button class="btn btn-primary" (click)="guardarInfoCiudadano(modalCiudadanoIndex)">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Modificar Solicitud -->
   <div *ngIf="modalIndex !== null" class="custom-modal-backdrop">
     <div class="custom-modal">
       <h5>Modificar Solicitud #{{ solicitudesPaginadas[modalIndex].id }}</h5>
 
       <div class="mb-2">
-        <label class="form-label">Dirección</label>
+        <label>Dirección</label>
         <input class="form-control" [(ngModel)]="solicitudesPaginadas[modalIndex].direccion" />
       </div>
 
       <div class="mb-2">
-        <label class="form-label">Descripción</label>
-        <textarea class="form-control" rows="2" [(ngModel)]="solicitudesPaginadas[modalIndex].descripcion"></textarea>
+        <label>Descripción</label>
+        <textarea class="form-control" [(ngModel)]="solicitudesPaginadas[modalIndex].descripcion" rows="2"></textarea>
       </div>
 
-       <div class="mb-2">
-      <label class="form-label">Tipo Reparación</label>
-      <select class="form-select" [(ngModel)]="solicitudesPaginadas[modalIndex].tipoReparacion">
-        <option value="Vialidad">Vialidad</option>
-        <option value="Alumbrado Público">Alumbrado Público</option>
-        <option value="Espacios Públicos">Espacios Públicos</option>
-        <option value="Áreas Verdes">Áreas Verdes</option>
-        <option value="Edificaciones Municipales">Edificaciones Municipales</option>
-        <option value="Limpieza Urbana">Limpieza Urbana</option>
-      </select>
-    </div>
+      <div class="mb-2">
+        <label>Tipo Reparación</label>
+        <select class="form-select" [(ngModel)]="solicitudesPaginadas[modalIndex].tipoReparacionId">
+          <option *ngFor="let tipo of tiposReparacion" [value]="tipo.id">{{ tipo.nombre }}</option>
+        </select>
+      </div>
 
       <div class="mb-2">
-        <label class="form-label">Prioridad</label>
-        <select class="form-select" [(ngModel)]="solicitudesPaginadas[modalIndex].prioridad">
-          <option value="Alta">Alta</option>
-          <option value="Media">Media</option>
-          <option value="Baja">Baja</option>
+        <label>Prioridad</label>
+        <select class="form-select" [(ngModel)]="solicitudesPaginadas[modalIndex].prioridadId">
+          <option *ngFor="let p of prioridades" [value]="p.id">{{ p.nombre }}</option>
         </select>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Estado</label>
-        <select class="form-select" [(ngModel)]="solicitudesPaginadas[modalIndex].estado">
-          <option value="Pendiente">Pendiente</option>
-          <option value="En proceso">En proceso</option>
-          <option value="Finalizado">Finalizado</option>
-          <option value="Rechazada">Rechazada</option>
+        <label>Estado</label>
+        <select class="form-select" [(ngModel)]="solicitudesPaginadas[modalIndex].estadoId">
+          <option *ngFor="let e of estados" [value]="e.id">{{ e.nombre }}</option>
         </select>
       </div>
 
@@ -169,6 +203,94 @@
       </div>
     </div>
   </div>
+
+<!-- Acordeón de Solicitudes -->
+<div class="container mt-4">
+  <div *ngIf="solicitudes.length === 0" class="alert alert-info text-center">No hay solicitudes registradas.</div>
+
+  <div class="accordion" id="accordionSolicitudes">
+    <div class="accordion-item" *ngFor="let solicitud of solicitudesPaginadas; let i = index">
+      <h2 class="accordion-header">
+        <button class="accordion-button" [ngClass]="{ collapsed: activeIndex !== i }" (click)="toggleAcordeon(i)">
+          <div class="d-flex justify-content-between w-100 align-items-center">
+            <div class="d-flex flex-column">
+              <span><strong>ID:</strong> {{ solicitud.id }}</span>
+              <span><strong>Dirección:</strong> {{ solicitud.direccion }}</span>
+            </div>
+            <div>
+              <span class="badge" [ngClass]="getEstadoBadgeClass(solicitud.estadoNombre || '')">
+                {{ solicitud.estadoNombre || 'Sin estado' }}
+              </span>
+            </div>
+          </div>
+        </button>
+      </h2>
+
+      <div class="accordion-collapse" [ngClass]="{ 'collapse show': activeIndex === i, 'collapse': activeIndex !== i }">
+        <div class="accordion-body row">
+          <!-- Columna izquierda -->
+          <div class="col-md-8">
+            <p><strong>Descripción:</strong> {{ solicitud.descripcion }}</p>
+
+            <div *ngIf="solicitud.imagenes.length > 0"
+              id="carousel-{{ solicitud.id }}"
+              class="carousel slide"
+              data-bs-ride="carousel">
+
+            <div class="carousel-inner">
+              <div *ngFor="let img of solicitud.imagenes; let j = index"
+                  class="carousel-item"
+                  [class.active]="j === 0">
+                <img [src]="img" class="d-block w-100" [alt]="'Imagen ' + (j + 1)">
+              </div>
+            </div>
+
+            <button class="carousel-control-prev"
+                type="button"
+                [attr.data-bs-target]="'#carousel-' + solicitud.id"
+                data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+          </button>
+
+          <button class="carousel-control-next"
+                  type="button"
+                  [attr.data-bs-target]="'#carousel-' + solicitud.id"
+                  data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+          </button>
+          </div>
+
+            <ul class="mt-3 list-group">
+              <li class="list-group-item"><strong>Fecha de Creación:</strong> {{ solicitud.fechaCreacion | date:'dd/MM/yyyy' }}</li>
+              <li class="list-group-item"><strong>Fecha de Aprobación:</strong> {{ solicitud.fechaAprobacion | date:'dd/MM/yyyy' }}</li>
+              <li class="list-group-item"><strong>Fecha de Asignación:</strong> {{ solicitud.fechaAsignacion | date:'dd/MM/yyyy' }}</li>
+              <li class="list-group-item"><strong>Tipo Reparación:</strong> {{ solicitud.tipoReparacion }}</li>
+              <li class="list-group-item"><strong>Prioridad:</strong> {{ solicitud.prioridad }}</li>
+            </ul>
+          </div>
+
+          <!-- Columna derecha -->
+          <div class="col-md-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Estado:</strong>
+              <span class="ms-auto badge" [ngClass]="getEstadoBadgeClass(solicitud.estadoNombre || '')">
+                {{ solicitud.estadoNombre || 'Sin estado' }}
+              </span>
+            </div>
+            <button class="btn btn-accent w-100" (click)="abrirModal(i)">Modificar</button>
+            <button class="btn btn-danger w-100 mt-2" (click)="confirmarEliminar(solicitud.id)">Eliminar Solicitud</button>
+            <button class="btn btn-cafe w-100 mt-2" [disabled]="!solicitud.rutCiudadano" (click)="abrirModalCiudadano(i)">
+              Info Ciudadano
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Paginación -->
   <nav class="mt-4">
