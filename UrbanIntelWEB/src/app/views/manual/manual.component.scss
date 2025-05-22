@@ -160,6 +160,44 @@ hr{
     .right-section video {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      display: block;
+      object-fit: contain;
+      background-color: transparent;
     }
+
+
+    .botonera {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 30px 0;
+}
+
+.btn-tutorial {
+  padding: 12px 24px;
+  background-color: #d86e12;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-tutorial:hover {
+  background-color: #b5743f;
+}
+
+.btn-tutorial.active {
+  background-color: #b5743f;
+}
+
+.scroll-anim {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-anim.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

@@ -21,11 +21,30 @@
         </ul>
         <div class="spacer"></div> 
       </nav>
-<div class="titulo"> <h1>MANUAL DE COMPLETADO <br><span> FORMULARIO DE SOLICITUD </span></h1></div>  
 
-<hr>
+<div class="titulo"> <h1>MANUAL DE USO <br><span> PARA EL CIUDADANO </span></h1></div>  
 
-    <div class="paso">
+<div class="botonera">
+  <button 
+  class="btn-tutorial" 
+  [class.active]="selectedTutorial === 'formulario'"
+  (click)="setTutorial('formulario')">
+  Tutorial Formulario Solicitud
+</button>
+
+<button 
+  class="btn-tutorial" 
+  [class.active]="selectedTutorial === 'consulta'"
+  (click)="setTutorial('consulta')">
+  Tutorial Consulta Solicitud
+</button>
+</div>
+
+<HR>
+<div *ngIf="selectedTutorial === 'formulario'">
+  <div class="titulo"> <h1>FORMULARIO DE SOLICITUD</h1></div>  
+
+    <div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 1:<br><span class="highlight">Ingresa tu nombre y apellido.</span></h1>
     <p>
@@ -37,13 +56,13 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 1.mp4" type="video/mp4">
+      <source src="assets/img/Paso_1.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 </div>
 
-<div class="paso">
+<div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 2:<br><span class="highlight">Completa tu RUT.</span></h1>
     <p>
@@ -55,13 +74,13 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 2.mp4" type="video/mp4">
+      <source src="assets/img/Paso_2.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 </div>
 
-<div class="paso">
+<div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 3:<br><span class="highlight">Selecciona tu región.</span></h1>
     <p>
@@ -73,13 +92,13 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 3.mp4" type="video/mp4">
+      <source src="assets/img/Paso_3.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 </div>
 
- <div class="paso">
+ <div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 4:<br><span class="highlight">Ingresa la Comuna de reparación.</span></h1>
     <p>
@@ -92,13 +111,13 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 4.mp4" type="video/mp4">
+      <source src="assets/img/Paso_4.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 </div>
 
-<div class="paso">
+<div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 5:<br><span class="highlight">Ingresa la Dirección de reparación.</span></h1>
     <p>
@@ -110,13 +129,13 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 5.mp4" type="video/mp4">
+      <source src="assets/img/Paso_5.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 </div>
 
-<div class="paso">
+<div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 6:<br><span class="highlight">Agrega tu correo electrónico.</span></h1>
     <p>
@@ -128,13 +147,13 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 6.mp4" type="video/mp4">
+      <source src="assets/img/Paso_6.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 </div>
 
-<div class="paso">
+<div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 7:<br><span class="highlight">Escribe tu número de celular.</span></h1>
     <p>
@@ -146,13 +165,13 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 7.mp4" type="video/mp4">
+      <source src="assets/img/Paso_7.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 </div>
 
-<div class="paso">
+<div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 8:<br><span class="highlight">Adjunta Imágenes.</span></h1>
     <p>
@@ -165,13 +184,13 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 8.mp4" type="video/mp4">
+      <source src="assets/img/Paso_8.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 </div>
 
-<div class="paso">
+<div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 9:<br><span class="highlight">Describe el problema.</span></h1>
     <p>
@@ -184,13 +203,13 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 9 .mp4" type="video/mp4">
+      <source src="assets/img/Paso_9.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 </div>
 
-<div class="paso">
+<div class="paso scroll-anim">
     <div class="left-section">
     <h1>Paso número 10:<br><span class="highlight">¡Listo! Presiona "Enviar Reporte"</span></h1>
     <p>
@@ -200,10 +219,69 @@
   </div>
   <div class="right-section">
     <video autoplay loop muted>
-      <source src="assets/img/Paso 10.mp4" type="video/mp4">
+      <source src="assets/img/Paso_10.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
+</div>
+</div>
+
+
+<div *ngIf="selectedTutorial === 'consulta'">
+<div class="titulo"> <h1>CONSULTA DE SOLICITUDES</h1></div>  
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 1: <br><span class="highlight">Desplegar la ventana de consultas:</span></h1>
+    <p>
+      Haga clic en el botón "Consultar Solicitud" para desplegar la ventana necesaria para realizar la misma.
+    </p>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 2:<br><span class="highlight">Ingresar los datos necesarios</span></h1>
+    <p>
+      La consulta puede ser realizada de dos formas: Ingresando su RUT o ingresando la ID de solicitud que fue enviada a su correo electrónico al momento de realizarla, no es obligatorio ingresar las dos.
+      Debe ingresar su RUT en el formato correct y la ID debe ser exactamente la que le fue enviada.
+    </p>
+    <div class="quote">
+     📍 Ejemplo: RUT -> 12345678-9 / ID -> 345
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Indicadores de estado<br><span class="highlight">Existen 4 tipos:</span></h1>
+    <p>
+      🟢 FINALIZADA -> Esto significa que la reparación solicitada ya se realizó. <br>
+      🟡 PENDIENTE -> Esto significa que tu solicitud aún está en espera de ser aprobada. <br>
+      🟡 EN PROCESO -> Esto significa que tu solicitud fue aprobada y está en proceso de ser reparada. <br>
+      🔴 RECHAZADA -> Esto significa que tu solicitud no fue aprobada.
+    </p>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
 </div>
 </body>
 </html>
