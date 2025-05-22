@@ -21,7 +21,8 @@ import { ManualComponent } from './views/manual/manual.component';
 
 import { DataTablesModule } from "angular-datatables";
 import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
-import { SolicitudesComponent } from './views/solicitudes/solicitudes.component'; // datatables de angular
+import { SolicitudesComponent } from './views/solicitudes/solicitudes.component';
+import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.component'; // datatables de angular
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { SolicitudesComponent } from './views/solicitudes/solicitudes.component'
     QuienesSomosComponent,
     ManualComponent,
     GestionCuentasComponent,
-    SolicitudesComponent 
+    SolicitudesComponent,
+    AprobacionesComponent 
     // Agregarás más componentes aquí luego
   ],
   imports: [

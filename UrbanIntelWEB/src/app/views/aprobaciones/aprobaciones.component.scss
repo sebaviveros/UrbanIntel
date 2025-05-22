@@ -1,0 +1,169 @@
+/* ==== CONTENEDOR PRINCIPAL ==== */
+.container {
+  padding-bottom: 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
+
+  h3 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #f7941d !important;
+  }
+}
+
+/* ==== TÍTULO E ÍCONO ==== */
+.d-flex.flex-wrap {
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  ion-icon {
+    font-size: 1.9rem;
+    color: #f7941d;
+    margin-right: 0.5rem;
+  }
+
+  h3 {
+    font-weight: 700;
+    margin-bottom: 0;
+    color: #f7941d;
+  }
+}
+
+.form-label{
+  color: #E0E0E0;
+}
+
+/* ==== ACORDEÓN ==== */
+.accordion-item {
+  background-color: transparent;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  border: none;
+
+  .accordion-header {
+   
+   background-color: #1e1e1e; 
+    padding: 1rem 1.5rem;
+
+    .d-flex {
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    span.badge {
+      margin-left: auto;
+    }
+  }
+
+  .text-start{
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .accordion-button {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  .accordion-body {
+    font-weight: 500;
+    color: #fff;
+    background-color: #1e1e1e; 
+    padding: 1.5rem;
+  }
+}
+
+/* ==== BADGES ESTADOS ==== */
+.badge {
+  font-size: 0.85rem;
+  padding: 0.4em 0.75em;
+  border-radius: 0.5rem;
+  font-weight: bold;
+}
+
+.bg-pendiente {
+  background-color: #b0b0b0;
+  color: #333;
+}
+
+.bg-finalizado {
+  background-color: #28a745 !important;
+  color: #fff !important;
+}
+
+.bg-rechazada {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+/* ==== BOTONES APROBAR / DENEGAR ==== */
+.btn-approve {
+  background-color: #28a745;
+  color: #fff;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #218838;
+  }
+}
+
+.btn-deny {
+  background-color: #dc3545;
+  color: #fff;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #c82333;
+  }
+}
+
+/* ==== SELECT TIPO REPARACIÓN ==== */
+select.form-select {
+  border-radius: 0.5rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  color: #333;
+
+  &:focus {
+    border-color: #f7941d;
+    box-shadow: 0 0 0 0.2rem rgba(247, 148, 29, 0.25);
+  }
+}
+
+/* ==== PAGINACIÓN ==== */
+.pagination {
+  .page-item {
+    .page-link {
+      background-color: #2a2a2a;
+      color: #fff;
+      border: 1px solid #444;
+      margin: 0 2px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #3a3a3a;
+        color: #fff;
+      }
+    }
+
+    &.active .page-link {
+      background-color: #f7941d;
+      border-color: #f7941d;
+    }
+
+    &.disabled .page-link {
+      background-color: #1c1c1c;
+      color: #666;
+      border-color: #333;
+    }
+  }
+}

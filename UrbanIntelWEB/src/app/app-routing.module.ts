@@ -8,6 +8,7 @@ import { QuienesSomosComponent } from './views/quienes-somos/quienes-somos.compo
 import { ManualComponent } from './views/manual/manual.component';
 import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
 import { SolicitudesComponent } from './views/solicitudes/solicitudes.component';
+import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.component';
 
 
 const routes: Routes = [
@@ -26,7 +27,8 @@ const routes: Routes = [
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'solicitudes', component: SolicitudesComponent },
-      { path: 'gestion-cuentas', component: GestionCuentasComponent }
+      { path: 'gestion-cuentas', component: GestionCuentasComponent },
+      { path: 'aprobaciones', component: AprobacionesComponent }
       // puedes agregar más rutas hijas aquí
     ]
   },
