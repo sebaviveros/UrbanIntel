@@ -30,17 +30,21 @@
   }
 }
 
+.form-label{
+  color: #E0E0E0;
+}
+
 /* ==== ACORDEÓN ==== */
 .accordion-item {
-  background-color: #fff;
+  background-color: transparent;
   border-radius: 0.75rem;
   margin-bottom: 1.5rem;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
   border: none;
 
   .accordion-header {
-    background-color: #dce6ff;
+   
+   background-color: #1e1e1e; 
     padding: 1rem 1.5rem;
 
     .d-flex {
@@ -52,6 +56,11 @@
     span.badge {
       margin-left: auto;
     }
+  }
+
+  .text-start{
+    color: #fff;
+    font-weight: 500;
   }
 
   .accordion-button {
@@ -66,7 +75,9 @@
   }
 
   .accordion-body {
-    background-color: #f9f9f9;
+    font-weight: 500;
+    color: #fff;
+    background-color: #1e1e1e; 
     padding: 1.5rem;
   }
 }
@@ -136,6 +147,7 @@ select.form-select {
       color: #fff;
       border: 1px solid #444;
       margin: 0 2px;
+      cursor: pointer;
 
       &:hover {
         background-color: #3a3a3a;
