@@ -4,7 +4,15 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
+<<<<<<< Updated upstream
     "types": []
+=======
+    "types": [
+      "google.maps",
+      "@angular/localize"
+    ],
+    "typeRoots": ["node_modules/@types"]
+>>>>>>> Stashed changes
   },
   "files": [
     "src/main.ts"
