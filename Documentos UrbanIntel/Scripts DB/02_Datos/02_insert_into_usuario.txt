@@ -1,0 +1,11 @@
+INSERT INTO usuario (rut, nombre, apellido, email, telefono, direccion, password)
+VALUES ('18586538-k', 'Sebastian', 'Viveros', 'sviverosn@gmail.com', '933888257', 'Madrid 436 Villa Alemana', 'urbanintel123');
+
+INSERT INTO usuario (rut, nombre, apellido, email, telefono, direccion, password)
+VALUES ('20476925-7', 'Vicente' , 'Fernandez', 'vice.fernandezr@duocuc.cl', '966156896', 'La Torre 648, Casa 31, Villa Alemana', 'urbanintel123');
+
+INSERT INTO usuario (rut, nombre, apellido, email, telefono, direccion, password)
+VALUES ('20834198-7', 'Diego', 'Diaz', 'diegodiazgaete7@gmail.com', '985818036', 'Pasaje Freire 137, Forestal Alto', 'urbanintel123');
+
+INSERT INTO usuario (rut, nombre, apellido, email, telefono, direccion, password)
+VALUES ('21834498-k', 'Marcelo Alexis', 'Ramirez Silva', 'marceloa@gmail.com', '985843422', 'Bastion 32, Valparaiso', 'urbanintel123');

@@ -1,0 +1,4 @@
+insert into EstadoSolicitud (nombre) values ('Finalizada');
+insert into EstadoSolicitud (nombre) values ('Pendiente');
+insert into EstadoSolicitud (nombre) values ('En proceso');
+insert into EstadoSolicitud (nombre) values ('Rechazada');

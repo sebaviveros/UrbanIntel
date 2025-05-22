@@ -1,0 +1,98 @@
+<!-- Scrollable modal -->
+<div *ngIf="mostrarModal" class="modal-dialog modal-dialog-scrollable">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">{{ modoEdicion ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
+      <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="mb-3">
+          <label for="rut" class="form-label">RUT</label>
+          <input type="text" id="rut" class="form-control" 
+                 [(ngModel)]="usuarioActual.rut" 
+                 [readonly]="modoEdicion" name="rut">
+        </div>
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" id="nombre" class="form-control" 
+                 [(ngModel)]="usuarioActual.nombre" name="nombre">
+        </div>
+        <div class="mb-3">
+          <label for="apellido" class="form-label">Apellido</label>
+          <input type="text" id="apellido" class="form-control" 
+                 [(ngModel)]="usuarioActual.apellido" name="apellido">
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" class="form-control" 
+                 [(ngModel)]="usuarioActual.email" name="email">
+        </div>
+        <div class="mb-3">
+          <label for="telefono" class="form-label">Teléfono</label>
+          <input type="text" id="telefono" class="form-control" 
+                 [(ngModel)]="usuarioActual.telefono" name="telefono">
+        </div>
+        <div class="mb-3">
+          <label for="direccion" class="form-label">Dirección</label>
+          <input type="text" id="direccion" class="form-control" 
+                 [(ngModel)]="usuarioActual.direccion" name="direccion">
+        </div>
+
+        <!-- Campo de Password: solo en modo creación -->
+        <div *ngIf="!modoEdicion" class="mb-3 position-relative">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-group">
+            <input [type]="mostrarPassword ? 'text' : 'password'" id="password" class="form-control" 
+                   [(ngModel)]="usuarioActual.password" name="password">
+            <button type="button" class="btn btn-outline-secondary" (click)="togglePasswordVisibility()">
+              <ion-icon [name]="mostrarPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="rol" class="form-label">Rol</label>
+          <select id="rol" class="form-select" [(ngModel)]="usuarioActual.rol" name="rol">
+            <option value="Funcionario Municipal">Funcionario Municipal</option>
+            <option value="Administrador">Administrador</option>           
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+      <button type="button" class="btn btn-primary" (click)="guardarUsuario()">
+        {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="header-container">
+  <ion-icon name="people-circle-outline"></ion-icon>
+  <h2>Gestión de cuentas</h2>
+</div>
+
+<button class="btn btn-warning btn-sm me-1" (click)="abrirModal(true)">
+  Nuevo usuario
+</button>
+
+<table id="DataTables_Table_1" datatable [dtOptions]="dtOptions" class="table table-striped table-hover table-bordered">
+  <thead class="table-dark">
+    <tr>
+      <th class="text-start">ID</th>
+      <th class="text-start">RUT</th>
+      <th class="text-start">Nombre</th>
+      <th class="text-start">Apellido</th>
+      <th class="text-start">E-Mail</th>
+      <th class="text-start">Teléfono</th>
+      <th class="text-start">Dirección</th>
+      <th class="text-start">Rol</th>
+      <th class="text-start">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Cuerpo generado automáticamente mediante AJAX -->
+  </tbody>
+</table>

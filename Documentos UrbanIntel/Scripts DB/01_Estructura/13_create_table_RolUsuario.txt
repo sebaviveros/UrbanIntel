@@ -1,7 +1,0 @@
-CREATE TABLE RolUsuario (
-    id_rol INT,
-    rut VARCHAR(12),
-    PRIMARY KEY (id_rol, rut),
-    FOREIGN KEY (id_rol) REFERENCES Rol(id_rol),
-    FOREIGN KEY (rut) REFERENCES Usuario(rut)
-);
