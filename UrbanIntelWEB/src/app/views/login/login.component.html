@@ -1,1 +1,48 @@
-<p>login works!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>login</title>
+</head>
+<body>
+  <div class="wrapper" #wrapperRef>
+    <img src="assets/img/logo.png" alt="">
+    <div class="form-wrapper login">
+      <form (ngSubmit)="loginBtn()" #loginForm="ngForm">
+        <h2>LOGIN</h2>
+
+        <div class="input-box">
+          <span class="icon"><ion-icon name="mail"></ion-icon></span>
+          <input 
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            placeholder="Correo Electrónico"
+            required>
+        </div>
+
+        <div class="input-box">
+          <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+          <input 
+            type="password"
+            name="password"
+            [(ngModel)]="password"
+            placeholder="Contraseña"
+            required>
+        </div>
+
+        <button type="submit">Iniciar Sesión</button>
+
+        <div class="forgot-pass">
+          <a href="#">Olvidó su contraseña?</a>
+        </div>
+
+        <div *ngIf="loginError" class="login-error">
+          {{ loginError }}
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

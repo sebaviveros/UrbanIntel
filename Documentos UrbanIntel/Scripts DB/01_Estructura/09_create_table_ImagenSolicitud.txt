@@ -1,0 +1,6 @@
+CREATE TABLE ImagenSolicitud (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    solicitud_id INT,
+    url_imagen TEXT,
+    FOREIGN KEY (solicitud_id) REFERENCES Solicitud(id)
+);

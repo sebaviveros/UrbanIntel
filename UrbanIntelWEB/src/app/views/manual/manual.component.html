@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>UrbanIntel-ComoSeUsa</title>
+  <link rel="stylesheet" href="./manual.component.scss">
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+          <img src="assets/imagenes/7cff6bf4-c274-4c75-be64-e9b65939ffd4-removebg-preview.png" alt="Urban Intel Logo">
+        </div>
+        <button class="menu-toggle" id="menu-toggle">&#9776;</button> <!-- este e el icono burger pa cuando la pagina se ponga modo responsiva jeje -->
+        <ul class="nav-links" id="nav-links">
+          <li><a href="landing-page">INICIO <span class="arrow">▼</span></a></li>
+          <li><a href="quienes-somos">QUIENES SOMOS <span class="arrow">▼</span></a></li>
+          <li><a href="manual">¿CÓMO SE USA? <span class="arrow">▼</span></a></li>
+        </ul>
+        <div class="spacer"></div> 
+      </nav>
+
+<div class="titulo"> <h1>MANUAL DE USO <br><span> PARA EL CIUDADANO </span></h1></div>  
+
+<div class="botonera">
+  <button 
+  class="btn-tutorial" 
+  [class.active]="selectedTutorial === 'formulario'"
+  (click)="setTutorial('formulario')">
+  Tutorial Formulario Solicitud
+</button>
+
+<button 
+  class="btn-tutorial" 
+  [class.active]="selectedTutorial === 'consulta'"
+  (click)="setTutorial('consulta')">
+  Tutorial Consulta Solicitud
+</button>
+</div>
+
+<HR>
+<div *ngIf="selectedTutorial === 'formulario'">
+  <div class="titulo"> <h1>FORMULARIO DE SOLICITUD</h1></div>  
+
+    <div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 1:<br><span class="highlight">Ingresa tu nombre y apellido.</span></h1>
+    <p>
+      Debes rellenar estos campos con tu nombre y apellido tal como aparecen en tu documento de identidad.
+    </p>
+    <div class="quote">
+      📍 Ejemplo: María González
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_1.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 2:<br><span class="highlight">Completa tu RUT.</span></h1>
+    <p>
+     Completa tu RUT tal como aparece en tu documento de identidad. Es muy importante escribirlo con el formato correcto.
+    </p>
+    <div class="quote">
+     📍 Ejemplo: 12345678-9
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_2.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 3:<br><span class="highlight">Selecciona tu región.</span></h1>
+    <p>
+      Haz clic en el menú desplegable y selecciona la región donde necesitas que se realice la reparación.
+    </p>
+    <div class="quote">
+    📍  Ejemplo: Valparaíso, Región Metropolitana, etc.
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_3.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+ <div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 4:<br><span class="highlight">Ingresa la Comuna de reparación.</span></h1>
+    <p>
+      Luego de seleccionar tu región, aparecerá un nuevo campo llamado "Comuna".
+      Haz clic en el menú desplegable y selecciona la comuna donde se encuentra el incidente a reparar.
+    </p>
+    <div class="quote">
+     📍 Ejemplo: Valparaíso, Viña del Mar, Villa Alemana, etc.
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_4.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 5:<br><span class="highlight">Ingresa la Dirección de reparación.</span></h1>
+    <p>
+      Llena este campo con la dirección de donde debe realizarse la reparación. Es importante que sea la dirección del incidente y no otra que sea cercana a él. Mientras más exacta, mejor.
+    </p>
+    <div class="quote">
+     📍 Ejemplo: Calle John Doe 123, Villa Alemana, Valparaíso.
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_5.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 6:<br><span class="highlight">Agrega tu correo electrónico.</span></h1>
+    <p>
+      Este es el medio por el cual te contactaremos para informarte el estado de tu solicitud, por lo que debes fijarte de que sea correcto antes de enviar el formulario.
+    </p>
+    <div class="quote">
+    📍  Ejemplo: maria.gonzalez&#64;email.com
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_6.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 7:<br><span class="highlight">Escribe tu número de celular.</span></h1>
+    <p>
+      Ingresa tu número de celular y asegurate de que sea válido. Sólo te llamaremos si es realmente necesario.
+    </p>
+    <div class="quote">
+     📍 Ejemplo: +56 9 12345678
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_7.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 8:<br><span class="highlight">Adjunta Imágenes.</span></h1>
+    <p>
+      Haz clicl en el botón "Adjuntar Imágenes" y selecciona los archivos desde tu dispositivo.
+      Puedes subir hasta 3 fotos para ilustrar el problema.
+    </p>
+    <div class="quote">
+     📍 TIP: Usa fotos claras y cercanas al área afectada.
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_8.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 9:<br><span class="highlight">Describe el problema.</span></h1>
+    <p>
+      Utiliza el campo de descripción para explicar de manera clara y breve qué sucede y qué necesitas.
+      Cuanta más información proporciones, más nos ayudas a tomar acción correctamente.
+    </p>
+    <div class="quote">
+     📍 Ejemplo: "Hay una bache gigante en la calle que no permite que los autos circulen con normalidad"
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_9.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 10:<br><span class="highlight">¡Listo! Presiona "Enviar Reporte"</span></h1>
+    <p>
+     Una vez finalizado todo, haz clic en el botón naranja al final del formulario. 
+     Tu solicitud será enviada y atendida a la brevedad.
+    </p>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="assets/img/Paso_10.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+</div>
+
+
+<div *ngIf="selectedTutorial === 'consulta'">
+<div class="titulo"> <h1>CONSULTA DE SOLICITUDES</h1></div>  
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 1: <br><span class="highlight">Desplegar la ventana de consultas:</span></h1>
+    <p>
+      Haga clic en el botón "Consultar Solicitud" para desplegar la ventana necesaria para realizar la misma.
+    </p>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Paso número 2:<br><span class="highlight">Ingresar los datos necesarios</span></h1>
+    <p>
+      La consulta puede ser realizada de dos formas: Ingresando su RUT o ingresando la ID de solicitud que fue enviada a su correo electrónico al momento de realizarla, no es obligatorio ingresar las dos.
+      Debe ingresar su RUT en el formato correct y la ID debe ser exactamente la que le fue enviada.
+    </p>
+    <div class="quote">
+     📍 Ejemplo: RUT -> 12345678-9 / ID -> 345
+    </div>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="paso scroll-anim">
+    <div class="left-section">
+    <h1>Indicadores de estado<br><span class="highlight">Existen 4 tipos:</span></h1>
+    <p>
+      🟢 FINALIZADA -> Esto significa que la reparación solicitada ya se realizó. <br>
+      🟡 PENDIENTE -> Esto significa que tu solicitud aún está en espera de ser aprobada. <br>
+      🟡 EN PROCESO -> Esto significa que tu solicitud fue aprobada y está en proceso de ser reparada. <br>
+      🔴 RECHAZADA -> Esto significa que tu solicitud no fue aprobada.
+    </p>
+  </div>
+  <div class="right-section">
+    <video autoplay loop muted>
+      <source src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

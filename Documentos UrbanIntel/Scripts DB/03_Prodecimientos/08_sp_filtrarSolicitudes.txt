@@ -1,0 +1,50 @@
+CREATE PROCEDURE sp_filtrarSolicitudes
+    @p_id INT = NULL,
+    @p_rut_usuario VARCHAR(12) = NULL,
+    @p_rut_ciudadano VARCHAR(12) = NULL,
+    @p_fecha_creacion DATETIME = NULL,
+    @p_fecha_aprobacion DATETIME = NULL,
+    @p_fecha_asignacion DATETIME = NULL,
+    @p_tipo_reparacion_id INT = NULL,
+    @p_tipo_prioridad_id INT = NULL,
+    @p_estado_id INT = NULL,
+    @p_comuna VARCHAR(100) = NULL
+AS
+BEGIN
+    SELECT 
+        s.id,
+        s.rut_usuario,
+        s.direccion,
+        s.comuna,
+        s.descripcion,
+        s.fecha_creacion AS fecha_creacion,
+        s.fecha_aprobacion AS fecha_aprobacion,
+        s.fecha_asignacion AS fecha_asignacion,
+        s.rut_ciudadano,
+        s.nombre_ciudadano,
+        s.apellido_ciudadano,
+        s.telefono_ciudadano,
+        s.email_ciudadano,
+        s.tipo_reparacion_id,
+        tr.nombre AS tipo_reparacion_nombre,
+        s.prioridad_id,
+        p.nombre AS prioridad_nombre,
+        s.estado_id,
+        e.nombre AS estado
+    FROM Solicitud s
+    LEFT JOIN TipoReparacion tr ON s.tipo_reparacion_id = tr.id
+    LEFT JOIN Prioridad p ON s.prioridad_id = p.id
+    LEFT JOIN EstadoSolicitud e ON s.estado_id = e.id
+    WHERE
+        (@p_id IS NULL OR s.id = @p_id) AND
+        (@p_rut_usuario IS NULL OR s.rut_usuario = @p_rut_usuario) AND
+        (@p_rut_ciudadano IS NULL OR s.rut_ciudadano = @p_rut_ciudadano) AND
+        (@p_fecha_creacion IS NULL OR CAST(s.fecha_creacion AS DATE) = CAST(@p_fecha_creacion AS DATE)) AND
+        (@p_fecha_aprobacion IS NULL OR CAST(s.fecha_aprobacion AS DATE) = CAST(@p_fecha_aprobacion AS DATE)) AND
+        (@p_fecha_asignacion IS NULL OR CAST(s.fecha_asignacion AS DATE) = CAST(@p_fecha_asignacion AS DATE)) AND
+        (@p_tipo_reparacion_id IS NULL OR s.tipo_reparacion_id = @p_tipo_reparacion_id) AND
+        (@p_tipo_prioridad_id IS NULL OR s.prioridad_id = @p_tipo_prioridad_id) AND
+        (@p_estado_id IS NULL OR s.estado_id = @p_estado_id) AND
+        (@p_comuna IS NULL OR s.comuna = @p_comuna)
+    ORDER BY s.fecha_creacion DESC
+END

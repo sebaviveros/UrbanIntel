@@ -1,10 +1,5 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-<<<<<<< Updated upstream
-import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
-import { LoginComponent } from './views/login/login.component';
-=======
 
 //  Importación del módulo para formularios
 import { FormsModule } from '@angular/forms';
@@ -13,9 +8,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { ReactiveFormsModule } from '@angular/forms';
-
-import { NgbAccordionModule, NgbCarouselModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
-
 
 
 import { AppComponent } from './app.component';
@@ -29,33 +21,32 @@ import { ManualComponent } from './views/manual/manual.component';
 
 import { DataTablesModule } from "angular-datatables";
 import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
-import { SolicitudesComponent } from './views/solicitudes/solicitudes.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap'; // datatables de angular
->>>>>>> Stashed changes
+import { SolicitudesComponent } from './views/solicitudes/solicitudes.component'; // datatables de angular
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    HomeComponent,
+    LayoutComponent,
+    LandingPageComponent,
+    QuienesSomosComponent,
+    ManualComponent,
+    GestionCuentasComponent,
+    SolicitudesComponent 
     // Agregarás más componentes aquí luego
   ],
   imports: [
     BrowserModule,
-<<<<<<< Updated upstream
-    AppRoutingModule
-=======
     DataTablesModule,  
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,       // formulario
-    HttpClientModule, NgbModule, 
+    HttpClientModule, 
        // Api Rest 
-     NgbAccordionModule,
-    NgbCarouselModule,
-    NgbPaginationModule
->>>>>>> Stashed changes
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Agregago de ion-icons para que sea reconocido por Angular
 })
 export class AppModule { }

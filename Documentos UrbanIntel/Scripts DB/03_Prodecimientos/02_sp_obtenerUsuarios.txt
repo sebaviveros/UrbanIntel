@@ -1,0 +1,26 @@
+CREATE PROCEDURE sp_obtenerUsuarios
+    @p_rut VARCHAR(20)
+AS
+BEGIN
+    IF @p_rut IS NULL OR LTRIM(RTRIM(@p_rut)) = ''
+    BEGIN
+        SELECT u.Id, u.Rut, u.Nombre, u.Apellido, u.Email, u.Telefono, u.Direccion, r.nombre AS Rol
+        FROM Usuario u
+        LEFT JOIN RolUsuario ru ON u.Rut = ru.rut
+        LEFT JOIN Rol r ON ru.id_rol = r.id_rol;
+    END
+    ELSE
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM Usuario WHERE Rut = @p_rut)
+        BEGIN
+            RAISERROR('Usuario no encontrado.', 16, 50006);
+            RETURN;
+        END
+
+        SELECT u.Id, u.Rut, u.Nombre, u.Apellido, u.Email, u.Telefono, u.Direccion, r.nombre AS Rol
+        FROM Usuario u
+        LEFT JOIN RolUsuario ru ON u.Rut = ru.rut
+        LEFT JOIN Rol r ON ru.id_rol = r.id_rol
+        WHERE u.Rut = @p_rut;
+    END
+END;

@@ -1,0 +1,24 @@
+CREATE PROCEDURE sp_eliminarUsuario
+    @p_rut VARCHAR(12)
+AS
+BEGIN
+    -- Verificar si el usuario existe
+    IF NOT EXISTS (SELECT 1 FROM Usuario WHERE Rut = @p_rut)
+    BEGIN
+        RAISERROR('El usuario con el RUT proporcionado no existe.', 16, 50004);
+        RETURN;
+    END
+
+    BEGIN TRY
+        -- Eliminar el rol del usuario
+        DELETE FROM RolUsuario WHERE Rut = @p_rut;
+
+        -- Eliminar el usuario
+        DELETE FROM Usuario WHERE Rut = @p_rut;
+    END TRY
+    BEGIN CATCH
+        -- Manejo de errores durante la eliminación
+        RAISERROR('Error al eliminar el usuario.', 16, 50005);
+    END CATCH
+END;
+
