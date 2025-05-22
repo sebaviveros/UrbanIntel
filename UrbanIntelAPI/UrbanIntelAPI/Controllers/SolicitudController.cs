@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UrbanIntelDATA.Services;
 using UrbanIntelDATA.Models;
+using UrbanIntelDATA.Dto;
 
 namespace UrbanIntelAPI.Controllers
 {
@@ -42,6 +43,59 @@ namespace UrbanIntelAPI.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = $"Error al obtener solicitudes: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("filtrar")]
+        public async Task<IActionResult> ObtenerSolicitudPorFiltro(
+            [FromQuery] int? id,
+            [FromQuery] string? rutUsuario,
+            [FromQuery] string? rutCiudadano,
+            [FromQuery] DateTime? fechaCreacion,
+            [FromQuery] DateTime? fechaAprobacion,
+            [FromQuery] DateTime? fechaAsignacion,
+            [FromQuery] int? tipoReparacionId,
+            [FromQuery] int? prioridadId,
+            [FromQuery] int? estadoId,
+            [FromQuery] string? comuna
+)
+        {
+            try
+            {
+                var filtros = new SolicitudFiltroDto
+                {
+                    Id = id,
+                    RutUsuario = rutUsuario,
+                    RutCiudadano = rutCiudadano,
+                    FechaCreacion = fechaCreacion,
+                    FechaAprobacion = fechaAprobacion,
+                    FechaAsignacion = fechaAsignacion,
+                    TipoReparacionId = tipoReparacionId,
+                    PrioridadId = prioridadId,
+                    EstadoId = estadoId,
+                    Comuna = comuna
+                };
+
+                var resultado = await _solicitudService.ObtenerSolicitudesPorFiltroAsync(filtros);
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al filtrar solicitudes: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("{solicitudId}/imagenes")]
+        public async Task<IActionResult> ObtenerImagenesPorSolicitud(int solicitudId)
+        {
+            try
+            {
+                var imagenes = await _solicitudService.ObtenerImagenesPorSolicitudIdAsync(solicitudId);
+                return Ok(imagenes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al obtener imágenes: {ex.Message}" });
             }
         }
     }

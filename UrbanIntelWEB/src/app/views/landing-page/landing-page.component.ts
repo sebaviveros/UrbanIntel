@@ -255,4 +255,22 @@ export class LandingPageComponent implements AfterViewInit {
     const modal = new bootstrap.Modal(document.getElementById('modalEvidencia')!);
     modal.show();
   }
+
+  getEstadoClass(estado: string | null): string {
+  if (!estado) return 'estado-na';
+
+  switch (estado.toLowerCase()) {
+    case 'finalizada':
+      return 'estado-finalizada';
+    case 'pendiente':
+      return 'estado-pendiente';
+    case 'en proceso':
+      return 'estado-en-proceso';
+    case 'rechazada':
+      return 'estado-rechazada';
+    default:
+      return 'estado-na';
+  }
+}
+
 }

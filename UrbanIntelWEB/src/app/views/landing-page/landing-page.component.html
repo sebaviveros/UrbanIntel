@@ -254,7 +254,11 @@
           <button class="btn btn-sm btn-tabla" (click)="abrirModalEvidencia(solicitud.imagenes)">Ver evidencia</button>
         </td>
 
-        <td>{{ solicitud.estadoNombre || 'N/A' }}</td>
+        <td>
+          <button class="btn btn-sm estado-btn" [ngClass]="getEstadoClass(solicitud.estadoNombre)">
+            {{ solicitud.estadoNombre || 'N/A' }}
+          </button>
+        </td>
         <td>{{ solicitud.fechaCreacion ? (solicitud.fechaCreacion | date:'short') : 'N/A' }}</td>
         <td>{{ solicitud.fechaAprobacion ? (solicitud.fechaAprobacion | date:'short') : 'N/A' }}</td>
         <td>{{ solicitud.fechaAsignacion ? (solicitud.fechaAsignacion | date:'short') : 'N/A' }}</td>
