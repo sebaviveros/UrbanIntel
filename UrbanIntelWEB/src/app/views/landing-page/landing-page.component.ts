@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild, OnInit,ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitudService/solicitud.service';
 import { ComunaService } from '../../services/comunaService/comuna.service';
@@ -19,7 +19,6 @@ export class LandingPageComponent implements AfterViewInit {
 
   @ViewChild('seccionFormulario', { static: false }) seccionFormulario!: ElementRef;
   @ViewChild('direccionInput', { static: false }) direccionInput!: ElementRef;
-
   // Formulario reactivo
   solicitudForm: FormGroup;
   activeTab: 'solicitudes' | 'consulta' = 'solicitudes';
@@ -48,7 +47,8 @@ export class LandingPageComponent implements AfterViewInit {
     private fb: FormBuilder,
     private solicitudService: SolicitudService,
     private comunaService: ComunaService,
-    private googleMapsService: GoogleMapsPlatformService
+    private googleMapsService: GoogleMapsPlatformService,
+    private cdRef: ChangeDetectorRef
   ) {
 
     // Inicialización del formulario reactivo
@@ -122,6 +122,7 @@ export class LandingPageComponent implements AfterViewInit {
   scrollToFormulario(): void {
     this.seccionFormulario.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
+
 
   // Cambio de pestaña (Realizar Solicitud / Consultar Solicitud)
   setActiveTab(tab: 'solicitudes' | 'consulta') {
@@ -242,6 +243,11 @@ export class LandingPageComponent implements AfterViewInit {
       Swal.fire('Error', 'Hubo un problema al consultar las solicitudes.', 'error');
     }
   });
+    this.cdRef.detectChanges();
+
+   setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 100);
 }
 
   abrirModalDescripcion(desc: string): void {
