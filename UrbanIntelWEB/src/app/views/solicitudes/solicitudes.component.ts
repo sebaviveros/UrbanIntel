@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SolicitudService } from '../../services/solicitudService/solicitud.service';
-
+//borrar esto dsps 
 interface Solicitud {
   id: number;
   direccion: string;
