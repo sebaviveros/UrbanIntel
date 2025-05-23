@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, ViewChild, OnInit,ChangeDetectorRef } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitudService/solicitud.service';
 import { ComunaService } from '../../services/comunaService/comuna.service';
@@ -7,7 +7,6 @@ import Swal from 'sweetalert2';
 import { of, forkJoin } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
-
 declare var bootstrap: any;
 
 @Component({
@@ -15,33 +14,29 @@ declare var bootstrap: any;
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.scss']
 })
-export class LandingPageComponent implements AfterViewInit {
+export class LandingPageComponent implements AfterViewInit, OnInit {
 
+  // ViewChild y estado general del componente
   @ViewChild('seccionFormulario', { static: false }) seccionFormulario!: ElementRef;
   @ViewChild('direccionInput', { static: false }) direccionInput!: ElementRef;
-  // Formulario reactivo
+
   solicitudForm: FormGroup;
   activeTab: 'solicitudes' | 'consulta' = 'solicitudes';
 
-  // Manejo de múltiples imágenes (máximo 3)
   selectedFiles: File[] = [];
   fileLimitExceeded: boolean = false;
 
-   // Regiones y Comunas
   regiones: any[] = [];
   comunas: string[] = [];
   regionSeleccionada: string = '';
   comunaSeleccionada: string = '';
-  
-  // Inputs de consulta ciudadana
+
   rutConsulta: string = "";
   idConsulta: string = "";
   resultados: any[] = [];
 
-  // datos botones tabla consulta
   descripcionSeleccionada: string = '';
   imagenesSeleccionadas: string[] = [];
-
 
   constructor(
     private fb: FormBuilder,
@@ -50,8 +45,7 @@ export class LandingPageComponent implements AfterViewInit {
     private googleMapsService: GoogleMapsPlatformService,
     private cdRef: ChangeDetectorRef
   ) {
-
-    // Inicialización del formulario reactivo
+    // Inicialización del formulario
     this.solicitudForm = this.fb.group({
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
@@ -65,30 +59,41 @@ export class LandingPageComponent implements AfterViewInit {
     });
   }
 
+  // Inicialización del componente
   ngOnInit(): void {
     this.comunaService.obtenerComunas().subscribe({
-      next: (data) => {
-        this.regiones = data;
-      },
-      error: (err) => {
-        console.error('Error al cargar comunas:', err); // Mostrar error si falla
+      next: (data) => { this.regiones = data; },
+      error: () => { Swal.fire('Error', 'Error al cargar comunas.', 'error'); }
+    });
+
+    this.solicitudForm.get('rut')?.valueChanges.subscribe(val => {
+      const clean = val.replace(/\./g, '').replace(/[^0-9kK]/g, '');
+      if (clean.length > 1) {
+        const formatted = this.formatRut(clean);
+        this.solicitudForm.get('rut')?.setValue(formatted, { emitEvent: false });
+      }
+    });
+
+    this.solicitudForm.get('celular')?.valueChanges.subscribe(val => {
+      if (val && /[^0-9]/.test(val)) {
+        this.solicitudForm.get('celular')?.setValue(val.replace(/\D/g, ''), { emitEvent: false });
       }
     });
   }
 
-   onRegionChange(): void {
-    const region = this.solicitudForm.get('region')?.value;
-    const regionEncontrada = this.regiones.find((r: any) => r.region === region);
-    this.comunas = regionEncontrada ? regionEncontrada.comunas : [];
-    this.solicitudForm.get('comuna')?.setValue('');
+  public onRutConsultaChange(value: string): void {
+    const clean = value.replace(/\./g, '').replace(/[^0-9kK]/g, '');
+    if (clean.length > 1) {
+      this.rutConsulta = this.formatRut(clean);
+    } else {
+      this.rutConsulta = value;
+    }
   }
 
-
-    //Configuración del menú de navegación (Modo Responsive)
-    ngAfterViewInit(): void {
+  // Configuración de Google Autocomplete y menú
+  ngAfterViewInit(): void {
     const menuToggle = document.getElementById('menu-toggle');
     const navLinks = document.getElementById('nav-links');
-
     if (menuToggle && navLinks) {
       menuToggle.addEventListener('click', () => {
         navLinks.classList.toggle('active');
@@ -100,6 +105,176 @@ export class LandingPageComponent implements AfterViewInit {
     }).catch((err) => {
       console.error('Error al cargar Google Maps:', err);
     });
+  }
+
+  // Crear solicitudes ciudadanas
+  enviarSolicitud(): void {
+    const formValues = this.solicitudForm.value;
+
+    if (this.selectedFiles.length === 0) {
+      Swal.fire('Error', 'Debe adjuntar al menos una imagen.', 'warning');
+      return;
+    }
+
+    const rutUsuario = formValues.rut;
+    if (!this.isValidRut(rutUsuario)) {
+      Swal.fire('Error', 'El RUT ingresado no es válido.', 'warning');
+      return;
+    }
+
+    if (this.solicitudForm.valid) {
+      const formData = new FormData();
+      formData.append('NombreCiudadano', formValues.nombre);
+      formData.append('ApellidoCiudadano', formValues.apellido);
+      formData.append('RutCiudadano', this.normalizeRutForBackend(rutUsuario));
+      formData.append('Comuna', formValues.comuna);
+      formData.append('Direccion', formValues.direccion);
+      formData.append('EmailCiudadano', formValues.correo);
+      formData.append('TelefonoCiudadano', formValues.celular);
+      formData.append('Descripcion', formValues.descripcion);
+
+      this.selectedFiles.forEach((file) => {
+        formData.append('imagenes', file);
+      });
+
+      this.solicitudService.crearSolicitud(formData).subscribe(
+        () => {
+          Swal.fire('Éxito', 'Solicitud enviada correctamente.', 'success');
+          this.solicitudForm.reset();
+          this.selectedFiles = [];
+        },
+        () => { Swal.fire('Error', 'Hubo un problema al enviar la solicitud.', 'error'); }
+      );
+    } else {
+      Swal.fire('Error', 'Por favor complete todos los campos correctamente.', 'warning');
+    }
+  }
+
+  // Obtener solicitudes ciudadanas
+  buscarSolicitud(): void {
+  const rut = this.rutConsulta.trim();
+  const id = this.idConsulta.trim();
+
+  // Validar campos vacíos
+  if (!rut && !id) {
+    Swal.fire('Error', 'Ingrese al menos el RUT o el ID de la solicitud.', 'warning');
+    return;
+  }
+
+  // Validar RUT si fue ingresado
+  if (rut && !this.isValidRut(rut)) {
+    Swal.fire('Error', 'El RUT ingresado no es válido.', 'warning');
+    return;
+  }
+
+  const filtros: any = {};
+  if (id) filtros.id = id;
+  if (rut) filtros.rutCiudadano = this.normalizeRutForBackend(rut); // lo envías sin puntos
+
+  this.solicitudService.obtenerSolicitudPorFiltro(filtros).subscribe({
+    next: (solicitudes) => {
+      if (!solicitudes || solicitudes.length === 0) {
+        Swal.fire('Sin resultados', 'No se encontraron solicitudes con los datos ingresados.', 'info');
+        this.resultados = [];
+        return;
+      }
+
+      const solicitudesConImagenes = solicitudes.map((solicitud: any) => {
+        return this.solicitudService.obtenerImagenesPorSolicitud(solicitud.id).pipe(
+          map(imagenes => {
+            solicitud.imagenes = imagenes;
+            return solicitud;
+          }),
+          catchError(() => {
+            solicitud.imagenes = [];
+            return of(solicitud);
+          })
+        );
+      });
+
+      forkJoin(solicitudesConImagenes).subscribe({
+        next: (solicitudesFinales) => {
+          this.resultados = solicitudesFinales;
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudieron cargar las imágenes de algunas solicitudes.', 'warning');
+          this.resultados = solicitudes;
+        }
+      });
+    },
+    error: () => {
+      Swal.fire('Error', 'Hubo un problema al consultar las solicitudes.', 'error');
+    }
+  });
+
+  this.cdRef.detectChanges();
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 100);
+  }
+
+
+  // Eventos del formulario
+  onRegionChange(): void {
+    const region = this.solicitudForm.get('region')?.value;
+    const regionEncontrada = this.regiones.find((r: any) => r.region === region);
+    this.comunas = regionEncontrada ? regionEncontrada.comunas : [];
+    this.solicitudForm.get('comuna')?.setValue('');
+  }
+
+  onFilesSelected(event: any): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      const filesArray = Array.from(input.files);
+      if (this.selectedFiles.length + filesArray.length > 3) {
+        this.fileLimitExceeded = true;
+        return;
+      }
+      this.fileLimitExceeded = false;
+      this.selectedFiles = [...this.selectedFiles, ...filesArray].slice(0, 3);
+    }
+  }
+
+  removeFile(index: number): void {
+    this.selectedFiles.splice(index, 1);
+  }
+
+  // Utilidades
+  formatRut(rut: string): string {
+    rut = rut.replace(/\./g, '').replace('-', '').toLowerCase();
+    if (!rut || rut.length < 2) return rut;
+    const body = rut.slice(0, -1);
+    const dv = rut.slice(-1);
+    let formatted = '';
+    let i = 0;
+    for (let j = body.length - 1; j >= 0; j--) {
+      formatted = body[j] + formatted;
+      i++;
+      if (i % 3 === 0 && j !== 0) {
+        formatted = '.' + formatted;
+      }
+    }
+    return `${formatted}-${dv}`;
+  }
+
+  isValidRut(rut: string): boolean {
+    rut = rut.replace(/\./g, '').replace('-', '').toLowerCase();
+    if (!rut || rut.length < 2) return false;
+    const body = rut.slice(0, -1);
+    const dv = rut.slice(-1);
+    let suma = 0;
+    let multiplo = 2;
+    for (let i = body.length - 1; i >= 0; i--) {
+      suma += parseInt(body[i]) * multiplo;
+      multiplo = multiplo === 7 ? 2 : multiplo + 1;
+    }
+    const dvEsperado = 11 - (suma % 11);
+    const dvReal = dv === 'k' ? 10 : dv === '0' ? 11 : parseInt(dv);
+    return dvEsperado === dvReal;
+  }
+
+  normalizeRutForBackend(rut: string): string {
+    return rut.replace(/\./g, '').toLowerCase();
   }
 
   initializeGoogleAutocomplete(): void {
@@ -118,137 +293,13 @@ export class LandingPageComponent implements AfterViewInit {
     }
   }
 
-  // Scroll suave al formulario
   scrollToFormulario(): void {
     this.seccionFormulario.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
-
-  // Cambio de pestaña (Realizar Solicitud / Consultar Solicitud)
   setActiveTab(tab: 'solicitudes' | 'consulta') {
     this.activeTab = tab;
   }
-
-  // Selección de archivos de imagen
-  onFilesSelected(event: any): void {
-    const input = event.target as HTMLInputElement;
-
-    if (input.files) {
-      const filesArray = Array.from(input.files);
-
-      // Verificar si el número total de archivos supera el límite
-      if (this.selectedFiles.length + filesArray.length > 3) {
-        this.fileLimitExceeded = true;
-        return;
-      }
-
-      this.fileLimitExceeded = false;
-      this.selectedFiles = [...this.selectedFiles, ...filesArray].slice(0, 3);
-    }
-  }
-
-  // Eliminar una imagen de la lista
-  removeFile(index: number): void {
-    this.selectedFiles.splice(index, 1);
-  }
-
-  // Enviar el formulario al backend
-  enviarSolicitud(): void {
-    if (this.solicitudForm.valid) {
-        const formValues = this.solicitudForm.value;
-        const formData = new FormData();
-
-        // Añadir solo los campos requeridos por el backend
-        formData.append('NombreCiudadano', formValues.nombre);
-        formData.append('ApellidoCiudadano', formValues.apellido);
-        formData.append('RutCiudadano', formValues.rut);
-        formData.append('Comuna', formValues.comuna);
-        formData.append('Direccion', formValues.direccion);
-        formData.append('EmailCiudadano', formValues.correo);
-        formData.append('TelefonoCiudadano', formValues.celular);
-        formData.append('Descripcion', formValues.descripcion);
-
-        // Adjuntar las imágenes con el nombre adecuado
-        this.selectedFiles.forEach((file) => {
-            formData.append('imagenes', file);
-        });
-
-        this.solicitudService.crearSolicitud(formData).subscribe(
-            response => {
-                alert('Solicitud enviada correctamente');
-                this.solicitudForm.reset();
-                this.selectedFiles = [];
-            },
-            error => {
-                alert('Hubo un problema al enviar la solicitud');
-            }
-        );
-    } else {
-        alert('Por favor, complete todos los campos correctamente.');
-    }
-  }
-
-  buscarSolicitud(): void {
-  const rut = this.rutConsulta.trim();
-  const id = this.idConsulta.trim();
-
-  if (!rut && !id) {
-    Swal.fire('Error', 'Ingrese al menos el RUT o el ID de la solicitud.', 'warning');
-    return;
-  }
-
-  // Construcción dinámica de filtros
-  const filtros: any = {};
-  if (id) filtros.id = id;
-  if (rut) filtros.rutCiudadano = rut;
-
-  // Llamada al servicio
-  this.solicitudService.obtenerSolicitudPorFiltro(filtros).subscribe({
-    next: (solicitudes) => {
-      if (!solicitudes || solicitudes.length === 0) {
-        Swal.fire('Sin resultados', 'No se encontraron solicitudes con los datos ingresados.', 'info');
-        this.resultados = [];
-        return;
-      }
-
-      // Cargar imágenes para cada solicitud (cuando tengas implementado el endpoint)
-      const solicitudesConImagenes = solicitudes.map((solicitud: any) => {
-        return this.solicitudService.obtenerImagenesPorSolicitud(solicitud.id).pipe(
-          // Asignamos las imágenes al objeto solicitud
-          // Si falla, le asignamos un arreglo vacío
-          // Esto requiere que uses RxJS (forkJoin si quisieras paralelizar todos, opcional)
-          map(imagenes => {
-            solicitud.imagenes = imagenes;
-            return solicitud;
-          }),
-          catchError(() => {
-            solicitud.imagenes = [];
-            return of(solicitud);
-          })
-        );
-      });
-
-      // Esperar a que todas las solicitudes terminen de cargar sus imágenes
-      forkJoin(solicitudesConImagenes).subscribe({
-        next: (solicitudesFinales) => {
-          this.resultados = solicitudesFinales;
-        },
-        error: () => {
-          Swal.fire('Error', 'No se pudieron cargar las imágenes de algunas solicitudes.', 'warning');
-          this.resultados = solicitudes; // Muestra los datos sin imágenes
-        }
-      });
-    },
-    error: () => {
-      Swal.fire('Error', 'Hubo un problema al consultar las solicitudes.', 'error');
-    }
-  });
-    this.cdRef.detectChanges();
-
-   setTimeout(() => {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }, 100);
-}
 
   abrirModalDescripcion(desc: string): void {
     this.descripcionSeleccionada = desc;
@@ -263,20 +314,14 @@ export class LandingPageComponent implements AfterViewInit {
   }
 
   getEstadoClass(estado: string | null): string {
-  if (!estado) return 'estado-na';
-
-  switch (estado.toLowerCase()) {
-    case 'finalizada':
-      return 'estado-finalizada';
-    case 'pendiente':
-      return 'estado-pendiente';
-    case 'en proceso':
-      return 'estado-en-proceso';
-    case 'rechazada':
-      return 'estado-rechazada';
-    default:
-      return 'estado-na';
+    if (!estado) return 'estado-na';
+    switch (estado.toLowerCase()) {
+      case 'finalizada': return 'estado-finalizada';
+      case 'pendiente': return 'estado-pendiente';
+      case 'en proceso': return 'estado-en-proceso';
+      case 'rechazada': return 'estado-rechazada';
+      default: return 'estado-na';
+    }
   }
-}
 
 }

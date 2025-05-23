@@ -9,42 +9,33 @@
       <form>
         <div class="mb-3">
           <label for="rut" class="form-label">RUT</label>
-          <input type="text" id="rut" class="form-control" 
-                 [(ngModel)]="usuarioActual.rut" 
-                 [readonly]="modoEdicion" name="rut">
+          <input type="text" id="rut" class="form-control" [(ngModel)]="usuarioActual.rut" [readonly]="modoEdicion" name="rut">
         </div>
         <div class="mb-3">
           <label for="nombre" class="form-label">Nombre</label>
-          <input type="text" id="nombre" class="form-control" 
-                 [(ngModel)]="usuarioActual.nombre" name="nombre">
+          <input type="text" id="nombre" class="form-control" [(ngModel)]="usuarioActual.nombre" name="nombre">
         </div>
         <div class="mb-3">
           <label for="apellido" class="form-label">Apellido</label>
-          <input type="text" id="apellido" class="form-control" 
-                 [(ngModel)]="usuarioActual.apellido" name="apellido">
+          <input type="text" id="apellido" class="form-control" [(ngModel)]="usuarioActual.apellido" name="apellido">
         </div>
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
-          <input type="email" id="email" class="form-control" 
-                 [(ngModel)]="usuarioActual.email" name="email">
+          <input type="email" id="email" class="form-control" [(ngModel)]="usuarioActual.email" name="email">
         </div>
         <div class="mb-3">
           <label for="telefono" class="form-label">Teléfono</label>
-          <input type="text" id="telefono" class="form-control" 
-                 [(ngModel)]="usuarioActual.telefono" name="telefono">
+          <input type="text" id="telefono" class="form-control" [(ngModel)]="usuarioActual.telefono" name="telefono">
         </div>
         <div class="mb-3">
           <label for="direccion" class="form-label">Dirección</label>
-          <input type="text" id="direccion" class="form-control" 
-                 [(ngModel)]="usuarioActual.direccion" name="direccion">
+          <input type="text" id="direccion" class="form-control" [(ngModel)]="usuarioActual.direccion" name="direccion">
         </div>
 
-        <!-- Campo de Password: solo en modo creación -->
         <div *ngIf="!modoEdicion" class="mb-3 position-relative">
           <label for="password" class="form-label">Password</label>
           <div class="input-group">
-            <input [type]="mostrarPassword ? 'text' : 'password'" id="password" class="form-control" 
-                   [(ngModel)]="usuarioActual.password" name="password">
+            <input [type]="mostrarPassword ? 'text' : 'password'" id="password" class="form-control" [(ngModel)]="usuarioActual.password" name="password">
             <button type="button" class="btn btn-outline-secondary" (click)="togglePasswordVisibility()">
               <ion-icon [name]="mostrarPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
             </button>
@@ -55,7 +46,7 @@
           <label for="rol" class="form-label">Rol</label>
           <select id="rol" class="form-select" [(ngModel)]="usuarioActual.rol" name="rol">
             <option value="Funcionario Municipal">Funcionario Municipal</option>
-            <option value="Administrador">Administrador</option>           
+            <option value="Administrador">Administrador</option>
           </select>
         </div>
       </form>
@@ -69,15 +60,19 @@
   </div>
 </div>
 
-<div class="header-container">
+<!-- Header + Botón -->
+<div class="header-container mb-4 mt-3">
   <ion-icon name="people-circle-outline"></ion-icon>
   <h2>Gestión de cuentas</h2>
 </div>
 
-<button class="btn btn-warning btn-sm me-1" (click)="abrirModal(true)">
-  Nuevo usuario
-</button>
+<div class="datatable-toolbar mb-3 d-flex justify-content-between align-items-center">
+  <button class="btn btn-cafe-claro d-flex align-items-center gap-2" (click)="abrirModal(true)">
+    <i class="bi bi-plus-circle"></i> Nuevo usuario
+  </button>
+</div>
 
+<!-- Tabla DataTable -->
 <table id="DataTables_Table_1" datatable [dtOptions]="dtOptions" class="table table-striped table-hover table-bordered">
   <thead class="table-dark">
     <tr>
