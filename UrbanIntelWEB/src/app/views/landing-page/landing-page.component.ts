@@ -122,33 +122,43 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
       return;
     }
 
-    if (this.solicitudForm.valid) {
-      const formData = new FormData();
-      formData.append('NombreCiudadano', formValues.nombre);
-      formData.append('ApellidoCiudadano', formValues.apellido);
-      formData.append('RutCiudadano', this.normalizeRutForBackend(rutUsuario));
-      formData.append('Comuna', formValues.comuna);
-      formData.append('Direccion', formValues.direccion);
-      formData.append('EmailCiudadano', formValues.correo);
-      formData.append('TelefonoCiudadano', formValues.celular);
-      formData.append('Descripcion', formValues.descripcion);
-
-      this.selectedFiles.forEach((file) => {
-        formData.append('imagenes', file);
-      });
-
-      this.solicitudService.crearSolicitud(formData).subscribe(
-        () => {
-          Swal.fire('Éxito', 'Solicitud enviada correctamente.', 'success');
-          this.solicitudForm.reset();
-          this.selectedFiles = [];
-        },
-        () => { Swal.fire('Error', 'Hubo un problema al enviar la solicitud.', 'error'); }
-      );
-    } else {
-      Swal.fire('Error', 'Por favor complete todos los campos correctamente.', 'warning');
+    // Validacion de campos vacios
+    if (!this.solicitudForm.valid) {
+      const controls = this.solicitudForm.controls;
+      for (const name in controls) {
+        if (controls[name].invalid) {
+          const label = this.getFieldLabel(name);
+          Swal.fire('Atención', `Debes llenar el campo "${label}" del formulario.`, 'warning');
+          return;
+        }
+      }
     }
+
+  
+    const formData = new FormData();
+    formData.append('NombreCiudadano', formValues.nombre);
+    formData.append('ApellidoCiudadano', formValues.apellido);
+    formData.append('RutCiudadano', this.normalizeRutForBackend(rutUsuario));
+    formData.append('Comuna', formValues.comuna);
+    formData.append('Direccion', formValues.direccion);
+    formData.append('EmailCiudadano', formValues.correo);
+    formData.append('TelefonoCiudadano', formValues.celular);
+    formData.append('Descripcion', formValues.descripcion);
+
+    this.selectedFiles.forEach((file) => {
+      formData.append('imagenes', file);
+    });
+
+    this.solicitudService.crearSolicitud(formData).subscribe(
+      () => {
+        Swal.fire('Éxito', 'Solicitud enviada correctamente.', 'success');
+        this.solicitudForm.reset();
+        this.selectedFiles = [];
+      },
+      () => { Swal.fire('Error', 'Hubo un problema al enviar la solicitud.', 'error'); }
+    );
   }
+
 
   // Obtener solicitudes ciudadanas
   buscarSolicitud(): void {
@@ -213,6 +223,22 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
     }, 100);
   }
 
+  getFieldLabel(fieldName: string): string {
+  const labels: { [key: string]: string } = {
+    nombre: 'Nombre',
+    apellido: 'Apellido',
+    rut: 'RUT',
+    region: 'Región',
+    comuna: 'Comuna',
+    direccion: 'Dirección',
+    correo: 'Correo Electrónico',
+    celular: 'Celular',
+    descripcion: 'Descripción'
+  };
+  return labels[fieldName] || fieldName;
+}
+
+
 
   // Eventos del formulario
   onRegionChange(): void {
@@ -223,17 +249,27 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
   }
 
   onFilesSelected(event: any): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files) {
-      const filesArray = Array.from(input.files);
-      if (this.selectedFiles.length + filesArray.length > 3) {
-        this.fileLimitExceeded = true;
-        return;
-      }
-      this.fileLimitExceeded = false;
-      this.selectedFiles = [...this.selectedFiles, ...filesArray].slice(0, 3);
+  const input = event.target as HTMLInputElement;
+  if (input.files) {
+    const filesArray = Array.from(input.files);
+    const validExtensions = ['image/png', 'image/jpeg'];
+
+    const invalidFiles = filesArray.filter(file => !validExtensions.includes(file.type));
+    if (invalidFiles.length > 0) {
+      Swal.fire('Error', 'Solo se permiten archivos JPG o PNG.', 'warning');
+      return;
     }
+
+    if (this.selectedFiles.length + filesArray.length > 3) {
+      this.fileLimitExceeded = true;
+      return;
+    }
+
+    this.fileLimitExceeded = false;
+    this.selectedFiles = [...this.selectedFiles, ...filesArray].slice(0, 3);
   }
+}
+
 
   removeFile(index: number): void {
     this.selectedFiles.splice(index, 1);
