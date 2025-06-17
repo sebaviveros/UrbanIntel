@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
 </head>
 <body>
   <div class="wrapper" #wrapperRef>
-    <img src="assets/img/logo.png" alt="">
+    <img src="assets/img/logo.png" alt="Logo" />
     <div class="form-wrapper login">
       <form (ngSubmit)="loginBtn()" #loginForm="ngForm">
         <h2>LOGIN</h2>
@@ -19,7 +19,7 @@
             name="email"
             [(ngModel)]="email"
             placeholder="Correo Electrónico"
-            required>
+            required />
         </div>
 
         <div class="input-box">
@@ -29,20 +29,77 @@
             name="password"
             [(ngModel)]="password"
             placeholder="Contraseña"
-            required>
+            required />
         </div>
 
-        <button type="submit">Iniciar Sesión</button>
+        <button type="submit" class="btn-login">Iniciar Sesión</button>
 
-        <div class="forgot-pass">
-          <a href="#">Olvidó su contraseña?</a>
+        <div class="forgot-pass text-center">
+          <a href="javascript:void(0)" (click)="abrirModalRecuperar()">¿Has olvidado la contraseña?</a>
+        </div>
+        <div class="change-pass text-center">
+          <a href="javascript:void(0)" (click)="abrirModalCambiar()">Cambiar contraseña</a>
         </div>
 
-        <div *ngIf="loginError" class="login-error">
+        <div *ngIf="loginError" class="login-error text-center mt-2">
           {{ loginError }}
         </div>
       </form>
     </div>
   </div>
+
+  <!-- Modal Recuperar Contraseña -->
+<ng-container *ngIf="mostrarModalRecuperar">
+  <div class="custom-modal-wrapper">
+    <div class="modal-dialog modal-dialog-centered custom-modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Recupera tu contraseña</h5>
+          <button type="button" class="btn-close" (click)="cerrarModalRecuperar()"></button>
+        </div>
+        <div class="modal-body">
+          <label class="label-email">Introduce tu correo electrónico para buscar tu cuenta.</label>
+          <input type="email" class="form-control mt-2"id="emailRecuperacion" [(ngModel)]="correoRecuperacion" name="emailRecuperacion" 
+          placeholder="Correo electrónico válido" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancelar" (click)="cerrarModalRecuperar()">Cancelar</button> 
+          <button class="btn-aceptar" (click)="enviarRecuperacion()">Aceptar</button>             
+        </div>
+      </div>
+    </div>
+    <div class="custom-modal-backdrop"></div>
+  </div>
+</ng-container>
+
+
+  <!-- Modal Cambiar Contraseña -->
+  <ng-container *ngIf="mostrarModalCambiar">
+  <div class="custom-modal-wrapper">
+    <div class="modal-dialog modal-dialog-centered custom-modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cambia tu contraseña</h5>
+          <button type="button" class="btn-close" (click)="cerrarModalCambiar()"></button>
+        </div>
+        <div class="modal-body">
+          <label>Correo electrónico:</label>
+          <input type="email" class="form-control mb-2" [(ngModel)]="emailCambio" placeholder="Ingresa un correo electrónico válido" />
+          <label>Contraseña actual:</label>
+          <input type="password" class="form-control mb-2" [(ngModel)]="passActual" placeholder="Ingresa tu contraseña actual" />
+          <label>Nueva contraseña:</label>
+          <input type="password" class="form-control mb-2" [(ngModel)]="nuevaPass" placeholder="Ingresa tu nueva contraseña"/>
+          <label>Confirmar nueva contraseña:</label>
+          <input type="password" class="form-control" [(ngModel)]="confirmarNuevaPass" placeholder="Repite tu nueva contraseña"/>
+        </div>
+        <div class="modal-footer modal-footer-centered">
+          <button class="btn-cancelar" (click)="cerrarModalCambiar()">Cancelar</button> 
+          <button class="btn-aceptar" (click)="cambiarContrasena()">Aceptar</button> 
+        </div>
+      </div>
+    </div>
+    <div class="custom-modal-backdrop"></div>
+  </div>
+  </ng-container>
 </body>
 </html>

@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -12,9 +14,19 @@ import Swal from 'sweetalert2';
 export class LoginComponent {
   @ViewChild('wrapperRef') wrapperRef!: ElementRef;
 
+  
   email: string = '';
   password: string = '';
   loginError: string = '';
+
+  correoRecuperacion: string = '';
+  emailCambio: string = '';
+  passActual: string = '';
+  nuevaPass: string = '';
+  confirmarNuevaPass: string = '';
+
+  mostrarModalRecuperar: boolean = false;
+  mostrarModalCambiar: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -48,5 +60,47 @@ export class LoginComponent {
       }
     });
   }
-  
+
+  abrirModalRecuperar() {
+    this.mostrarModalRecuperar = true;
+  }
+
+  cerrarModalRecuperar () {
+    this.mostrarModalRecuperar = false;
+  }
+
+  abrirModalCambiar() {
+    this.mostrarModalCambiar = true;
+  }
+
+  cerrarModalCambiar() {
+    this.mostrarModalCambiar = false;
+  }
+
+  enviarRecuperacion() {
+    if (!this.correoRecuperacion || !this.correoRecuperacion.includes('@')) {
+      Swal.fire('Error', 'Ingresa un correo electrónico válido.', 'warning');
+      return;
+    }
+
+    // Aquí se llamará al servicio de recuperación cuando esté implementado
+    Swal.fire('Enviado', 'Se ha enviado un correo con instrucciones.', 'success');
+  }
+
+  cambiarContrasena() {
+    if (!this.emailCambio || !this.passActual || !this.nuevaPass || !this.confirmarNuevaPass) {
+      Swal.fire('Error', 'Todos los campos son obligatorios.', 'warning');
+      return;
+    }
+
+    if (this.nuevaPass !== this.confirmarNuevaPass) {
+      Swal.fire('Error', 'Las nuevas contraseñas no coinciden.', 'warning');
+      return;
+    }
+
+    // Aquí se llamará al servicio de cambio de contraseña cuando esté implementado
+    Swal.fire('Actualizado', 'Tu contraseña ha sido cambiada.', 'success');
+  }
 }
+  
+

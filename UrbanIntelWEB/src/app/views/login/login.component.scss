@@ -85,22 +85,40 @@ h2{
     line-height: 55px;
 }
 
-.forgot-pass{
-    margin: 15px 0 15px 15px;
-    margin-left: 75px;
-}
+.forgot-pass {
+  width: 100%;
+  margin-top: 0.8rem;
+  margin-left: 3rem;
+  text-align: left !important;
 
-.forgot-pass a{
+  a {
     color: #0C0605;
     font-size: .9em;
     text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-.forgot-pass a:hover{
-    text-decoration: underline;
+.change-pass {
+  width: 100%;
+  text-align: left !important;
+  margin-left: 5rem;
+
+  a {
+    color: #0C0605;
+    font-size: .9em;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-button{
+.btn-login{
     width: 320px;
     height: 45px;
     background: #0C0605;
@@ -120,22 +138,84 @@ button{
     flex-direction: column;
     align-items: center;
   }
-  
-  .form-content button {
-    width: 100%;
-    margin-top: 10px;
-  }
-  
-  .form-content .forgot-pass {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 10px;
-  }
-  
+    
   .login-error {
   color: red; 
   margin-top: 10px; 
   font-weight: bold; 
   font-size: 1rem;
   margin-left: 62px;
+}
+
+//modal recuperar contraseña
+.custom-modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1050;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.custom-modal-dialog {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1051;
+}
+// Fondo oscurecido
+.custom-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1050;
+}
+.modal-header {
+  padding: 0.5em;
+}
+.modal-title {
+  font-weight: bold;
+}
+.modal-content {
+  border-radius: 1rem;
+  padding: 1rem;
+}
+.label-email {
+ margin-bottom: 0.5em;
+}
+.modal-body {
+  margin-top: 1em;
+}
+.modal-footer {
+  margin-top: 1em;
+  padding: 0.5em;
+}
+.form-control {
+  padding: 1em
+}
+.btn-aceptar {
+  padding: 0.5em;
+  padding-left: 1em;
+  padding-right: 1em;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  background-color: #b69143f8;
+  color: white
+}
+.btn-cancelar {
+  padding: 0.5em;
+  padding-left: 1em;
+  padding-right: 1em;
+  border-radius: 12px;
+  margin-right: 0.5em;
+  border: none;
+  font-weight: bold;
+  background-color: #b91e1ef8;
+  color: white
 }

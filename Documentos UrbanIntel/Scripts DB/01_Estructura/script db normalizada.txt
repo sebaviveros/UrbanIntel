@@ -1,0 +1,114 @@
+CREATE TABLE Usuario (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    rut VARCHAR(12) NOT NULL UNIQUE,
+    nombre VARCHAR(150) NOT NULL,
+    apellido VARCHAR(150) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    telefono VARCHAR(50) NOT NULL,
+    direccion VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Rol (
+    id_rol INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE TipoReparacion (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100)
+);
+
+CREATE TABLE Prioridad (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE EstadoSolicitud (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Modulo (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Accion (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Ciudadano (
+    rut VARCHAR(12) PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    apellido VARCHAR(150) NOT NULL,
+    telefono VARCHAR(20),
+    email VARCHAR(100)
+);
+
+CREATE TABLE Comuna (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE Solicitud (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    rut_usuario VARCHAR(12),
+    direccion VARCHAR(150) NOT NULL,
+    comuna_id INT NOT NULL,
+    descripcion VARCHAR(MAX) NOT NULL,
+    fecha_creacion DATETIME DEFAULT GETDATE(),
+    fecha_aprobacion DATETIME,
+    fecha_asignacion DATETIME,
+    rut_ciudadano VARCHAR(12),
+    tipo_reparacion_id INT,
+    prioridad_id INT,
+    estado_id INT,
+    tiempo_estimado VARCHAR(50),
+    
+    FOREIGN KEY (rut_usuario) REFERENCES Usuario(rut),
+    FOREIGN KEY (tipo_reparacion_id) REFERENCES TipoReparacion(id),
+    FOREIGN KEY (prioridad_id) REFERENCES Prioridad(id),
+    FOREIGN KEY (estado_id) REFERENCES EstadoSolicitud(id),
+    FOREIGN KEY (rut_ciudadano) REFERENCES Ciudadano(rut),
+    FOREIGN KEY (comuna_id) REFERENCES Comuna(id)
+);
+
+CREATE TABLE ImagenSolicitud (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    solicitud_id INT,
+    url_imagen VARCHAR(MAX),
+    FOREIGN KEY (solicitud_id) REFERENCES Solicitud(id)
+);
+
+CREATE TABLE Auditoria (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    rut_usuario VARCHAR(12),
+    accion_id INT,
+    modulo_id INT,
+    fecha DATETIME,
+    descripcion VARCHAR(MAX),
+    FOREIGN KEY (rut_usuario) REFERENCES Usuario(rut),
+    FOREIGN KEY (accion_id) REFERENCES Accion(id),
+    FOREIGN KEY (modulo_id) REFERENCES Modulo(id)
+);
+
+CREATE TABLE RolUsuario (
+    id_rol INT,
+    rut VARCHAR(12),
+    PRIMARY KEY (id_rol, rut),
+    FOREIGN KEY (id_rol) REFERENCES Rol(id_rol),
+    FOREIGN KEY (rut) REFERENCES Usuario(rut)
+);
+
+CREATE TABLE Evento (
+    id_evento INT IDENTITY(1,1) PRIMARY KEY,
+    nombre_evento VARCHAR(200) NOT NULL,
+    descripcion VARCHAR(600) NULL,
+    hora_inicio DATETIME NOT NULL,
+    hora_termino DATETIME NULL,
+    notificacion BIT NOT NULL,
+    rut_usuario VARCHAR(12) NOT NULL,
+    FOREIGN KEY (rut_usuario) REFERENCES Usuario(rut)
+);
