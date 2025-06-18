@@ -14,18 +14,54 @@
     <span class="input-group-text"><i class="bi bi-search"></i></span>
   </div>
 
-  <!-- Filtro por estado -->
-  <div class="mb-2">
-    <label for="estadoSelect" class="form-label mb-0">Estado</label>
-    <select id="estadoSelect" class="form-select" [(ngModel)]="estadoSeleccionado" (change)="filtrarSolicitudes()">
-      <option value="">Todos</option>
-      <option value="Pendiente">Pendiente</option>
-      <option value="En proceso">En proceso</option>
-      <option value="Finalizado">Finalizado</option>
-      <option value="Rechazada">Rechazada</option>
-    </select>
+ <!-- Botón mostrar/ocultar filtro -->
+<div class="d-flex justify-content-center mb-3">
+  <button class="btn btn-cafe-claro d-flex align-items-center gap-1" (click)="abrirFiltro()">
+    <i class="bi bi-funnel"></i> Filtros Avanzados
+  </button>
+</div>
+
+<!-- Filtro desplegable -->
+<div class="container">
+  <div *ngIf="filtrosVisibles" class="card mb-3 p-3 border border-primary bg-light mt-3">
+    <div class="row g-2">
+      <div class="col-md-2">
+        <input class="form-control" placeholder="ID" [(ngModel)]="filtro.id">
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" placeholder="Comuna" [(ngModel)]="filtro.comuna">
+      </div>
+      <div class="col-md-2">
+        <select class="form-select" [(ngModel)]="filtro.estadoId">
+          <option [ngValue]="''" disabled selected>Estado...</option>
+          <option *ngFor="let estado of estados" [value]="estado.id">{{ estado.nombre }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="filtro.tipoReparacionId">
+          <option [ngValue]="''" disabled selected>Tipo reparación...</option>
+          <option *ngFor="let tipo of tiposReparacion" [value]="tipo.id">{{ tipo.nombre }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="filtro.prioridadId">
+          <option [ngValue]="''" disabled selected>Prioridad...</option>
+          <option *ngFor="let p of prioridades" [value]="p.id">{{ p.nombre }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3 mt-4">
+      <button class="btn btn-primary d-flex align-items-center gap-2" (click)="buscarPorFiltros()">
+        <i class="bi bi-search"></i> Buscar
+      </button>
+      <button class="btn btn-danger d-flex align-items-center gap-2" (click)="limpiarFiltros()">
+        <i class="bi bi-x-circle"></i> Limpiar
+      </button>
+    </div>
   </div>
 </div>
+
 
 
 <!-- Acordeón de aprobaciones -->
@@ -67,9 +103,13 @@
             <p><strong>Nombre:</strong> {{ solicitud.nombre }}</p>
             <p><strong>Descripción:</strong> {{ solicitud.descripcion }}</p>
 
-            <div *ngIf="solicitud.imagen" class="mb-3">
-              <img [src]="solicitud.imagen" class="img-fluid rounded" alt="Evidencia">
-            </div>
+            <div *ngIf="solicitud.imagenes?.length" class="mb-3 d-flex flex-wrap gap-2">
+  <img *ngFor="let img of solicitud.imagenes"
+       [src]="img"
+       class="img-fluid rounded"
+       style="max-width: 30%; height: auto;"
+       alt="Evidencia" />
+</div>
           </div>
 
           <!-- Columna derecha -->
