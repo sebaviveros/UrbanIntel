@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { catchError } from 'rxjs/operators';
+import { jwtDecode } from 'jwt-decode'; 
 
 
 @Injectable({
@@ -52,4 +53,16 @@ export class AuthService {
     // eliminar el token del almacenamiento local
     localStorage.removeItem('token');
   }
+
+  getRolUsuario(): string | null {
+  const token = this.obtenerToken();
+  if (!token) return null;
+
+  try {
+    const decoded: any = jwtDecode(token);
+    return decoded.role || decoded.rol || null; // ajusta según cómo lo envía tu backend
+  } catch (err) {
+    return null;
+  }
+}
 }

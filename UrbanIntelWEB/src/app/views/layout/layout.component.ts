@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 })
 export class LayoutComponent {
   isMenuOpen: boolean = false;
+  rolUsuario: string | null = null;
 
   constructor(private router: Router, private authsvc: AuthService) {}
 
@@ -23,7 +24,10 @@ export class LayoutComponent {
   ngOnInit() {
     // Inicializar el menú desplegado
     this.adjustMenuOnResize(window.innerWidth);
+    this.rolUsuario = this.authsvc.getRolUsuario();
   }
+  
+
 
   // Ajustar el menú según el ancho de la pantalla
   adjustMenuOnResize(width: number) {
