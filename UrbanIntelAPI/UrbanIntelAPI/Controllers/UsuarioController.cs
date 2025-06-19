@@ -115,5 +115,24 @@ namespace UrbanIntelAPI.Controllers
             }
         }
 
+        [HttpPost("recuperar-password")]
+        public async Task<IActionResult> RecuperarPassword([FromBody] RecuperarPasswordDto dto)
+        {
+            try
+            {
+                var resultado = await _usuarioService.RecuperarPasswordAsync(dto.Correo);
+
+                if (resultado.Contains("fue enviada"))
+                    return Ok(new { success = true, message = resultado });
+
+                return BadRequest(new { success = false, message = resultado });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = $"Error del servidor: {ex.Message}" });
+            }
+        }
+
+
     }
 }

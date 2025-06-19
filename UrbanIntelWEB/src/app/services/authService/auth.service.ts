@@ -60,7 +60,7 @@ export class AuthService {
 
   try {
     const decoded: any = jwtDecode(token);
-    return decoded.role || decoded.rol || null; // ajusta según cómo lo envía tu backend
+    return decoded.role || decoded.rol || null;
   } catch (err) {
     return null;
   }

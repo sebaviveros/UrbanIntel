@@ -2,17 +2,21 @@
 using System.Data;
 using UrbanIntelDATA.Models;
 using UrbanIntelDATA.Dto;
+using System.Net.Mail;
+using System.Net;
 
 namespace UrbanIntelDATA.Services
 {
     public class UsuarioService
     {
         private readonly UrbanIntelDBContext _context;
+        private readonly SmtpService _smtpService;
 
         // inyectamos el contexto que centraliza la configuración y conexión a la base de datos
-        public UsuarioService(UrbanIntelDBContext context)
+        public UsuarioService(UrbanIntelDBContext context, SmtpService smtpService)
         {
             _context = context;
+            _smtpService = smtpService;
         }
         // obetener usuarios por rut o todos 
         public async Task<List<Usuario>> ObtenerUsuariosAsync(string? rut = null)
@@ -183,5 +187,46 @@ namespace UrbanIntelDATA.Services
                 return $"Error del servidor: {ex.Message}";
             }
         }
+
+        public async Task<string> RecuperarPasswordAsync(string correo)
+        {
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("sp_recuperarPassword", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@p_email", correo);
+
+            try
+            {
+                string? password = null;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        password = reader.GetString(0); // asumiendo que la contraseña viene en la primera columna
+                    }
+                }
+
+                if (string.IsNullOrEmpty(password))
+                    return "El correo no tiene una contraseña registrada.";
+
+                // Envía la contraseña al correo del usuario
+                await _smtpService.EnviarCorreoAsync(correo, "Recuperación de contraseña", $"Has solicitado la recuperación de tu contraseña correctamente, " +
+                    $"si no fuiste tu, contacta con un Administrador, tu contraseña es: {password}");
+
+                return "La contraseña fue enviada a tu correo electrónico.";
+            }
+            catch (SqlException ex) when (ex.Number == 50010)
+            {
+                return "El correo no existe en el sistema.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al recuperar la contraseña: {ex.Message}";
+            }
+        }
+
     }
 }

@@ -77,6 +77,21 @@ modificarUsuario(rut: string, usuario: Usuario): Observable<ApiResponse> {
         })
     );
   }
+
+  recuperarPassword(correo: string): Observable<any> {
+  return this.http.post(`${this.apiUrl}/recuperar-password`, { correo });
+
+}
+
+  cambiarPassword(data: {
+    email: string,
+    passwordActual: string,
+    nuevaPassword: string
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/cambiar-password`, data);
+  }
+
+
 }
 
 

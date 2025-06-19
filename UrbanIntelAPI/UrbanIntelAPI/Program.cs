@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using UrbanIntelDATA;
+using UrbanIntelDATA.Models;
 using UrbanIntelDATA.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,11 @@ builder.Services.AddSwaggerGen();
 
 // inyeccion de db context para ser reconocida en el resto del sistema
 builder.Services.AddScoped<UrbanIntelDBContext>();
+
+// Configuración SMTP
+builder.Services.Configure<SmtpSettings>(
+builder.Configuration.GetSection("Smtp"));
+builder.Services.AddTransient<SmtpService>();
 
 // configuracion cors
 builder.Services.AddCors(options =>

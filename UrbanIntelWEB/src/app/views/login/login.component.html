@@ -91,7 +91,27 @@
           <input type="password" class="form-control mb-2" [(ngModel)]="nuevaPass" placeholder="Ingresa tu nueva contraseña"/>
           <label>Confirmar nueva contraseña:</label>
           <input type="password" class="form-control" [(ngModel)]="confirmarNuevaPass" placeholder="Repite tu nueva contraseña"/>
-        </div>
+          <br>
+          <p>Reglas de contraseña:</p>
+          <br>
+         <p>
+            <ion-icon [name]="tieneMayuscula ? 'checkmark-circle' : 'close-circle'" [style.color]="tieneMayuscula ? 'green' : 'red'"></ion-icon>
+            Una letra mayúscula
+          </p>
+          <p>
+            <ion-icon [name]="tieneMinuscula ? 'checkmark-circle' : 'close-circle'" [style.color]="tieneMinuscula ? 'green' : 'red'"></ion-icon>
+            Una letra minúscula
+          </p>
+          <p>
+            <ion-icon [name]="tieneNumero ? 'checkmark-circle' : 'close-circle'" [style.color]="tieneNumero ? 'green' : 'red'"></ion-icon>
+            Un número
+          </p>
+          <p>
+          <ion-icon [name]="tieneSimbolo ? 'checkmark-circle' : 'close-circle'" [style.color]="tieneSimbolo ? 'green' : 'red'"></ion-icon>
+          Un símbolo ( !,&#64;,$,%,&,(,) )
+        </p>
+
+        </div>              
         <div class="modal-footer modal-footer-centered">
           <button class="btn-cancelar" (click)="cerrarModalCambiar()">Cancelar</button> 
           <button class="btn-aceptar" (click)="cambiarContrasena()">Aceptar</button> 
