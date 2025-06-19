@@ -8,6 +8,8 @@ export class Solicitud {
   fechaAsignacion?: string;
   tipoReparacion?: string;
   tipoReparacionId?: number;
+  tipoReparacionNombre?: string;
+  prioridadNombre?: string;
   prioridad?: string;
   prioridadId?: number;
   estadoNombre?: string;

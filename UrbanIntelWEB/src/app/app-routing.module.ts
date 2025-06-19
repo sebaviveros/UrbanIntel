@@ -9,6 +9,7 @@ import { ManualComponent } from './views/manual/manual.component';
 import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
 import { SolicitudesComponent } from './views/solicitudes/solicitudes.component';
 import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.component';
+import { ReportesComponent } from './views/reportes/reportes.component';
 
 
 const routes: Routes = [
@@ -28,7 +29,8 @@ const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'solicitudes', component: SolicitudesComponent },
       { path: 'gestion-cuentas', component: GestionCuentasComponent },
-      { path: 'aprobaciones', component: AprobacionesComponent }
+      { path: 'aprobaciones', component: AprobacionesComponent },
+      { path: 'reportes', component: ReportesComponent }
       // puedes agregar más rutas hijas aquí
     ]
   },

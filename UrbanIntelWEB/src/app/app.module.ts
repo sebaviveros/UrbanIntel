@@ -22,7 +22,9 @@ import { ManualComponent } from './views/manual/manual.component';
 import { DataTablesModule } from "angular-datatables";
 import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
 import { SolicitudesComponent } from './views/solicitudes/solicitudes.component';
-import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.component'; // datatables de angular
+import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.component';
+import { ReportesComponent } from './views/reportes/reportes.component'; // datatables de angular
+
 
 
 @NgModule({
@@ -36,7 +38,8 @@ import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.compone
     ManualComponent,
     GestionCuentasComponent,
     SolicitudesComponent,
-    AprobacionesComponent 
+    AprobacionesComponent,
+    ReportesComponent
     // Agregarás más componentes aquí luego
   ],
   imports: [
