@@ -22,8 +22,15 @@ import { ManualComponent } from './views/manual/manual.component';
 import { DataTablesModule } from "angular-datatables";
 import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
 import { SolicitudesComponent } from './views/solicitudes/solicitudes.component';
-import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.component'; // datatables de angular
+import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.component';
+import { ProgramacionComponent } from './views/programacion/programacion.component'; // datatables de angular
 
+
+import { LOCALE_ID } from '@angular/core';
+import localeEs from '@angular/common/locales/es';
+import { registerLocaleData } from '@angular/common';
+
+registerLocaleData(localeEs);
 
 @NgModule({
   declarations: [
@@ -36,7 +43,8 @@ import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.compone
     ManualComponent,
     GestionCuentasComponent,
     SolicitudesComponent,
-    AprobacionesComponent 
+    AprobacionesComponent,
+    ProgramacionComponent 
     // Agregarás más componentes aquí luego
   ],
   imports: [
@@ -49,6 +57,7 @@ import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.compone
        // Api Rest 
   ],
   bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Agregago de ion-icons para que sea reconocido por Angular
+  schemas: [CUSTOM_ELEMENTS_SCHEMA], // Agregago de ion-icons para que sea reconocido por Angular
+  providers: [{ provide: LOCALE_ID, useValue: 'es-ES' }]
 })
 export class AppModule { }

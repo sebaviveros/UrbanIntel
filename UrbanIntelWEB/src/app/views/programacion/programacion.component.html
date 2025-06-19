@@ -1,0 +1,85 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+  integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+
+<div class="container">
+  <div class="left">
+    <div class="calendar" #calendar>
+      <div class="month">
+        <i class="fas fa-angle-left prev" #prev></i>
+        <div class="date" #date></div>
+        <i class="fas fa-angle-right next" #next></i>
+      </div>
+      <div class="weekdays">
+        <div>Lun</div>
+        <div>Mar</div>
+        <div>Mié</div>
+        <div>Jue</div>
+        <div>Vie</div>
+        <div>Sab</div>
+        <div>Dom</div>
+      </div>
+      <div class="days" #daysContainer></div>
+      <div class="goto-today">
+        <div class="goto">
+          <input type="text" placeholder="MM/AAA" class="date-input" #dateInput />
+          <button class="goto-btn" #gotoBtn>Ir</button>
+        </div>
+        <button class="today-btn" #todayBtn>Hoy</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+   <div class="today-date">
+  <div class="event-day">{{ currentDayName }}</div>
+  <div class="event-date">{{ activeDay }} de {{ months[month] }} de {{ year }}</div>
+</div>
+    <div class="events" #eventsContainer></div>
+    <div class="add-event-wrapper" #addEventWrapper>
+      <div class="add-event-header">
+        <div class="title">Agregar Evento</div>
+        <i class="fas fa-times close" #addEventCloseBtn></i>
+      </div>
+      <div class="add-event-body">
+        <div class="add-event-input">
+          <input
+            type="text"
+            placeholder="Nombre del Evento"
+            class="event-name"
+            #addEventTitle
+          />
+        </div>
+        <div class="add-event-input">
+          <input
+            type="text"
+            placeholder="Horario Inicio"
+            class="event-time-from"
+            #addEventFrom
+          />
+        </div>
+        <div class="add-event-input">
+          <input
+            type="text"
+            placeholder="Horario Termino"
+            class="event-time-to"
+            #addEventTo
+          />
+        </div>
+      </div>
+      <div class="add-event-footer">
+        <button class="add-event-btn" #addEventSubmit>Agregar Evento</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="add-event" #addEventBtn>
+    <i class="fas fa-plus"></i>
+  </button>
+</div>

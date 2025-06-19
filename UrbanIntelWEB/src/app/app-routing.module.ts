@@ -9,7 +9,7 @@ import { ManualComponent } from './views/manual/manual.component';
 import { GestionCuentasComponent } from './views/gestion-cuentas/gestion-cuentas.component';
 import { SolicitudesComponent } from './views/solicitudes/solicitudes.component';
 import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.component';
-
+import { ProgramacionComponent } from './views/programacion/programacion.component';
 
 const routes: Routes = [
   // redirecciona al login si la url está vacía
@@ -28,7 +28,8 @@ const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'solicitudes', component: SolicitudesComponent },
       { path: 'gestion-cuentas', component: GestionCuentasComponent },
-      { path: 'aprobaciones', component: AprobacionesComponent }
+      { path: 'aprobaciones', component: AprobacionesComponent },
+      { path: 'programacion', component: ProgramacionComponent}
       // puedes agregar más rutas hijas aquí
     ]
   },
