@@ -212,7 +212,7 @@ namespace UrbanIntelDATA.Services
                 if (string.IsNullOrEmpty(password))
                     return "El correo no tiene una contraseña registrada.";
 
-                // Envía la contraseña al correo del usuario
+                // enviar la contraseña al correo del usuario
                 await _smtpService.EnviarCorreoAsync(correo, "Recuperación de contraseña", $"Has solicitado la recuperación de tu contraseña correctamente, " +
                     $"si no fuiste tu, contacta con un Administrador, tu contraseña es: {password}");
 
@@ -227,6 +227,50 @@ namespace UrbanIntelDATA.Services
                 return $"Error al recuperar la contraseña: {ex.Message}";
             }
         }
+
+        public async Task<string> CambiarPasswordAsync(CambiarPasswordDto dto)
+        {
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("sp_cambiarPassword", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@p_email", dto.Email);
+            command.Parameters.AddWithValue("@p_password_actual", dto.PasswordActual);
+            command.Parameters.AddWithValue("@p_nueva_password", dto.NuevaPassword);
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+
+                // enviar la contraseña al correo del usuario
+                await _smtpService.EnviarCorreoAsync(
+                 dto.Email,
+                 "Contraseña actualizada correctamente",
+                 $@"
+                    <p>Has solicitado la modificación de tu contraseña correctamente, 
+                    si no fuiste tú, contacta con un Administrador.</p>
+                    <p><strong>Tu nueva contraseña es: {dto.NuevaPassword}</strong></p>
+                ");
+
+                return "Contraseña actualizada correctamente. Revisa tu correo.";
+            }
+            catch (SqlException ex) when (ex.Number == 50012)
+            {
+                return "La contraseña actual es incorrecta.";
+            }
+            catch (SqlException ex) when (ex.Number == 50013)
+            {
+                return "El usuario no existe.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al cambiar la contraseña: {ex.Message}";
+            }
+        }
+
+
 
     }
 }

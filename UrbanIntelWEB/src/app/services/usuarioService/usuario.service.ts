@@ -88,7 +88,7 @@ modificarUsuario(rut: string, usuario: Usuario): Observable<ApiResponse> {
     passwordActual: string,
     nuevaPassword: string
   }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/cambiar-password`, data);
+    return this.http.post(`${this.apiUrl}/cambiar-password`, data);
   }
 
 

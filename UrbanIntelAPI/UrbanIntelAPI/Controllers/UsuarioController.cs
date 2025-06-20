@@ -133,6 +133,23 @@ namespace UrbanIntelAPI.Controllers
             }
         }
 
+        [HttpPost("cambiar-password")]
+        public async Task<IActionResult> CambiarPassword([FromBody] CambiarPasswordDto dto)
+        {
+            try
+            {
+                var resultado = await _usuarioService.CambiarPasswordAsync(dto);
+
+                if (resultado.Contains("actualizada"))
+                    return Ok(new { success = true, message = resultado });
+
+                return BadRequest(new { success = false, message = resultado });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = $"Error del servidor: {ex.Message}" });
+            }
+        }
 
     }
 }
