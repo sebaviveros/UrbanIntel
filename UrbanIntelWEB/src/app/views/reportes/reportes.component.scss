@@ -1,0 +1,50 @@
+h3{
+    color: #f7941d;
+    align-items: left;
+}
+
+/* Título */
+h5 {
+  color: #ff8000; // Naranja vibrante
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Etiquetas de texto */
+.d-flex span {
+  color: white;
+  font-weight: 500;
+}
+
+/* Barra de fondo */
+.progress {
+  height: 22px; // Ajusta aquí el grosor
+  background-color: #333; // Fondo oscuro para contraste
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Barra de avance */
+.progress-bar {
+  background-color: #ff8000; // Naranja
+  transition: width 0.5s ease;
+  font-weight: bold;
+}
+
+
+.page-link {
+  transition: background-color 0.3s;
+}
+
+.page-item.active .page-link {
+  background-color: #e67e22; // tu color naranja suave
+  border-color: #e67e22;
+  color: #fff;
+}
+
+.page-link:hover {
+  background-color: #333;
+  color: #fff;
+}
+
