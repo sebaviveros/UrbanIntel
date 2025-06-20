@@ -1,28 +1,35 @@
+  <div class="header-container">
+  <ion-icon name="checkbox-outline"></ion-icon>
+  <h2>Aprobaciones</h2>
+</div>
 
-<!-- Barra superior -->
-<div class="d-flex justify-content-between align-items-center flex-wrap mb-4 px-2">
-
-  <!-- Título e ícono -->
-  <div class="d-flex align-items-center mb-2">
-    <ion-icon name="checkbox-outline" class="me-2"></ion-icon>
-    <h3 class="m-0">APROBACIONES</h3>
+<!-- Contenedor de acciones superiores -->
+<div class="row mb-4 align-items-center gx-2">
+  
+  <!-- Buscador sensitivo -->
+   <div class="col-md-3"></div>
+  <div class="col-md-4">
+    <input type="text" class="form-control" [(ngModel)]="searchText" placeholder="Buscar por ID, dirección, descripción..." (input)="filtrarSolicitudes()" >   
   </div>
 
-  <!-- Búsqueda -->
-  <div class="input-group mb-2 me-2" style="max-width: 250px;">
-    <input type="text" class="form-control" [(ngModel)]="searchText" placeholder="Buscar..." (input)="filtrarSolicitudes()" />
-    <span class="input-group-text"><i class="bi bi-search"></i></span>
-  </div>
-
- <!-- Botón mostrar/ocultar filtro -->
-<div class="d-flex justify-content-center mb-3">
-  <button class="btn btn-cafe-claro d-flex align-items-center gap-1" (click)="abrirFiltro()">
-    <i class="bi bi-funnel"></i> Filtros Avanzados
+  <!-- Botón Filtros -->
+  <div class="col-auto">
+    <button class="btn btn-cafe-claro d-flex align-items-center gap-1" (click)="abrirFiltro()">
+    <i class="bi bi-funnel"></i> Filtros
   </button>
+  </div>
+
+  <!-- Botón Actualizar -->
+<div class="col-auto">
+  <button class="btn btn-cafe-claro d-flex align-items-center gap-2" (click)="actualizarAprobaciones()">
+    <i class="bi bi-arrow-clockwise fs-5"></i>
+    Actualizar
+  </button>
+  </div>
 </div>
 
 <!-- Filtro desplegable -->
-<div class="container">
+<div class="container filtro-aprobaciones">
   <div *ngIf="filtrosVisibles" class="card mb-3 p-3 border border-primary bg-light mt-3">
     <div class="row g-2">
       <div class="col-md-2">
@@ -65,7 +72,7 @@
 
 
 <!-- Acordeón de aprobaciones -->
-<div class="container mt-3">
+<div class="container mt-4">
   <div class="accordion" id="accordionAprobaciones">
     <div class="accordion-item" *ngFor="let solicitud of solicitudesPaginadas; let i = index">
       <h2 class="accordion-header">

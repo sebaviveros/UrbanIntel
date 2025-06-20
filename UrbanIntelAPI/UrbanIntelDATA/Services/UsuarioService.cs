@@ -214,7 +214,7 @@ namespace UrbanIntelDATA.Services
 
                 // enviar la contraseña al correo del usuario
                 await _smtpService.EnviarCorreoAsync(correo, "Recuperación de contraseña", $"Has solicitado la recuperación de tu contraseña correctamente, " +
-                    $"si no fuiste tu, contacta con un Administrador, tu contraseña es: {password}");
+                    $"si no fuiste tú, contacta con un Administrador.<p><strong>Tu contraseña es: {password}</strong></p>");
 
                 return "La contraseña fue enviada a tu correo electrónico.";
             }

@@ -62,6 +62,10 @@ export class AprobacionesComponent implements OnInit {
     this.actualizarPagina();
   }
 
+  actualizarAprobaciones(){
+    
+  }
+
   actualizarPagina(): void {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
