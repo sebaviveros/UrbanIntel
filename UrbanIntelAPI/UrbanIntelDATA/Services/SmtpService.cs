@@ -14,7 +14,7 @@ namespace UrbanIntelDATA.Services
             _smtp = smtpSettings.Value;
         }
 
-        public async Task EnviarCorreoAsync(string destino, string asunto, string mensajePlano)
+        public async Task EnviarCorreoAsync(string destino, string asunto, string emailbody)
         {
             var remitente = _smtp.Remitente;
             var clave = _smtp.Clave;
@@ -28,7 +28,7 @@ namespace UrbanIntelDATA.Services
             var rutaImagen = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "urbanintelbanner.png");
 
             string htmlBody = $@"
-                <p>{mensajePlano}</p>
+                <p>{emailbody}</p>
                 <br/>
                 <p>Saludos.</p>
                 <p>Urban Intel</p>

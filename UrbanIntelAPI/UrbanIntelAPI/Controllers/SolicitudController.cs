@@ -2,6 +2,7 @@
 using UrbanIntelDATA.Services;
 using UrbanIntelDATA.Models;
 using UrbanIntelDATA.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UrbanIntelAPI.Controllers
 {
@@ -177,7 +178,39 @@ namespace UrbanIntelAPI.Controllers
             return Ok(data);
         }
 
+        [HttpPost("{solicitudId}/aprobar")]
+        public async Task<IActionResult> AprobarSolicitud(int solicitudId, [FromBody] AprobarSolicitudDto dto)
+        {
+            try
+            {
+                if (dto == null || string.IsNullOrWhiteSpace(dto.RutUsuario) || dto.TipoReparacionId == 0 || dto.PrioridadId == 0)
+                    return BadRequest("Faltan datos para aprobar la solicitud.");
 
+                await _solicitudService.AprobarSolicitudAsync(solicitudId, dto);
+                return Ok(new { message = "Solicitud aprobada exitosamente." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al aprobar solicitud: {ex.Message}" });
+            }
+        }
+
+        [HttpPost("{solicitudId}/denegar")]
+        public async Task<IActionResult> DenegarSolicitud(int solicitudId, [FromBody] DenegarSolicitudDto dto)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(dto?.RutUsuario) || string.IsNullOrWhiteSpace(dto.Motivo))
+                    return BadRequest("Faltan datos para denegar la solicitud.");
+
+                await _solicitudService.DenegarSolicitudAsync(solicitudId, dto.RutUsuario, dto.Motivo);
+                return Ok(new { message = "Solicitud denegada exitosamente." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al denegar solicitud: {ex.Message}" });
+            }
+        }
 
     }
 }

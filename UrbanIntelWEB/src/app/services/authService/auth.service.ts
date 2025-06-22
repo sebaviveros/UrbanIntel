@@ -63,6 +63,18 @@ export class AuthService {
     return decoded.role || decoded.rol || null;
   } catch (err) {
     return null;
+   }
   }
-}
+  
+  obtenerRutUsuario(): string | null {
+    const token = this.obtenerToken();
+    if (!token) return null;
+
+    try {
+      const decoded: any = jwtDecode(token);
+      return decoded.sub || null;
+    } catch {
+      return null;
+    }
+  }
 }

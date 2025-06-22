@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { GenericItem } from '../../models/generic-item.model';
+import { AprobarSolicitudDto } from '../../models/Dto/aprobarSolicitudDto';
+import { DenegarSolicitudDto } from '../../models/Dto/denegarSolicitudDto';
 
 @Injectable({
   providedIn: 'root'
@@ -56,12 +58,22 @@ export class SolicitudService {
   }
 
   crearSolicitudInterna(formData: FormData): Observable<any> {
-  return this.http.post<any>(`${this.apiUrl}/crear-interna`, formData);
+    return this.http.post<any>(`${this.apiUrl}/crear-interna`, formData);
+  }
+
+  // aprobar solicitud
+  aprobarSolicitud(id: number, dto: AprobarSolicitudDto): Observable<any> {
+  return this.http.post(`${this.apiUrl}/${id}/aprobar`, dto);
+}
+
+  // denegar solicitud
+  denegarSolicitud(id: number, dto: DenegarSolicitudDto): Observable<any> {
+  return this.http.post(`${this.apiUrl}/${id}/denegar`, dto);
+}
+
 }
 
 
-
-}
   
 
 

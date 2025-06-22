@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { SolicitudService } from '../../services/solicitudService/solicitud.service';
+import Swal from 'sweetalert2';
+import { GenericItem } from '../../models/generic-item.model';
+import { AuthService } from '../../services/authService/auth.service';
+import { AprobarSolicitudDto } from '../../models/Dto/aprobarSolicitudDto';
 
 interface Solicitud {
   id: number;
@@ -6,10 +11,14 @@ interface Solicitud {
   direccion: string;
   descripcion: string;
   imagenes: string[];
-  tipoReparacion: string;
-  estado: string; // pendiente, finalizado, rechazada
-  prioridad:string;
+  tipoReparacionId: number;
+  prioridadId: number;
+  estado: string;
+  rutCiudadano: string;
+  emailCiudadano: string;
+  estadoNombre: string;
 }
+
 
 @Component({
   selector: 'app-aprobaciones',
@@ -23,54 +32,155 @@ export class AprobacionesComponent implements OnInit {
   pageSize: number = 5;
   totalPages: number = 0;
   activeIndex: number | null = null;
-
   searchText: string = '';
-  estadoSeleccionado: string = '';
+
+  tiposReparacion: GenericItem[] = [];
+  prioridades: GenericItem[] = [];
+
+
+
+constructor(private solicitudService: SolicitudService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    // Simular solicitudes mock
-        const imagenesDisponibles = [
-      'assets/imagenes/ejemplo_aprobacion1.png',
-      'assets/imagenes/ejemplo_aprobacion2.jpg',
-      'assets/imagenes/ejemplo_aprobacion3.jpg'
-    ];
+  this.obtenerSolicitudesPendientes();
+  this.obtenerTiposReparacion();
+  this.obtenerPrioridades();
+}
 
-    const prioridades = ['Alta', 'Media', 'Baja'];
-
-    this.solicitudes = Array.from({ length: 12 }).map((_, i) => {
-      const cantidad = Math.floor(Math.random() * 3) + 1; // de 1 a 3 imágenes
-      const imagenes = Array.from({ length: cantidad }).map(() => {
-        const randomIndex = Math.floor(Math.random() * imagenesDisponibles.length);
-        return imagenesDisponibles[randomIndex];
-      });
-
-       const prioridad = prioridades[Math.floor(Math.random() * prioridades.length)];
-
-      return {
-        id: i + 1,
-        nombre: `Calle ${i + 1}`,
-        direccion: `Dirección Falsa ${i + 1}`,
-        descripcion: `Descripción de la solicitud número ${i + 1}.`,
-        imagenes,
-        tipoReparacion: '',
-        estado: 'Pendiente',
-        prioridad
-      };
-    });
-
-    this.totalPages = Math.ceil(this.solicitudes.length / this.pageSize);
-    this.actualizarPagina();
-  }
 
   actualizarAprobaciones(){
-    
+    this.obtenerSolicitudesPendientes();
   }
+
+  obtenerTiposReparacion(): void {
+  this.solicitudService.obtenerTiposReparacion().subscribe(data => {
+    this.tiposReparacion = data;
+  });
+  }
+
+  obtenerPrioridades(): void {
+    this.solicitudService.obtenerPrioridades().subscribe(data => {
+      this.prioridades = data;
+    });
+  }
+
+  
+  obtenerSolicitudesPendientes() {
+    const filtros = { estadoId: 2 }; // estado Pendiente
+    this.solicitudService.obtenerSolicitudPorFiltro(filtros).subscribe(async solicitudes => {
+      const solicitudesConImagenes = await Promise.all(
+        solicitudes.map(async (sol: any) => {
+          const imagenes = await this.solicitudService.obtenerImagenesPorSolicitud(sol.id).toPromise();
+          return { ...sol, imagenes };
+        })
+      );
+      this.solicitudes = solicitudesConImagenes;
+      this.totalPages = Math.ceil(this.solicitudes.length / this.pageSize);
+      this.actualizarPagina();
+    });
+  }
+
+  aprobarSolicitud(index: number): void {
+  const solicitud = this.solicitudesPaginadas[index];
+  
+  if (!solicitud.tipoReparacionId || !solicitud.prioridadId) {
+    Swal.fire('Campos requeridos', 'Debes seleccionar tipo de reparación y prioridad.', 'warning');
+    return;
+  }
+
+  const rut = this.authService.obtenerRutUsuario(); // Usa tu servicio de auth
+ 
+  if (!rut) {
+    Swal.fire('Error', 'No se pudo obtener el RUT del usuario.', 'error');
+    return;
+  }
+
+  const dto: AprobarSolicitudDto = {
+    tipoReparacionId: solicitud.tipoReparacionId,
+    prioridadId: solicitud.prioridadId,
+    rutUsuario: rut
+  };
+
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: `¿Deseas aprobar la solicitud #${solicitud.id}?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, aprobar',
+    cancelButtonText: 'Cancelar'
+  }).then(result => {
+    if (result.isConfirmed) {
+      this.solicitudService.aprobarSolicitud(solicitud.id, dto).subscribe({
+        next: () => {
+          Swal.fire('Aprobada', 'La solicitud ha sido aprobada.', 'success');
+          this.obtenerSolicitudesPendientes();
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudo aprobar la solicitud.', 'error');
+        }
+      });
+    }
+  });
+}
+
+
+  denegarSolicitud(index: number): void {
+  const solicitud = this.solicitudesPaginadas[index];
+
+  Swal.fire({
+    title: '¿Deseas denegar esta solicitud?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, denegar',
+    cancelButtonText: 'Cancelar'
+  }).then(result => {
+    if (result.isConfirmed) {
+      Swal.fire({
+  title: 'Motivo de denegación',
+  input: 'textarea',
+  inputLabel: 'Por favor, escribe una explicación (opcional):',
+  inputPlaceholder: 'Motivo del rechazo...',
+  inputAttributes: {
+    'aria-label': 'Motivo'
+  },
+  showCancelButton: true
+}).then(res => {
+  if (res.isConfirmed) {
+    const motivo = res.value?.trim() || "N/A";  // <-- Fallback si no hay texto
+
+    const rut = this.authService.obtenerRutUsuario();
+    if (!rut) {
+      Swal.fire('Error', 'No se pudo obtener el RUT del usuario.', 'error');
+      return;
+    }
+
+    const dto = {
+      motivo,
+      rutUsuario: rut
+    };
+
+    this.solicitudService.denegarSolicitud(solicitud.id, dto).subscribe({
+      next: () => {
+        Swal.fire('Rechazada', 'La solicitud ha sido denegada.', 'success');
+        this.obtenerSolicitudesPendientes();
+      },
+      error: () => {
+        Swal.fire('Error', 'No se pudo denegar la solicitud.', 'error');
+      }
+    });
+  }
+});
+    }
+  });
+}
+
 
   actualizarPagina(): void {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
     this.solicitudesPaginadas = this.solicitudes.slice(start, end);
     this.activeIndex = null;
+    console.log("solicitudes:", this.solicitudesPaginadas)
   }
 
   cambiarPagina(pagina: number): void {
@@ -79,67 +189,40 @@ export class AprobacionesComponent implements OnInit {
   }
 
   toggleAcordeon(index: number): void {
-    this.activeIndex = this.activeIndex === index ? null : index;
-  }
+  if (this.activeIndex === index) {
+    this.activeIndex = null;
+  } else {
+    this.activeIndex = index;
 
-  aprobarSolicitud(index: number): void {
-    const solicitud = this.solicitudesPaginadas[index];
-    solicitud.estado = 'Finalizado';
-    console.log(`✅ Aprobada solicitud ID ${solicitud.id}`);
+    // Limpiar selects de la solicitud seleccionada
+    this.solicitudesPaginadas[index].tipoReparacionId = null!;
+    this.solicitudesPaginadas[index].prioridadId = null!;
   }
+}
 
-  denegarSolicitud(index: number): void {
-    const solicitud = this.solicitudesPaginadas[index];
-    solicitud.estado = 'Rechazada';
-    console.log(`❌ Rechazada solicitud ID ${solicitud.id}`);
-  }
 
  filtrosVisibles: boolean = false;
 
-filtro = {
-  id: '',
-  comuna: '',
-  estadoId: '',
-  tipoReparacionId: '',
-  prioridadId: ''
-};
+  filtro = {
+    id: '',
+    comuna: ''
+  };
 
-tiposReparacion = [
-  { id: 'Vialidad', nombre: 'Vialidad' },
-  { id: 'Alumbrado Público', nombre: 'Alumbrado Público' },
-  { id: 'Espacios Públicos', nombre: 'Espacios Públicos' },
-  { id: 'Áreas Verdes', nombre: 'Áreas Verdes' },
-  { id: 'Edificaciones Municipales', nombre: 'Edificaciones Municipales' },
-  { id: 'Limpieza Urbana', nombre: 'Limpieza Urbana' }
-];
-
-prioridades = [
-  { id: 'Alta', nombre: 'Alta' },
-  { id: 'Media', nombre: 'Media' },
-  { id: 'Baja', nombre: 'Baja' }
-];
-
-estados = [
-  { id: 'Pendiente', nombre: 'Pendiente' },
-  { id: 'En proceso', nombre: 'En proceso' },
-  { id: 'Finalizado', nombre: 'Finalizado' },
-  { id: 'Rechazada', nombre: 'Rechazada' }
-];
 
 abrirFiltro(): void {
   this.filtrosVisibles = !this.filtrosVisibles;
 }
 
 buscarPorFiltros(): void {
-  const { id, comuna, estadoId, tipoReparacionId, prioridadId } = this.filtro;
+  const { id, comuna } = this.filtro;
+
+  const normalizar = (texto: string) =>
+    texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   const filtradas = this.solicitudes.filter(sol => {
     const coincideId = id ? sol.id.toString().includes(id) : true;
-    const coincideComuna = comuna ? sol.direccion.toLowerCase().includes(comuna.toLowerCase()) : true;
-    const coincideEstado = estadoId ? sol.estado === estadoId : true;
-    const coincideTipo = tipoReparacionId ? sol.tipoReparacion === tipoReparacionId : true;
-    const coincidePrioridad = prioridadId ? sol['prioridad'] === prioridadId : true; // prioridad simulada
-    return coincideId && coincideComuna && coincideEstado && coincideTipo && coincidePrioridad;
+    const coincideComuna = comuna ? normalizar(sol.direccion).includes(normalizar(comuna)) : true;
+    return coincideId && coincideComuna;
   });
 
   this.totalPages = Math.ceil(filtradas.length / this.pageSize);
@@ -152,34 +235,23 @@ buscarPorFiltros(): void {
 limpiarFiltros(): void {
   this.filtro = {
     id: '',
-    comuna: '',
-    estadoId: '',
-    tipoReparacionId: '',
-    prioridadId: ''
+    comuna: ''
   };
   this.actualizarPagina();
 }
 
 filtrarSolicitudes(): void {
   const texto = this.searchText.toLowerCase();
-  const estado = this.estadoSeleccionado;
 
-  const filtradas = this.solicitudes.filter(sol => {
-    const coincideTexto =
-      sol.nombre.toLowerCase().includes(texto) ||
-      sol.direccion.toLowerCase().includes(texto) ||
-      sol.descripcion.toLowerCase().includes(texto);
-
-    const coincideEstado = estado ? sol.estado === estado : true;
-
-    return coincideTexto && coincideEstado;
-  });
+  const filtradas = this.solicitudes.filter(sol =>
+    sol.nombre.toLowerCase().includes(texto) ||
+    sol.direccion.toLowerCase().includes(texto) ||
+    sol.descripcion.toLowerCase().includes(texto)
+  );
 
   this.totalPages = Math.ceil(filtradas.length / this.pageSize);
   this.solicitudesPaginadas = filtradas.slice(0, this.pageSize);
   this.currentPage = 1;
   this.activeIndex = null;
 }
-
-
 }

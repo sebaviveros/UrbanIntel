@@ -1,0 +1,14 @@
+INSERT INTO accion (nombre)
+VALUES ('Crear');
+
+INSERT INTO accion (nombre)
+VALUES ('Modificar');
+
+INSERT INTO accion (nombre)
+VALUES ('Eliminar');
+
+INSERT INTO accion (nombre)
+VALUES ('Aprobar');
+
+INSERT INTO accion (nombre)
+VALUES ('Denegar');

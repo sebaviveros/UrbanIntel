@@ -1,4 +1,4 @@
-CREATE PROCEDURE sp_crearSolicitudCiudadana
+CREATE PROCEDURE [dbo].[sp_crearSolicitudCiudadana]
     @p_nombre NVARCHAR(100),
     @p_apellido NVARCHAR(100),
     @p_rut NVARCHAR(20),
@@ -16,8 +16,8 @@ BEGIN
         BEGIN TRANSACTION;
 
         -- Insertar la solicitud y obtener el ID generado
-        INSERT INTO Solicitud (nombre_ciudadano, apellido_ciudadano, rut_ciudadano, direccion, email_ciudadano, telefono_ciudadano, descripcion, comuna, fecha_creacion)
-        VALUES (@p_nombre, @p_apellido, @p_rut, @p_direccion, @p_correo, @p_celular, @p_descripcion, @p_comuna, GETDATE());
+        INSERT INTO Solicitud (nombre_ciudadano, apellido_ciudadano, rut_ciudadano, direccion, email_ciudadano, telefono_ciudadano, descripcion, comuna, fecha_creacion, estado_id)
+        VALUES (@p_nombre, @p_apellido, @p_rut, @p_direccion, @p_correo, @p_celular, @p_descripcion, @p_comuna, GETDATE(), 2);
 
         -- Obtener el ID de la solicitud recién creada
         SET @solicitudId = SCOPE_IDENTITY();

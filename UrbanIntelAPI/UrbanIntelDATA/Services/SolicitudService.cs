@@ -12,11 +12,14 @@ namespace UrbanIntelDATA.Services
     {
         private readonly UrbanIntelDBContext _context;
         private readonly AzureBlobService _blobService;
+        private readonly SmtpService _smtpService;
 
-        public SolicitudService(UrbanIntelDBContext context, AzureBlobService blobService)
+
+        public SolicitudService(UrbanIntelDBContext context, AzureBlobService blobService, SmtpService smtpService)
         {
             _context = context;
             _blobService = blobService;
+            _smtpService = smtpService;
         }
 
         // crear una solicitud con imagenes
@@ -380,6 +383,149 @@ namespace UrbanIntelDATA.Services
                 throw;
             }
         }
+
+        public async Task AprobarSolicitudAsync(int solicitudId, AprobarSolicitudDto dto)
+        {
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
+            try
+            {
+                // Obtener correo ciudadano
+                string correoCiudadano;
+                using (var cmdCorreo = new SqlCommand("sp_filtrarSolicitudes", connection, transaction))
+                {
+                    cmdCorreo.CommandType = CommandType.StoredProcedure;
+                    cmdCorreo.Parameters.AddWithValue("@p_id", solicitudId);
+
+                    using var reader = await cmdCorreo.ExecuteReaderAsync();
+                    if (!await reader.ReadAsync())
+                        throw new Exception("No se encontró el correo del ciudadano.");
+
+                    correoCiudadano = reader.GetString(reader.GetOrdinal("email_ciudadano"));
+                }
+
+                // Actualizar solicitud
+                using var cmd = new SqlCommand("sp_aprobarSolicitud", connection, transaction)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                cmd.Parameters.AddWithValue("@p_id", solicitudId);
+                cmd.Parameters.AddWithValue("@p_rut_usuario", dto.RutUsuario);
+                cmd.Parameters.AddWithValue("@p_tipo_reparacion_id", dto.TipoReparacionId);
+                cmd.Parameters.AddWithValue("@p_prioridad_id", dto.PrioridadId);
+                cmd.Parameters.AddWithValue("@p_fecha_aprobacion", DateTime.Now);
+
+                await cmd.ExecuteNonQueryAsync();
+
+                // Enviar correo
+                string asunto = "Solicitud Aprobada";
+                string cuerpo = $@"
+                    <p>Estimado/a ciudadano/a:</p>
+                    <p>Su solicitud con ID: <strong>{solicitudId}</strong> ha sido aprobada y se encuentra ahora en estado <strong>En Proceso</strong>.</p>
+                    <p>Puedes darle seguimiento con el Id de la solicitud o tu RUT en la web oficial de Urban Intel.</p>
+                    <p>Nos pondremos en contacto en caso de requerir más información.</p>
+                ";
+                await _smtpService.EnviarCorreoAsync(correoCiudadano, asunto, cuerpo);
+
+                // Insertar en auditoría
+                var descripcion = $"El usuario: {dto.RutUsuario} aprobó la solicitud con ID: {solicitudId} correspondiente al ciudadano de correo: {correoCiudadano}";
+
+                using var audCmd = new SqlCommand("sp_insertarAuditoria", connection, transaction)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                audCmd.Parameters.AddWithValue("@p_rut_usuario", dto.RutUsuario);
+                audCmd.Parameters.AddWithValue("@p_accion_id", 4); // Aprobar
+                audCmd.Parameters.AddWithValue("@p_modulo_id", 2); // Solicitudes
+                audCmd.Parameters.AddWithValue("@p_descripcion", descripcion);
+
+                await audCmd.ExecuteNonQueryAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task DenegarSolicitudAsync(int solicitudId, string rutUsuario, string motivoRechazo)
+        {
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
+            try
+            {
+                // obtener correo del ciudadano
+                string correoCiudadano;
+                using (var cmdCorreo = new SqlCommand("sp_filtrarSolicitudes", connection, transaction))
+                {
+                    cmdCorreo.CommandType = CommandType.StoredProcedure;
+                    cmdCorreo.Parameters.AddWithValue("@p_id", solicitudId);
+
+                    using var reader = await cmdCorreo.ExecuteReaderAsync();
+                    if (!await reader.ReadAsync())
+                        throw new Exception("No se encontró el correo del ciudadano.");
+
+                    correoCiudadano = reader.GetString(reader.GetOrdinal("email_ciudadano"));
+                }
+
+                // actualizar a estado rechazada
+                using var cmd = new SqlCommand("sp_denegarSolicitud", connection, transaction)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                cmd.Parameters.AddWithValue("@p_id", solicitudId);
+                cmd.Parameters.AddWithValue("@p_rut_usuario", rutUsuario);
+                cmd.Parameters.AddWithValue("@p_fecha_aprobacion", DateTime.Now);
+
+                await cmd.ExecuteNonQueryAsync();
+
+                // enviar correo con motivo rechazo
+                string asunto = "Solicitud Rechazada";
+                string cuerpo = $@"
+                    <p>Estimado/a ciudadano/a:</p>
+                    <p>Lamentamos informarle que su solicitud con ID: <strong>{solicitudId}</strong> ha sido <strong>rechazada</strong>.</p>
+                    <p><strong>Motivo:</strong> {motivoRechazo}</p>
+                    <p>Si considera que esta decisión fue errónea, puede realizar una nueva solicitud o comunicarse con soporte.</p>
+                ";
+                await _smtpService.EnviarCorreoAsync(correoCiudadano, asunto, cuerpo);
+
+                // insertar en auditoria            
+                var descripcion = $"El usuario: {rutUsuario} denegó la solicitud con ID: {solicitudId}, correspondiente al ciudadano de RUT: {rutUsuario} y correo: {correoCiudadano}, por el siguiente motivo: {motivoRechazo}";
+
+
+                using var audCmd = new SqlCommand("sp_insertarAuditoria", connection, transaction)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                audCmd.Parameters.AddWithValue("@p_rut_usuario", rutUsuario);
+                audCmd.Parameters.AddWithValue("@p_accion_id", 5); // accion denegar
+                audCmd.Parameters.AddWithValue("@p_modulo_id", 2); // modulo solicitudes
+                audCmd.Parameters.AddWithValue("@p_descripcion", descripcion);
+
+                await audCmd.ExecuteNonQueryAsync();
+
+                
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+
+
 
     }
 }
