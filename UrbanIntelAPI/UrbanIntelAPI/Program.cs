@@ -13,6 +13,7 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<SolicitudService>();
 builder.Services.AddScoped<AzureBlobService>();
+builder.Services.AddScoped<EventoService>();
 
 // Agregar controladores (API) UrbanIntelData
 builder.Services.AddControllers();

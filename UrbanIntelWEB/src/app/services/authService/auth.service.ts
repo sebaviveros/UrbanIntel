@@ -65,4 +65,16 @@ export class AuthService {
     return null;
   }
 }
+
+getRutUsuario(): string | null {
+  const token = this.obtenerToken();
+  if (!token) return null;
+
+  try {
+    const decoded: any = jwtDecode(token);
+    return decoded.sub || decoded.rut_usuario || decoded.rut || null;
+  } catch (err) {
+    return null;
+  }
+}
 }

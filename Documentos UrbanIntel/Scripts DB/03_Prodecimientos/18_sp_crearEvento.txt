@@ -1,0 +1,28 @@
+CREATE PROCEDURE sp_crearEvento
+    @p_nombre_evento NVARCHAR(100),
+    @p_descripcion NVARCHAR(255) = NULL,
+    @p_hora_inicio DATETIME,
+    @p_hora_termino DATETIME = NULL,
+    @p_notificacion BIT,
+    @p_rut_usuario NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO Evento (
+        nombre_evento,
+        descripcion,
+        hora_inicio,
+        hora_termino,
+        notificacion,
+        rut_usuario
+    )
+    VALUES (
+        @p_nombre_evento,
+        @p_descripcion,
+        @p_hora_inicio,
+        @p_hora_termino,
+        @p_notificacion,
+        @p_rut_usuario
+    );
+END;
