@@ -15,18 +15,19 @@ builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<SolicitudService>();
 builder.Services.AddScoped<AzureBlobService>();
 builder.Services.AddScoped<AuditoriaService>();
+builder.Services.AddScoped<EventoService>();
 
 // Agregar controladores (API) UrbanIntelData
 builder.Services.AddControllers();
 
-// Configurar Swagger para documentación
+// Configurar Swagger para documentaciï¿½n
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // inyeccion de db context para ser reconocida en el resto del sistema
 builder.Services.AddScoped<UrbanIntelDBContext>();
 
-// Configuración SMTP
+// Configuraciï¿½n SMTP
 builder.Services.Configure<SmtpSettings>(
 builder.Configuration.GetSection("Smtp"));
 builder.Services.AddTransient<SmtpService>();
@@ -42,7 +43,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configurar Autenticación JWT
+// Configurar Autenticaciï¿½n JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];
 
@@ -75,14 +76,14 @@ app.UseSwaggerUI(c =>
 // habilitar cors
 app.UseCors();
 
-// Activar Autenticación (verifica tokens JWT)
+// Activar Autenticaciï¿½n (verifica tokens JWT)
 app.UseAuthentication();
 
-// Activar Autorización (permite o deniega acceso según roles o claims)
+// Activar Autorizaciï¿½n (permite o deniega acceso segï¿½n roles o claims)
 app.UseAuthorization();
 
 // Mapear controladores (rutas)
 app.MapControllers();
 
-// Correr la aplicación
+// Correr la aplicaciï¿½n
 app.Run();

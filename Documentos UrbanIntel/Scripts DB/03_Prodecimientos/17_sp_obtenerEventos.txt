@@ -1,0 +1,17 @@
+CREATE PROCEDURE sp_obtenerEventos
+  @p_rut_usuario VARCHAR(20)
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  SELECT 
+    id_evento,
+    nombre_evento,
+    descripcion,
+    hora_inicio,
+    hora_termino,
+    notificacion,
+    rut_usuario
+  FROM Evento
+  WHERE rut_usuario = @p_rut_usuario;
+END;

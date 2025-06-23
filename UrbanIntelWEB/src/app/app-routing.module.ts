@@ -12,6 +12,7 @@ import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.compone
 import { ReportesComponent } from './views/reportes/reportes.component';
 import { AuditoriaComponent } from './views/auditoria/auditoria.component';
 
+import { ProgramacionComponent } from './views/programacion/programacion.component';
 
 const routes: Routes = [
   // redirecciona al login si la url está vacía
@@ -23,6 +24,7 @@ const routes: Routes = [
   {path: 'quienes-somos', component: QuienesSomosComponent},
   {path:'manual', component: ManualComponent},
   // rutas protegidas que usan layout (sidebar)
+  
   {
     path: '',
     component: LayoutComponent,
@@ -32,12 +34,11 @@ const routes: Routes = [
       { path: 'gestion-cuentas', component: GestionCuentasComponent },
       { path: 'aprobaciones', component: AprobacionesComponent },
       { path: 'reportes', component: ReportesComponent },
-      { path: 'auditoria', component: AuditoriaComponent }
-      // puedes agregar más rutas hijas aquí
+      { path: 'auditoria', component: AuditoriaComponent },
+      { path: 'programacion', component: ProgramacionComponent }
     ]
   },
-
-  // ruta comodín para rutas no encontradas
+   // ruta comodin
   { path: '**', redirectTo: 'login' }
 ];
 

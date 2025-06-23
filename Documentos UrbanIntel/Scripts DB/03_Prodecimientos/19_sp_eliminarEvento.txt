@@ -1,0 +1,14 @@
+CREATE PROCEDURE sp_eliminarEvento
+    @p_id_evento INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DELETE FROM Evento
+    WHERE Id_evento = @p_id_evento;
+END;
+
+
+DROP PROCEDURE sp_eliminarEvento
+
+SELECT * FROM EVENTO

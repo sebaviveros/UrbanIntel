@@ -26,7 +26,14 @@ import { AprobacionesComponent } from './views/aprobaciones/aprobaciones.compone
 import { ReportesComponent } from './views/reportes/reportes.component';
 import { AuditoriaComponent } from './views/auditoria/auditoria.component'; 
 
+import { ProgramacionComponent } from './views/programacion/programacion.component'; // datatables de angular
 
+
+import { LOCALE_ID } from '@angular/core';
+import localeEs from '@angular/common/locales/es';
+import { registerLocaleData } from '@angular/common';
+
+registerLocaleData(localeEs);
 
 @NgModule({
   declarations: [
@@ -41,7 +48,8 @@ import { AuditoriaComponent } from './views/auditoria/auditoria.component';
     SolicitudesComponent,
     AprobacionesComponent,
     ReportesComponent,
-    AuditoriaComponent
+    AuditoriaComponent,
+    ProgramacionComponent 
     // Agregarás más componentes aquí luego
   ],
    imports: [ 
@@ -54,6 +62,7 @@ import { AuditoriaComponent } from './views/auditoria/auditoria.component';
        // Api Rest 
   ],
   bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Agregago de ion-icons para que sea reconocido por Angular
+  schemas: [CUSTOM_ELEMENTS_SCHEMA], // Agregago de ion-icons para que sea reconocido por Angular
+  providers: [{ provide: LOCALE_ID, useValue: 'es-ES' }]
 })
 export class AppModule { }
