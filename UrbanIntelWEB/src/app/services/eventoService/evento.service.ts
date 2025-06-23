@@ -40,6 +40,10 @@ export class EventoService {
     );
   }
 
+  marcarComoNotificado(idEvento: number): Observable<any> {
+  return this.http.put(`${this.apiUrl}/eventos/${idEvento}/notificar`, null);
+}
+
   private handleError(error: any) {
     let message = 'Ocurrió un error inesperado.';
     if (error?.error?.message) {

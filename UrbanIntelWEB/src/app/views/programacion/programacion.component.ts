@@ -9,11 +9,12 @@ import {
 } from '@angular/core';
 import { EventoService, Evento } from '../../services/eventoService/evento.service';
 import { AuthService } from '../../services/authService/auth.service';
-
+import { ChangeDetectorRef } from '@angular/core';
 interface EventItem {
   id?:number;
   title: string;
   time: string;
+  notificado?:boolean
 }
 
 interface CalendarEvent {
@@ -63,18 +64,26 @@ export class ProgramacionComponent implements OnInit, AfterViewInit {
   constructor(
     private renderer: Renderer2,
     private eventoService: EventoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdref: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.getEventsFromBackend(); 
+    this.iniciarChequeoNotificaciones(); 
+
     const rut =  this.authService.getRutUsuario();
+
     console.log('rut:', rut)
   }
 
   ngAfterViewInit(): void {
     this.setupCalendarListeners();
     this.setupInputFormatters();
+    this.getActiveDay(this.activeDay);
+    this.updateEvents(this.activeDay);
+    this.cdref.detectChanges(); // Fuerza actualización segura
+    
   }
 
   getEventsFromBackend(): void {
@@ -110,6 +119,8 @@ export class ProgramacionComponent implements OnInit, AfterViewInit {
       this.initCalendar();
       this.setActiveDay(this.activeDay);
     });
+    
+    
   }
 
   setupCalendarListeners(): void {
@@ -340,8 +351,8 @@ addEvent(): void {
   const nuevoEvento: Evento = {
     nombre_evento: title,
     descripcion: '', // Puedes agregar input si lo deseas
-    hora_inicio: horaInicio.toISOString(),
-    hora_termino: horaTermino.toISOString(),
+    hora_inicio: horaInicio.toLocaleString('sv-SE').replace(' ', 'T'),
+    hora_termino: horaTermino?.toLocaleString('sv-SE').replace(' ', 'T'),
     notificacion: false,
     rut_usuario: rut
   };
@@ -425,5 +436,66 @@ deleteEvent(index: number): void {
 
   this.updateEvents(this.activeDay);
 }
+
+iniciarChequeoNotificaciones(): void {
+  setInterval(() => {
+    const ahora = new Date();
+
+    this.eventsArr.forEach((dia) => {
+      dia.events.forEach((evento) => {
+        if ((evento as any).notificado) return;
+
+        const [fromStr] = evento.time.split(' - ');
+        const [h, m, meridiano] = fromStr.match(/\d+|\w+/g) || [];
+        if (!h || !m || !meridiano) return;
+
+        let hora = parseInt(h);
+        const minutos = parseInt(m);
+
+        if (meridiano === 'PM' && hora < 12) hora += 12;
+        if (meridiano === 'AM' && hora === 12) hora = 0;
+
+        const eventoFecha = new Date(this.year, dia.month - 1, dia.day, hora, minutos);
+        const diferenciaMin = (eventoFecha.getTime() - ahora.getTime()) / 60000;
+
+        if (diferenciaMin > 9 && diferenciaMin < 11) {
+          // 🔊 Intenta reproducir antes del alert
+          const audio = new Audio('assets/sounds/alerta.mp3');
+          audio.play().catch(err => console.warn('No se pudo reproducir el sonido:', err));
+
+          // 🖼️ Muestra alerta personalizada
+          const mensaje = `📢 ATENCIÓN: En 10 minutos empieza "${evento.title}" (${evento.time})`;
+          this.mostrarAlertaPersonalizada(mensaje);
+
+          (evento as any).notificado = true;
+        }
+      });
+    });
+  }, 60000);
+}
+
+mostrarAlertaPersonalizada(mensaje: string): void {
+  const alertaDiv = document.createElement('div');
+  alertaDiv.innerText = mensaje;
+
+  // 🧭 Estilos para mostrar al centro arriba
+  alertaDiv.style.position = 'fixed';
+  alertaDiv.style.top = '30px';
+  alertaDiv.style.left = '50%';
+  alertaDiv.style.transform = 'translateX(-50%)';
+  alertaDiv.style.padding = '20px 30px';
+  alertaDiv.style.backgroundColor = '#ffcc00';
+  alertaDiv.style.color = '#000';
+  alertaDiv.style.fontWeight = 'bold';
+  alertaDiv.style.borderRadius = '10px';
+  alertaDiv.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+  alertaDiv.style.zIndex = '9999';
+
+  document.body.appendChild(alertaDiv);
+
+  setTimeout(() => document.body.removeChild(alertaDiv), 7000); // se elimina tras 7 segundos
+}
+
+
 
 }
