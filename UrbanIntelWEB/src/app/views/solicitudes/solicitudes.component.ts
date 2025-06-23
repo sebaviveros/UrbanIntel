@@ -65,6 +65,8 @@ imagenesAdjuntas: File[] = [];
   prioridades: GenericItem[] = [];
   estados: GenericItem[] = [];
 
+  imagenSeleccionada: string | null = null;
+
   constructor(private solicitudService: SolicitudService) {}
 
   async ngOnInit(): Promise<void> {
@@ -81,7 +83,8 @@ imagenesAdjuntas: File[] = [];
     this.estados = estados;
 
     // Obtener solicitudes filtradas (todas si se pasa objeto vacío)
-    const solicitudes = await firstValueFrom(this.solicitudService.obtenerSolicitudPorFiltro({}));
+    const todasSolicitudes = await firstValueFrom(this.solicitudService.obtenerSolicitudPorFiltro({}));
+    const solicitudes = todasSolicitudes.filter(sol => sol.estadoNombre !== 'Pendiente');
 
     // Obtener imágenes de cada solicitud en paralelo
     const solicitudesConImagenes = await Promise.all(
@@ -107,6 +110,14 @@ imagenesAdjuntas: File[] = [];
 
 onImagenesSeleccionadas(event: any): void {
   this.imagenesAdjuntas = Array.from(event.target.files);
+}
+
+abrirImagen(img: string): void {
+  this.imagenSeleccionada = img;
+}
+
+cerrarImagen(): void {
+  this.imagenSeleccionada = null;
 }
 
 abrirModalCrear(): void {
