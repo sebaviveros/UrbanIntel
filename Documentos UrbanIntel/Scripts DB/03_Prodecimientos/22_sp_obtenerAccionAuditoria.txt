@@ -1,0 +1,6 @@
+CREATE PROCEDURE sp_obtenerAccionAuditoria
+AS
+BEGIN
+    SELECT id, nombre FROM Accion;
+END
+GO

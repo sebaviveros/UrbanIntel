@@ -1,1 +1,147 @@
-<p>auditoria works!</p>
+<!-- Header -->
+<div class="header-container">
+  <ion-icon name="book-outline"></ion-icon>
+  <h2>Auditoría</h2>
+</div>
+
+<button class="btn-cafe-claro-filtros" (click)="mostrarFiltros = !mostrarFiltros">
+  <i class="bi bi-funnel-fill"></i> Filtros avanzados
+</button>
+<br>
+<!-- Container Filtros -->
+ <div *ngIf="mostrarFiltros" class="container-filtros mb-4">
+ <div class="container-filtros mb-4">
+  <div class="row align-items-center g-2">
+    <div class="col-md-2">
+      <input class="form-control" placeholder="ID" [(ngModel)]="filtro.id">
+    </div>
+    <div class="col-md-2">
+      <input class="form-control" placeholder="RUT Usuario" [(ngModel)]="filtro.rutUsuario">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" [(ngModel)]="filtro.accionId">
+        <option [ngValue]="null" disabled selected>Acción</option>
+        <option *ngFor="let a of acciones" [ngValue]="a.id">{{ a.nombre }}</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" [(ngModel)]="filtro.moduloId">
+        <option [ngValue]="null" disabled selected>Módulo</option>
+        <option *ngFor="let m of modulos" [ngValue]="m.id">{{ m.nombre }}</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input type="date" class="form-control" [(ngModel)]="filtro.fechaInicio">
+    </div>
+    <div class="col-md-2">
+      <input type="date" class="form-control" [(ngModel)]="filtro.fechaFin">
+    </div>
+  </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="d-flex justify-content-start mt-3 gap-2">
+    <button class="btn-buscar" (click)="buscarAuditorias()">Buscar</button>
+    <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
+  </div>
+</div>
+
+<!-- Búsqueda -->
+<input type="text"
+       class="form-control my-2 w-25"
+       placeholder="Búsqueda sensitiva..."
+       [ngModel]="busqueda"
+       (ngModelChange)="busquedaTexto = $event" />
+
+
+<!-- Tabla -->
+<table class="table table-striped table-hover table-bordered">
+  <thead class="table-dark">
+  <tr>
+    <th (click)="ordenarPor('id')">
+      ID
+      <i *ngIf="ordenColumna === 'id'" class="bi" [ngClass]="ordenAscendente ? 'bi-caret-up-fill' : 'bi-caret-down-fill'"></i>
+    </th>
+    <th (click)="ordenarPor('rutUsuario')">
+      RUT Usuario
+      <i *ngIf="ordenColumna === 'rutUsuario'" class="bi" [ngClass]="ordenAscendente ? 'bi-caret-up-fill' : 'bi-caret-down-fill'"></i>
+    </th>
+    <th (click)="ordenarPor('accionNombre')">
+      Acción
+      <i *ngIf="ordenColumna === 'accionNombre'" class="bi" [ngClass]="ordenAscendente ? 'bi-caret-up-fill' : 'bi-caret-down-fill'"></i>
+    </th>
+    <th (click)="ordenarPor('moduloNombre')">
+      Módulo
+      <i *ngIf="ordenColumna === 'moduloNombre'" class="bi" [ngClass]="ordenAscendente ? 'bi-caret-up-fill' : 'bi-caret-down-fill'"></i>
+    </th>
+    <th (click)="ordenarPor('fecha')">
+      Fecha
+      <i *ngIf="ordenColumna === 'fecha'" class="bi" [ngClass]="ordenAscendente ? 'bi-caret-up-fill' : 'bi-caret-down-fill'"></i>
+    </th>
+    <th>Detalle</th>
+  </tr>
+</thead>
+  <tbody *ngIf="auditoriasFiltradasPaginadas().length > 0; else sinResultados">
+    <tr *ngFor="let a of auditoriasFiltradasPaginadas()">
+      <td>{{ a.id }}</td>
+      <td>{{ a.rutUsuario }}</td>
+      <td>{{ a.accionNombre }}</td>
+      <td>{{ a.moduloNombre }}</td>
+      <td>{{ a.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+      <td>
+        <button class="btn-cafe-claro" (click)="abrirDetalle(a.descripcion)">Ver detalles</button>
+      </td>
+    </tr>
+  </tbody>
+  <ng-template #sinResultados>
+  <tr>
+    <td colspan="6" class="text-center text-muted">No se encontraron resultados.</td>
+  </tr>
+</ng-template>
+</table>
+
+<!-- Modal de detalle -->
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-white text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalle de la Auditoría</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        {{ descripcionSeleccionada }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Paginación -->
+<nav class="d-flex justify-content-center mt-3">
+  <ul class="pagination pagination-sm">
+    <li class="page-item" [class.disabled]="paginaActual === 1">
+      <button class="page-link" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
+    </li>
+    <li *ngFor="let pag of totalPaginasArray()" class="page-item" [class.active]="pag === paginaActual">
+      <button class="page-link" (click)="cambiarPagina(pag)">{{ pag }}</button>
+    </li>
+    <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+      <button class="page-link" (click)="cambiarPagina(paginaActual + 1)">Siguiente</button>
+    </li>
+  </ul>
+</nav>
+
+
+<!-- Modal Detalles -->
+<div class="modal fade" id="modalDetalles" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDetallesLabel">Detalle de Auditoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p>{{ descripcionSeleccionada }}</p>
+      </div>
+    </div>
+  </div>
+</div>

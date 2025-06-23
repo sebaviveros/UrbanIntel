@@ -44,6 +44,7 @@ import { AuditoriaComponent } from './views/auditoria/auditoria.component';
     AuditoriaComponent
     // Agregarás más componentes aquí luego
   ],
+   imports: [ 
     BrowserModule,
     DataTablesModule,  
     AppRoutingModule,

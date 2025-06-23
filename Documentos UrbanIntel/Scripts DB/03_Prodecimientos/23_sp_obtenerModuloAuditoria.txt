@@ -1,0 +1,6 @@
+CREATE PROCEDURE sp_obtenerModuloAuditoria
+AS
+BEGIN
+    SELECT id, nombre FROM Modulo;
+END
+GO

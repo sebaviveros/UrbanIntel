@@ -1,0 +1,30 @@
+CREATE PROCEDURE sp_buscarAuditorias
+    @Id INT = NULL,
+    @RutUsuario VARCHAR(12) = NULL,
+    @AccionId INT = NULL,
+    @ModuloId INT = NULL,
+    @FechaInicio DATETIME = NULL,
+    @FechaFin DATETIME = NULL
+AS
+BEGIN
+    SELECT 
+        a.id,
+        a.rut_usuario,
+        a.accion_id,
+        ac.nombre AS accion_nombre,
+        a.modulo_id,
+        m.nombre AS modulo_nombre,
+        a.fecha,
+        a.descripcion
+    FROM Auditoria a
+    INNER JOIN Accion ac ON a.accion_id = ac.id
+    INNER JOIN Modulo m ON a.modulo_id = m.id
+    WHERE
+        (@Id IS NULL OR a.id = @Id) AND
+        (@RutUsuario IS NULL OR a.rut_usuario = @RutUsuario) AND
+        (@AccionId IS NULL OR a.accion_id = @AccionId) AND
+        (@ModuloId IS NULL OR a.modulo_id = @ModuloId) AND
+        (@FechaInicio IS NULL OR a.fecha >= @FechaInicio) AND
+        (@FechaFin IS NULL OR a.fecha <= @FechaFin)
+    ORDER BY a.fecha DESC
+END

@@ -1,3 +1,23 @@
+// style header
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5rem;
+  margin-top: 3rem; 
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: white;
+  }
+
+  h2 {
+    margin: 0;
+    color: white;
+  }
+}
+
+
 h3{
     color: #f7941d;
     align-items: left;
