@@ -1,0 +1,8 @@
+CREATE PROCEDURE sp_obtenerImagenesSolicitud
+    @p_solicitud_id INT
+AS
+BEGIN
+    SELECT url_imagen
+	FROM ImagenSolicitud
+	WHERE solicitud_id = @p_solicitud_id
+END;

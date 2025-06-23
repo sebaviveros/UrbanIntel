@@ -1,0 +1,5 @@
+CREATE PROCEDURE sp_obtenerEstados
+AS
+BEGIN
+    SELECT id, nombre FROM EstadoSolicitud;
+END

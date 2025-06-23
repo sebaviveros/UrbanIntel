@@ -1,0 +1,5 @@
+INSERT INTO modulo (nombre)
+VALUES ('Usuarios');
+
+INSERT INTO modulo (nombre)
+VALUES ('Solicitudes');

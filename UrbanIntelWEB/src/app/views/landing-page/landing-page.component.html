@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>UrbanIntel</title>
+  <link rel="stylesheet" href="./landing-page.component.scss">
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+
+  <!-- Header y Navegación -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/imagenes/7cff6bf4-c274-4c75-be64-e9b65939ffd4-removebg-preview.png" alt="Urban Intel Logo">
+    </div>
+    <button class="menu-toggle" id="menu-toggle">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="landing-page">INICIO <span class="arrow">▼</span></a></li>
+      <li><a href="quienes-somos">QUIENES SOMOS <span class="arrow">▼</span></a></li>
+      <li><a href="manual">¿CÓMO SE USA? <span class="arrow">▼</span></a></li>
+    </ul>
+    <div class="spacer"></div>
+  </nav>
+
+  <header class="header" id="home">
+    <div class="section__container header__container">
+      <h2 class="titulo1">SOLUCIONES RÁPIDAS<br /></h2>
+      <h1 class="titulo2">PARA UNA CIUDAD MEJOR</h1>
+      <p>Conectamos a los vecinos y su municipalidad en tiempo real. <br> Reporta, gestiona y soluciona problemas de forma rápida y transparente</p>
+      <div class="input__group">
+        <button class="btn" (click)="scrollToFormulario()">Envía tu reporte</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Modal de Descripción -->
+  <div class="modal fade" id="modalDescripcion" tabindex="-1" aria-labelledby="modalDescripcionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalDescripcionLabel">Descripción de la Solicitud</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+          {{ descripcionSeleccionada }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Evidencia -->
+  <div class="modal fade" id="modalEvidencia" tabindex="-1" aria-labelledby="modalEvidenciaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEvidenciaLabel">Evidencia (Imágenes)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body d-flex flex-wrap gap-2 justify-content-center" style="max-height: 500px; overflow-y: auto;">
+          <ng-container *ngIf="imagenesSeleccionadas && imagenesSeleccionadas.length > 0; else noImagenes">
+            <img *ngFor="let img of imagenesSeleccionadas"
+                 [src]="img"
+                 alt="Evidencia"
+                 class="rounded shadow"
+                 style="max-width: 200px; max-height: 200px;">
+          </ng-container>
+          <ng-template #noImagenes>
+            <div class="alert alert-warning text-center w-100" role="alert">
+              No hay imágenes disponibles para esta solicitud.
+            </div>
+          </ng-template>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección Formulario y Consulta -->
+  <div class="seccion-formulario" #seccionFormulario>
+    <div class="contenedor-del-contenedor">
+
+      <!-- Contenedor de Pestañas -->
+      <div class="tab-container">
+        <button class="tab" [class.active]="activeTab === 'solicitudes'" (click)="setActiveTab('solicitudes')">Realizar Solicitud</button>
+        <button class="tab" [class.active]="activeTab === 'consulta'" (click)="setActiveTab('consulta')">Consultar Solicitud</button>
+      </div>
+
+      <div class="container-formulario">
+
+        <!-- Formulario de Solicitud -->
+        <div *ngIf="activeTab === 'solicitudes'" class="tab-content active">
+          <div class="title">Formulario de Solicitud</div>
+          <div class="content">
+            <form [formGroup]="solicitudForm" (ngSubmit)="enviarSolicitud()">
+              <div class="user-details">
+
+                <!-- Campo Nombre -->
+                <div class="input-box">
+                  <span class="details">Nombre</span>
+                  <input type="text" formControlName="nombre" placeholder="Ingrese su nombre" required>
+                </div>
+
+                <!-- Campo Apellido -->
+                <div class="input-box">
+                  <span class="details">Apellido</span>
+                  <input type="text" formControlName="apellido" placeholder="Ingrese su apellido" required>
+                </div>
+
+                <!-- Campo RUT -->
+                <div class="input-box">
+                  <span class="details">RUT</span>
+                  <input type="text" formControlName="rut" placeholder="Ingrese su RUT. ej. 12345678-9" required>
+                  <div *ngIf="solicitudForm.get('rut')?.touched && !isValidRut(solicitudForm.get('rut')?.value)">
+                    <small class="text-danger">RUT inválido.</small>
+                  </div>
+                </div>
+
+                <!-- Campo Región -->
+                <div class="input-box">
+                  <span class="details">Región</span>
+                  <select formControlName="region" (change)="onRegionChange()" required>
+                    <option value="" disabled selected>Seleccione Región</option>
+                    <option *ngFor="let region of regiones" [value]="region.region">{{ region.region }}</option>
+                  </select>
+                </div>
+
+                <!-- Campo Comuna -->
+                <div class="input-box" *ngIf="comunas.length > 0">
+                  <span class="details">Comuna</span>
+                  <select formControlName="comuna" required>
+                    <option value="" disabled selected>Seleccione Comuna</option>
+                    <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
+                  </select>
+                </div>
+
+                <!-- Sin Comunas -->
+                <div *ngIf="comunas.length === 0 && solicitudForm.get('region')?.value">
+                  <p>No hay comunas disponibles para la región seleccionada.</p>
+                </div>
+
+                <!-- Campo Dirección -->
+                <div class="input-box">
+                  <span class="details">Dirección</span>
+                  <input #direccionInput type="text" placeholder="Ingrese la dirección de la reparación" formControlName="direccion" required>
+                </div>
+
+                <!-- Campo Correo -->
+                <div class="input-box">
+                  <span class="details">Correo Electrónico</span>
+                  <input type="email" formControlName="correo" placeholder="Ingrese su correo electrónico" required>
+                </div>
+
+                <!-- Campo Celular -->
+                <div class="input-box">
+                  <span class="details">Celular</span>
+                  <input type="text" formControlName="celular" placeholder="Ingrese su número de celular" required>
+                </div>
+
+                <!-- Campo Imágenes -->
+                <div class="input-box file-upload">
+                  <button type="button" class="custom-file-upload" (click)="fileInput.click()">Adjuntar Imágenes</button>
+                  <p>(Máximo 3 permitidas)</p>
+                  <input #fileInput type="file" (change)="onFilesSelected($event)" accept="image/png, image/jpeg" multiple style="display: none;">
+                  <div *ngIf="fileLimitExceeded" class="error-message">Máximo 3 imágenes permitidas.</div>
+                  <div *ngFor="let file of selectedFiles; let i = index" class="file-preview">
+                    <span class="file-name">{{ file.name }}</span>
+                    <button type="button" class="remove-button" (click)="removeFile(i)">X</button>
+                  </div>
+                </div>
+
+                <!-- Campo Descripción -->
+                <div class="input-box">
+                  <span class="details">Descripción</span>
+                  <textarea formControlName="descripcion" placeholder="Explique la situación de forma clara y concisa" rows="5" required></textarea>
+                </div>
+
+              </div>
+
+              <!-- Botón Enviar -->
+              <div class="button">
+                <input type="submit" value="Enviar Reporte">
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Consulta de Solicitud -->
+        <div *ngIf="activeTab === 'consulta'" class="tab-content active">
+          <h5>Puedes buscar tu solicitud por tu RUT o por la ID de la solicitud.</h5>
+          <br>
+
+          <!-- Campo RUT -->
+          <div class="user-details">
+            <div class="input-box">
+              <span class="details">RUT</span>
+              <input type="text" [ngModel]="rutConsulta" (ngModelChange)="onRutConsultaChange($event)" placeholder="Ingrese su RUT. ej. 12345678-9">
+              <div *ngIf="rutConsulta && !isValidRut(rutConsulta)">
+                <small class="text-danger">RUT inválido.</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Campo ID Solicitud -->
+          <div class="user-details">
+            <div class="input-box">
+              <span class="details">ID SOLICITUD</span>
+              <input type="text" [(ngModel)]="idConsulta" placeholder="Ingrese la ID de la solicitud. ej. 543">
+            </div>
+          </div>
+
+          <!-- Botón Buscar -->
+          <div class="button-container">
+            <button type="button" class="btn btn-success" (click)="buscarSolicitud()">Buscar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Resultados de Consulta -->
+  <div *ngIf="activeTab === 'consulta' && resultados.length > 0" class="tabla-resultados">
+    <br><br>
+    <table datatable class="table table-striped table-hover table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>RUT del Solicitante</th>
+          <th>Dirección</th>
+          <th>Comuna</th>
+          <th>Descripción</th>
+          <th>Evidencia</th>
+          <th>Estado</th>
+          <th>Fecha de Creación</th>
+          <th>Fecha de Aprobación</th>
+          <th>Fecha de Asignación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let solicitud of resultados">
+          <td>{{ solicitud.id || 'N/A' }}</td>
+          <td>{{ solicitud.rutCiudadano || 'N/A' }}</td>
+          <td>{{ solicitud.direccion || 'N/A' }}</td>
+          <td>{{ solicitud.comuna || 'N/A' }}</td>
+          <td>
+            <button class="btn btn-sm btn-tabla" (click)="abrirModalDescripcion(solicitud.descripcion)">Ver descripción</button>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-tabla" (click)="abrirModalEvidencia(solicitud.imagenes)">Ver evidencia</button>
+          </td>
+          <td>
+            <button class="btn btn-sm estado-btn" [ngClass]="getEstadoClass(solicitud.estadoNombre)">
+              {{ solicitud.estadoNombre || 'N/A' }}
+            </button>
+          </td>
+          <td>{{ solicitud.fechaCreacion ? (solicitud.fechaCreacion | date:'short') : 'N/A' }}</td>
+          <td>{{ solicitud.fechaAprobacion ? (solicitud.fechaAprobacion | date:'short') : 'N/A' }}</td>
+          <td>{{ solicitud.fechaAsignacion ? (solicitud.fechaAsignacion | date:'short') : 'N/A' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>

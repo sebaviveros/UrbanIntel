@@ -1,0 +1,163 @@
+<!-- encabezado principal -->
+<div class="header-container">
+  <ion-icon name="checkbox-outline"></ion-icon>
+  <h2>Aprobaciones</h2>
+</div>
+
+<!-- contenedor de acciones superiores -->
+<div class="row mb-4 align-items-center gx-2">
+  <div class="col-md-3"></div>
+
+  <!-- buscador sensitivo -->
+  <div class="col-md-4">
+    <input type="text"
+           class="form-control"
+           [(ngModel)]="searchText"
+           placeholder="Buscar por ID, direccion, descripcion..."
+           (input)="filtrarSolicitudes()" />
+  </div>
+
+  <!-- boton filtros -->
+  <div class="col-auto">
+    <button class="btn btn-cafe-claro d-flex align-items-center gap-1" (click)="abrirFiltro()">
+      <i class="bi bi-funnel"></i> Filtros
+    </button>
+  </div>
+
+  <!-- boton actualizar -->
+  <div class="col-auto">
+    <button class="btn btn-cafe-claro d-flex align-items-center gap-2" (click)="actualizarAprobaciones()">
+      <i class="bi bi-arrow-clockwise fs-5"></i>
+      Actualizar
+    </button>
+  </div>
+</div>
+
+<!-- filtro desplegable -->
+<div class="container filtro-aprobaciones">
+  <div *ngIf="filtrosVisibles" class="card mb-3 p-3 border border-primary bg-light mt-3">
+    <div class="row g-2">
+      <div class="col-md-6">
+        <input class="form-control filtro" placeholder="ID" [(ngModel)]="filtro.id">
+      </div>
+      <div class="col-md-6">
+        <input class="form-control filtro" placeholder="Comuna" [(ngModel)]="filtro.comuna">
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3 mt-4">
+      <button class="btn btn-primary d-flex align-items-center gap-2" (click)="buscarPorFiltros()">
+        <i class="bi bi-search"></i> Buscar
+      </button>
+      <button class="btn btn-danger d-flex align-items-center gap-2" (click)="limpiarFiltros()">
+        <i class="bi bi-x-circle"></i> Limpiar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- acordeon de aprobaciones -->
+<div class="container mt-4">
+  <div class="accordion" id="accordionAprobaciones">
+    <div class="accordion-item" *ngFor="let solicitud of solicitudesPaginadas; let i = index">
+      
+      <!-- encabezado del acordeon -->
+      <h2 class="accordion-header">
+        <button class="accordion-button"
+                [ngClass]="{ collapsed: activeIndex !== i }"
+                (click)="toggleAcordeon(i)">
+          <div class="w-100 d-flex justify-content-between align-items-center">
+            <div class="text-start">
+              <div><strong>ID:</strong> {{ solicitud.id }}</div>
+              <div><strong>Direccion:</strong> {{ solicitud.direccion }}</div>
+            </div>
+            <span class="badge"
+              [ngClass]="{
+                'bg-warning text-dark': solicitud.estadoNombre === 'En proceso',
+                'bg-success': solicitud.estadoNombre === 'Finalizado',
+                'bg-pendiente': solicitud.estadoNombre === 'Pendiente',
+                'bg-danger': solicitud.estadoNombre === 'Rechazada',
+                'bg-secondary': !solicitud.estadoNombre
+              }">
+              {{ solicitud.estadoNombre || 'Sin estado' }}
+            </span>
+          </div>
+        </button>
+      </h2>
+
+      <!-- cuerpo del acordeon -->
+      <div class="accordion-collapse"
+           [ngClass]="{ 'collapse show': activeIndex === i, 'collapse': activeIndex !== i }">
+        <div class="accordion-body row">
+
+          <!-- columna izquierda -->
+          <div class="col-md-8">
+            <p><strong>Comuna:</strong> {{ solicitud.comuna }}</p>
+            <p><strong>Descripción:</strong> {{ solicitud.descripcion }}</p>
+
+            <!-- imagenes -->
+            <div *ngIf="solicitud.imagenes?.length"
+                 class="mb-3 d-flex flex-wrap gap-2 justify-content-start imagenes-container">
+              <img *ngFor="let img of solicitud.imagenes"
+                   [src]="img"
+                   (click)="abrirImagen(img)"
+                   class="img-fluid img-thumbnail imagen-evidencia"
+                   alt="Evidencia" />
+            </div>
+          </div>
+
+          <!-- columna derecha -->
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label"><strong>Tipo de reparacion</strong></label>
+              <select class="form-select" [(ngModel)]="solicitud.tipoReparacionId">
+                <option [ngValue]="null" disabled>Seleccionar tipo</option>
+                <option *ngFor="let tipo of tiposReparacion" [ngValue]="tipo.id">{{ tipo.nombre }}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label"><strong>Prioridad</strong></label>
+              <select class="form-select" [(ngModel)]="solicitud.prioridadId">
+                <option [ngValue]="null" disabled>Seleccionar prioridad</option>
+                <option *ngFor="let prioridad of prioridades" [ngValue]="prioridad.id">{{ prioridad.nombre }}</option>
+              </select>
+            </div>
+
+            <!-- botones aprobar / denegar -->
+            <div class="d-flex justify-content-between gap-2 mt-4">
+              <button class="btn btn-success w-50" (click)="aprobarSolicitud(i)">✅ Aprobar</button>
+              <button class="btn btn-danger w-50" (click)="denegarSolicitud(i)">❌ Denegar</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- paginacion -->
+  <nav class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link" (click)="cambiarPagina(currentPage - 1)">Anterior</a>
+      </li>
+      <li class="page-item"
+          *ngFor="let page of [].constructor(totalPages); let i = index"
+          [class.active]="currentPage === i + 1">
+        <a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link" (click)="cambiarPagina(currentPage + 1)">Siguiente</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<!-- modal vista previa de imagen -->
+<div *ngIf="imagenSeleccionada" class="custom-modal-backdrop" (click)="cerrarImagen()">
+  <div class="imagen-preview-modal" (click)="$event.stopPropagation()">
+    <button class="cerrar-x" (click)="cerrarImagen()">×</button>
+    <img [src]="imagenSeleccionada" alt="Vista previa" />
+  </div>
+</div>

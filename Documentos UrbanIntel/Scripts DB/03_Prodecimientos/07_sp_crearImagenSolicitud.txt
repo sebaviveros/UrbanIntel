@@ -1,0 +1,16 @@
+CREATE PROCEDURE sp_crearImagenSolicitud
+    @p_solicitudId INT,
+    @p_url NVARCHAR(MAX)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        INSERT INTO ImagenSolicitud (solicitud_id, url_imagen)
+        VALUES (@p_solicitudId, @p_url);
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO

@@ -1,0 +1,17 @@
+CREATE PROCEDURE sp_aprobarSolicitud
+    @p_id INT,
+    @p_rut_usuario VARCHAR(12),
+    @p_tipo_reparacion_id INT,
+    @p_prioridad_id INT,
+    @p_fecha_aprobacion DATETIME
+AS
+BEGIN
+    UPDATE Solicitud
+    SET 
+        estado_id = 3, -- En proceso
+        rut_usuario = @p_rut_usuario,
+        tipo_reparacion_id = @p_tipo_reparacion_id,
+        prioridad_id = @p_prioridad_id,
+        fecha_aprobacion = @p_fecha_aprobacion
+    WHERE id = @p_id;
+END

@@ -1,0 +1,23 @@
+CREATE PROCEDURE sp_validarUsuario
+    @p_email VARCHAR(100),
+    @p_password VARCHAR(100)
+AS
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM Usuario 
+        WHERE Email = @p_email AND Password = @p_password
+    )
+    BEGIN
+        RAISERROR('Usuario no encontrado.', 16, 50005);
+        RETURN;
+    END
+
+    SELECT 
+        u.Id, u.Rut, u.Nombre, u.Apellido, u.Email, u.Telefono, u.Direccion, u.Password,
+        r.Nombre AS Rol
+    FROM Usuario u
+    INNER JOIN RolUsuario ru ON ru.Rut = u.Rut
+    INNER JOIN Rol r ON r.Id_rol = ru.Id_rol
+    WHERE u.Email = @p_email AND u.Password = @p_password;
+END;

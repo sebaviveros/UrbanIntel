@@ -1,0 +1,7 @@
+
+db name: urbanintel_db
+server: (nueva) urban-intel-server
+connectionstring: "Server=tcp:urban-intel-server.database.windows.net,1433;Initial Catalog=urbanintel_db;Persist Security Info=False;User ID=uiadmin;Password=UrbanIntel123!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+
+user: uiadmin
+pass: UrbanIntel123!

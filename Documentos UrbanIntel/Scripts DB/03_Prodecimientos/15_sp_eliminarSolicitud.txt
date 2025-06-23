@@ -1,0 +1,10 @@
+CREATE PROCEDURE sp_eliminarSolicitud
+    @p_id INT
+AS
+BEGIN
+    -- Eliminar imágenes asociadas
+    DELETE FROM ImagenSolicitud WHERE solicitud_id = @p_id;
+
+    -- Eliminar la solicitud
+    DELETE FROM Solicitud WHERE id = @p_id;
+END

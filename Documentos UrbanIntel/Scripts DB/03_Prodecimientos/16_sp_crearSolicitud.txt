@@ -1,0 +1,26 @@
+CREATE PROCEDURE sp_crearSolicitud
+  @p_rut_usuario VARCHAR(12),
+  @p_direccion NVARCHAR(255),
+  @p_descripcion NVARCHAR(MAX),
+  @p_comuna NVARCHAR(100),
+  @p_tipo_reparacion_id INT,
+  @p_prioridad_id INT,
+  @p_estado_id INT,
+  @p_nueva_id INT OUTPUT
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  INSERT INTO Solicitud (
+    rut_usuario, direccion, descripcion, comuna, 
+    tipo_reparacion_id, prioridad_id, estado_id, 
+    fecha_creacion, fecha_asignacion
+  )
+  VALUES (
+    @p_rut_usuario, @p_direccion, @p_descripcion, @p_comuna,
+    @p_tipo_reparacion_id, @p_prioridad_id, @p_estado_id,
+    GETDATE(), GETDATE()
+  );
+
+  SET @p_nueva_id = SCOPE_IDENTITY();
+END

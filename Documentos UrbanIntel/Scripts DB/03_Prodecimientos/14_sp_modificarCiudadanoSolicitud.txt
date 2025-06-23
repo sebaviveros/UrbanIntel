@@ -1,0 +1,18 @@
+CREATE PROCEDURE sp_modificarCiudadanoSolicitud
+    @p_id INT,
+    @p_rut_ciudadano VARCHAR(12) = NULL,
+    @p_nombre_ciudadano NVARCHAR(100) = NULL,
+    @p_apellido_ciudadano NVARCHAR(100) = NULL,
+    @p_telefono_ciudadano NVARCHAR(20) = NULL,
+    @p_email_ciudadano NVARCHAR(150) = NULL
+AS
+BEGIN
+    UPDATE Solicitud
+    SET 
+        rut_ciudadano = ISNULL(@p_rut_ciudadano, rut_ciudadano),
+        nombre_ciudadano = ISNULL(@p_nombre_ciudadano, nombre_ciudadano),
+        apellido_ciudadano = ISNULL(@p_apellido_ciudadano, apellido_ciudadano),
+        telefono_ciudadano = ISNULL(@p_telefono_ciudadano, telefono_ciudadano),
+        email_ciudadano = ISNULL(@p_email_ciudadano, email_ciudadano)
+    WHERE id = @p_id;
+END

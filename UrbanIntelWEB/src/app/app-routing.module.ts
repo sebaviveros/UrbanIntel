@@ -14,6 +14,10 @@ import { AuditoriaComponent } from './views/auditoria/auditoria.component';
 
 
 const routes: Routes = [
+  // redirecciona al login si la url está vacía
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  // ruta para login
   { path: 'login', component: LoginComponent },
   { path: 'landing-page', component: LandingPageComponent},
   {path: 'quienes-somos', component: QuienesSomosComponent},
@@ -36,6 +40,7 @@ const routes: Routes = [
   // ruta comodín para rutas no encontradas
   { path: '**', redirectTo: 'login' }
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

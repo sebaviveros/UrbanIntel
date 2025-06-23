@@ -1,0 +1,222 @@
+<div class="px-4 py-3 w-100">
+  <h3 class="m-0"><i class="bi bi-journal-text"></i> Reportes</h3>
+  <br /><br />
+
+  <!-- Controles principales -->
+  <div class="d-flex justify-content-between align-items-center mb-3 w-100 flex-wrap">
+    <!-- Botón Filtros -->
+    <button class="btn btn-secondary mb-2" (click)="mostrarFiltros = !mostrarFiltros">
+      <i class="bi bi-funnel-fill"></i> Filtros
+    </button>
+
+    <!-- Buscador libre -->
+    <input
+      type="text"
+      class="form-control mx-3 w-50 mb-2"
+      placeholder="Buscar..."
+      [(ngModel)]="busqueda"
+    />
+
+    <!-- Botones de exportación -->
+    <div class="mb-2">
+      <button class="btn btn-outline-success me-2" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i> Excel
+      </button>
+      <button class="btn btn-outline-danger" (click)="exportToPDF()">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+<div *ngIf="mostrarFiltros" class="card card-body mb-3">
+  <div class="row">
+    <!-- Dropdown Tipo Reparación -->
+    <div class="col-md-4 mb-3">
+      <label for="tipoReparacion">Categoría</label>
+      <select id="tipoReparacion" class="form-select" [(ngModel)]="filtro.tipoReparacionId">
+        <option [ngValue]="null">Todas</option>
+        <option *ngFor="let tipo of tiposReparacion" [value]="tipo.id">
+          {{ tipo.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Dropdown Prioridad -->
+    <div class="col-md-4 mb-3">
+      <label for="prioridad">Prioridad</label>
+      <select id="prioridad" class="form-select" [(ngModel)]="filtro.prioridadId">
+        <option [ngValue]="null">Todas</option>
+        <option *ngFor="let prioridad of prioridades" [value]="prioridad.id">
+          {{ prioridad.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Comuna -->
+    <div class="col-md-4 mb-3">
+      <label for="comuna">Comuna</label>
+      <input
+        id="comuna"
+        type="text"
+        class="form-control"
+        [(ngModel)]="filtro.comuna"
+        placeholder="Ej: Quilpué"
+      />
+    </div>
+
+    <!-- Estado (DYNAMIC) -->
+    <div class="col-md-4 mb-3">
+      <label for="estado">Estado</label>
+      <select id="estado" class="form-select" [(ngModel)]="filtro.estadoNombre">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let estado of estados" [value]="estado.nombre">
+          {{ estado.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Fecha Creación -->
+    <div class="col-md-4 mb-3">
+      <label for="fechaCreacion">Fecha Creación</label>
+      <input
+        id="fechaCreacion"
+        type="date"
+        class="form-control"
+        [(ngModel)]="filtro.fechaCreacion"
+      />
+    </div>
+
+    <!-- Fecha Aprobación -->
+    <div class="col-md-4 mb-3">
+      <label for="fecha">Fecha Aprobación</label>
+      <input
+        id="fecha"
+        type="date"
+        class="form-control"
+        [(ngModel)]="filtro.fechaAprobacion"
+      />
+    </div>
+  </div>
+
+  <!-- Botones de filtro -->
+  <div class="text-end">
+    <button class="btn btn-outline-primary me-2" (click)="buscarPorFiltros()">Buscar</button>
+    <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">Limpiar</button>
+  </div>
+</div>
+
+
+
+   <table class="table table-dark table-hover">
+    <thead>
+      <tr>
+        <th>Nro Solicitud</th>
+        <th>Categoría</th>
+        <th>Prioridad</th>
+        <th>Comuna</th>
+        <th>Estado</th>
+        <th>Fecha Creación</th>
+        <th>Fecha Aprobación</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let reporte of reportesPaginados">
+        <td>{{ reporte.id }}</td>
+        <td>{{ reporte.tipoReparacionNombre ?? 'N/A' }}</td>
+        <td>{{ reporte.prioridadNombre ?? 'N/A' }}</td>
+        <td>{{ reporte.comuna ?? 'N/A' }}</td>
+        <td>{{ reporte.estadoNombre ?? 'N/A' }}</td>
+        <td>{{ reporte.fechaCreacion ? (reporte.fechaCreacion | date:'short') : 'N/A' }}</td>
+        <td>{{ reporte.fechaAprobacion ? (reporte.fechaAprobacion | date:'short') : 'N/A' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ✅ Paginación -->
+  <!-- Paginación -->
+<nav class="d-flex justify-content-center">
+  <ul class="pagination pagination-sm mb-0">
+    <li class="page-item" [class.disabled]="paginaActual === 1">
+      <button class="page-link bg-dark text-white border-secondary" (click)="cambiarPagina(paginaActual - 1)">
+        Anterior
+      </button>
+    </li>
+    <li
+      *ngFor="let pagina of totalPaginasArray()"
+      class="page-item"
+      [class.active]="pagina === paginaActual"
+    >
+      <button class="page-link bg-dark text-white border-secondary" (click)="cambiarPagina(pagina)">
+        {{ pagina }}
+      </button>
+    </li>
+    <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+      <button class="page-link bg-dark text-white border-secondary" (click)="cambiarPagina(paginaActual + 1)">
+        Siguiente
+      </button>
+    </li>
+  </ul>
+</nav>
+  <br>
+  <br>
+ <div class="row mt-5 text-white">
+  <!-- Reparación -->
+  <div class="col-md-6 mb-4">
+    <h5 class="text-orange text-center">COMPARATIVA POR TIPO DE REPARACIÓN</h5>
+    <div *ngFor="let item of graficoTiposReparacion" class="mb-2">
+      <div class="d-flex justify-content-between">
+        <span class="fw-bold">{{ item.tipo }}</span>
+        <span>{{ item.cantidad }}</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar bg-orange" [style.width.%]="item.porcentaje"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prioridad -->
+  <div class="col-md-6 mb-4">
+    <h5 class="text-orange text-center">COMPARATIVA POR PRIORIDAD</h5>
+    <div *ngFor="let item of graficoPrioridades" class="mb-2">
+      <div class="d-flex justify-content-between">
+        <span class="fw-bold">{{ item.prioridad }}</span>
+        <span>{{ item.cantidad }}</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar bg-orange" [style.width.%]="item.porcentaje"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comuna -->
+  <div class="col-md-6 mb-4">
+    <h5 class="text-orange text-center">COMPARATIVA POR COMUNA</h5>
+    <div *ngFor="let item of graficoComunas" class="mb-2">
+      <div class="d-flex justify-content-between">
+        <span class="fw-bold">{{ item.comuna }}</span>
+        <span>{{ item.cantidad }}</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar bg-orange" [style.width.%]="item.porcentaje"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado -->
+  <div class="col-md-6 mb-4">
+    <h5 class="text-orange text-center">COMPARATIVA POR ESTADO</h5>
+    <div *ngFor="let item of graficoEstados" class="mb-2">
+      <div class="d-flex justify-content-between">
+        <span class="fw-bold">{{ item.estado }}</span>
+        <span>{{ item.cantidad }}</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar bg-orange" [style.width.%]="item.porcentaje"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+

@@ -1,0 +1,127 @@
+// Estilo del encabezado (Gestión de cuentas)
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4rem;
+  margin-top: 3rem;
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: white;
+  }
+
+  h2 {
+    margin: 0;
+    color: white;
+  }
+}
+
+// Estilo del modal de usuario
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content {
+  padding: 1rem;
+}
+
+.modal-header,
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Estilo del botón para mostrar/ocultar contraseña
+.input-group {
+  button {
+    border-left: 0;
+  }
+
+  input {
+    border-right: 0;
+  }
+}
+
+// Botón personalizado reutilizable (igual a "Crear Solicitud")
+.btn-cafe-claro {
+  background-color: #b87b4b;
+  color: white;
+  border: none;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.45rem 1rem;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+
+  &:hover {
+    background-color: #a6663a;
+  }
+
+  i {
+    font-size: 1.2rem;
+  }
+}
+
+// Ajustes de la barra de herramientas de la tabla (DataTables)
+.datatable-toolbar {
+  padding: 1rem 0;
+
+  .dataTables_filter {
+    float: none !important;
+    text-align: right;
+
+    input {
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+      padding: 0.375rem 0.75rem;
+    }
+  }
+}
+
+// Reorganización de elementos del footer del datatable
+div.dataTables_wrapper {
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .dataTables_length,
+  .dataTables_info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .dataTables_length {
+    order: 1;
+  }
+
+  .dataTables_info {
+    order: 2;
+  }
+
+  .dataTables_paginate {
+    order: 3;
+    margin-left: auto;
+  }
+
+  .dataTables_filter {
+    margin-left: auto;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+}

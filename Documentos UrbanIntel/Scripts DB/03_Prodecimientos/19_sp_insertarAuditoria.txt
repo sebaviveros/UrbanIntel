@@ -1,0 +1,14 @@
+CREATE PROCEDURE sp_insertarAuditoria
+    @p_rut_usuario NVARCHAR(20),
+    @p_accion_id INT,
+    @p_modulo_id INT,
+    @p_descripcion NVARCHAR(MAX)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO Auditoria (rut_usuario, accion_id, modulo_id, fecha, descripcion)
+    VALUES (@p_rut_usuario, @p_accion_id, @p_modulo_id, GETDATE(), @p_descripcion);
+END
+
+select * from auditoria

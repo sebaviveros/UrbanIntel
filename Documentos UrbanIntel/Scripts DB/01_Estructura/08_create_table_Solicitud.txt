@@ -1,0 +1,23 @@
+CREATE TABLE Solicitud (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    rut_usuario VARCHAR(12),         
+    direccion TEXT NOT NULL,
+	comuna VARCHAR(100) NOT NULL,
+    descripcion TEXT NOT NULL,
+    fecha_creacion DATETIME DEFAULT GETDATE(),
+    fecha_aprobacion DATETIME,
+    fecha_asignacion DATETIME,
+    rut_ciudadano VARCHAR(12), 
+    nombre_ciudadano VARCHAR(150),
+    apellido_ciudadano VARCHAR(150),
+    telefono_ciudadano VARCHAR(20),
+    email_ciudadano VARCHAR(100),
+    tipo_reparacion_id INT,
+    prioridad_id INT,
+    estado_id INT,
+    tiempo_estimado VARCHAR(50),
+    FOREIGN KEY (rut_usuario) REFERENCES Usuario(rut),
+    FOREIGN KEY (tipo_reparacion_id) REFERENCES TipoReparacion(id),
+    FOREIGN KEY (prioridad_id) REFERENCES Prioridad(id),
+    FOREIGN KEY (estado_id) REFERENCES EstadoSolicitud(id)
+);

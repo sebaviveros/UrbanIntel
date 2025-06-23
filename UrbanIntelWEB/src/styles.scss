@@ -1,1 +1,150 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import "mapbox-gl/dist/mapbox-gl.css";
+:root {
+  --primary-color: #FFFFFF; 
+  --primary-color-dark: #BC5F04;
+
+}
+body {
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(
+    to bottom,
+    #010001 0%,
+    #0C0605 36%,
+    #25150E 100%
+  );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+// Estilo global para sweetalert2
+
+/* Estilo general del popup */
+.swal2-popup {
+  background-color: #96612ce3 !important;
+  color: #ecf0f1 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Título del modal */
+.swal2-title {
+  color: #ecf0f1 !important;
+  font-size: 1.5rem !important;
+  font-weight: bold !important;
+}
+
+/* Contenedor del mensaje */
+.swal2-html-container {
+  color: #bdc3c7 !important;
+  font-size: 1rem !important;
+}
+
+/* Íconos de advertencia */
+.swal2-icon.swal2-warning {
+  color: #e74c3c !important;
+  border-color: #e74c3c !important;
+}
+
+/* Íconos de éxito */
+.swal2-icon.swal2-success {
+  color: #27ae60 !important;
+  border-color: #27ae60 !important;
+}
+
+/* Íconos de error */
+.swal2-icon.swal2-error {
+  color: #e74c3c !important;
+  border-color: #e74c3c !important;
+}
+
+/* Botón de confirmación */
+.swal2-confirm {
+  background-color: #3498db !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 5px !important;
+  padding: 10px 20px !important;
+  font-weight: bold !important;
+}
+
+/* Botón de cancelación */
+.swal2-cancel {
+  background-color: #e74c3c !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 5px !important;
+  padding: 10px 20px !important;
+  font-weight: bold !important;
+}
+
+/* Contenedor de acciones (botones) */
+.swal2-actions {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 10px !important;
+}
+
+/* Botones al pasar el ratón */
+.swal2-confirm:hover,
+.swal2-cancel:hover {
+  opacity: 0.8 !important;
+  transition: opacity 0.2s !important;
+}
+
+/* Fondo opaco detrás del modal */
+.swal2-backdrop {
+  background-color: rgba(44, 62, 80, 0.8) !important;
+}
+
+// Fin estilo global sweetalert2
+
+
+// Estilo global para datatables
+/* Personalizar el texto fuera de la tabla */
+.dataTables_wrapper .dataTables_length label,
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+  color: white !important;  /* Cambiar color del texto */
+  font-weight: bold !important; /* Opcional: hacer el texto más grueso */
+}
+
+/* Ajuste específico para la etiqueta de "Entries per page" */
+.dt-container .dt-length label {
+  color: white !important;
+  text-align: left !important;
+}
+
+/* Estilo para el label "Search:" */
+.dt-container .dt-search label {
+  color: white !important;
+  text-align: left !important;
+}
+
+/* Ajuste específico para el texto "Showing X to Y of Z entries" */
+.dt-info {
+  color: white !important;
+}
+
+/* Botones de paginación */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background-color: #343a40 !important;
+  color: white !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background-color: #495057 !important;
+  color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background-color: #007bff !important;
+  color: #fff !important;
+}
+
+// Fin estilo global datatables
+

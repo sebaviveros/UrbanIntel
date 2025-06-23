@@ -1,0 +1,10 @@
+CREATE TABLE Evento (
+    id_evento INT IDENTITY(1,1) PRIMARY KEY,
+    nombre_evento VARCHAR(200) NOT NULL,
+    descripcion VARCHAR(600) NULL,
+    hora_inicio DATETIME NOT NULL,
+    hora_termino DATETIME NULL,
+    notificacion BIT NOT NULL,
+    rut_usuario VARCHAR(12) NOT NULL,
+    FOREIGN KEY (rut_usuario) REFERENCES Usuario(rut)
+);

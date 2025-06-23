@@ -1,0 +1,5 @@
+CREATE PROCEDURE sp_obtenerPrioridades
+AS
+BEGIN
+    SELECT id, nombre FROM Prioridad;
+END
