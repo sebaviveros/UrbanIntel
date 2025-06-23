@@ -1,3 +1,31 @@
+<div class="filtro-container">
+  <button (click)="mostrarFiltros = !mostrarFiltros" class="btn-toggle">
+    Filtros
+  </button>
+
+  <div *ngIf="mostrarFiltros" class="filtros-row">
+    <select [(ngModel)]="filtro.tipoReparacion" class="form-control">
+      <option value="">-- Tipo de Reparación --</option>
+      <option *ngFor="let tipo of tiposReparacion" [value]="tipo">{{ tipo }}</option>
+    </select>
+
+    <select [(ngModel)]="filtro.prioridad" class="form-control">
+      <option value="">-- Tipo de Prioridad --</option>
+      <option *ngFor="let prioridad of tiposPrioridad" [value]="prioridad">{{ prioridad }}</option>
+    </select>
+
+    <button class="btn btn-primary" (click)="filtrar()">Buscar</button>
+    <button class="btn btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+  </div>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div #map class="mapa-container"></div>
+
+
 <div class="map-container">
   <div #map id="map"></div>
 </div>
