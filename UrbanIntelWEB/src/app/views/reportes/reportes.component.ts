@@ -5,6 +5,7 @@ import autoTable from 'jspdf-autotable';
 import { SolicitudService } from '../../services/solicitudService/solicitud.service';
 import { Solicitud } from '../../models/solicitud.model';
 import { firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-reportes',
@@ -20,20 +21,20 @@ export class ReportesComponent implements OnInit {
 
   tiposReparacion: any[] = [];
   prioridades: any[] = [];
-  estados: any[] = []; // ✅ Agregado para estado dinámico
+  estados: any[] = [];
 
   filtro: {
     tipoReparacionId?: number | null;
     prioridadId?: number | null;
     comuna?: string | null;
-    estadoNombre?: string | null;
+    estadoId?: number | null;
     fechaCreacion?: string | null;
     fechaAprobacion?: string | null;
   } = {
     tipoReparacionId: null,
     prioridadId: null,
     comuna: null,
-    estadoNombre: null,
+    estadoId: null,
     fechaCreacion: null,
     fechaAprobacion: null
   };
@@ -46,13 +47,13 @@ export class ReportesComponent implements OnInit {
   paginaActual: number = 1;
   tamanoPagina: number = 10;
 
-  constructor(private solicitudService: SolicitudService) {}
+  constructor(private solicitudService: SolicitudService, private http: HttpClient) {}
 
   async ngOnInit(): Promise<void> {
     try {
       this.tiposReparacion = await firstValueFrom(this.solicitudService.obtenerTiposReparacion());
       this.prioridades = await firstValueFrom(this.solicitudService.obtenerPrioridades());
-      this.estados = await firstValueFrom(this.solicitudService.obtenerEstados()); // ✅ Agregado
+      this.estados = await firstValueFrom(this.solicitudService.obtenerEstados());
 
       const solicitudes = await firstValueFrom(
         this.solicitudService.obtenerSolicitudPorFiltro({})
@@ -89,7 +90,7 @@ export class ReportesComponent implements OnInit {
       tipoReparacionId: null,
       prioridadId: null,
       comuna: null,
-      estadoNombre: null,
+      estadoId: null,
       fechaCreacion: null,
       fechaAprobacion: null
     };
@@ -141,14 +142,31 @@ export class ReportesComponent implements OnInit {
     }));
   }
 
+  get reportesFiltradosPorTexto(): Solicitud[] {
+    const texto = this.busqueda.trim().toLowerCase();
+
+    return this.reportes.filter(r => {
+      return (
+        r.id?.toString().includes(texto) ||
+        r.tipoReparacionNombre?.toLowerCase().includes(texto) ||
+        r.prioridadNombre?.toLowerCase().includes(texto) ||
+        r.comuna?.toLowerCase().includes(texto) ||
+        r.estadoNombre?.toLowerCase().includes(texto) ||
+        new Date(r.fechaCreacion!).toLocaleString().toLowerCase().includes(texto) ||
+        new Date(r.fechaAprobacion!).toLocaleString().toLowerCase().includes(texto)
+
+      );
+    });
+  }
+
   get reportesPaginados(): Solicitud[] {
     const start = (this.paginaActual - 1) * this.tamanoPagina;
     const end = start + this.tamanoPagina;
-    return this.reportes.slice(start, end);
+    return this.reportesFiltradosPorTexto.slice(start, end);
   }
 
   get totalPaginas(): number {
-    return Math.ceil(this.reportes.length / this.tamanoPagina);
+    return Math.ceil(this.reportesFiltradosPorTexto.length / this.tamanoPagina);
   }
 
   totalPaginasArray(): number[] {
@@ -162,48 +180,79 @@ export class ReportesComponent implements OnInit {
   }
 
   exportToExcel(): void {
-    const dataExportada = this.reportes.map(r => ({
-      'Nro Solicitud': r.id ?? '',
-      'Categoría': r.tipoReparacionNombre ?? '',
-      'Prioridad': r.prioridadNombre ?? '',
-      'Comuna': r.comuna ?? 'Sin comuna',
-      'Estado': r.estadoNombre ?? 'Sin estado',
-      'Fecha Creación': r.fechaCreacion
-        ? new Date(r.fechaCreacion).toLocaleString('es-CL')
-        : 'Sin fecha',
-      'Fecha Aprobación': r.fechaAprobacion
-        ? new Date(r.fechaAprobacion).toLocaleString('es-CL')
-        : 'No aprobada'
-    }));
+  const formatter = new Intl.DateTimeFormat('es-CL', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  });
 
-    const worksheet = XLSX.utils.json_to_sheet(dataExportada);
-    worksheet['!cols'] = [
-      { wch: 15 }, { wch: 25 }, { wch: 15 },
-      { wch: 25 }, { wch: 20 }, { wch: 25 }, { wch: 25 }
-    ];
+  const dataExportada = this.reportesFiltradosPorTexto.map(r => ({
+    'Nro Solicitud': r.id ?? '',
+    'Categoría': r.tipoReparacionNombre ?? '',
+    'Prioridad': r.prioridadNombre ?? '',
+    'Comuna': r.comuna ?? 'N/A',
+    'Estado': r.estadoNombre ?? 'N/A',
+    'Fecha Creación': r.fechaCreacion
+      ? formatter.format(new Date(r.fechaCreacion))
+      : 'N/A',
+    'Fecha Aprobación': r.fechaAprobacion
+      ? formatter.format(new Date(r.fechaAprobacion))
+      : 'N/A'
+  }));
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reportes');
-    XLSX.writeFile(workbook, 'reportes.xlsx');
-  }
+  const worksheet = XLSX.utils.json_to_sheet(dataExportada);
+  worksheet['!cols'] = [
+    { wch: 15 }, { wch: 25 }, { wch: 15 },
+    { wch: 25 }, { wch: 20 }, { wch: 25 }, { wch: 25 }
+  ];
 
-  exportToPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Nro Solicitud', 'Categoría', 'Prioridad', 'Comuna', 'Estado', 'Fecha Creación', 'Fecha Aprobación']],
-      body: this.reportes.map(r => [
-        r.id ?? '',
-        r.tipoReparacionNombre ?? '',
-        r.prioridadNombre ?? '',
-        r.comuna ?? 'Sin comuna',
-        r.estadoNombre ?? 'Sin estado',
-        r.fechaCreacion ? new Date(r.fechaCreacion).toLocaleString('es-CL') : 'Sin fecha',
-        r.fechaAprobacion ? new Date(r.fechaAprobacion).toLocaleString('es-CL') : 'No aprobada'
-      ]),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [230, 126, 34] }
-    });
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reportes');
+  XLSX.writeFile(workbook, 'reportes.xlsx');
+}
 
-    doc.save('reportes.pdf');
-  }
+exportToPDF(): void {
+  const formatter = new Intl.DateTimeFormat('es-CL', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  });
+
+  this.http.get('assets/imagenes/7cff6bf4-c274-4c75-be64-e9b65939ffd4-removebg-preview.png', {
+    responseType: 'blob'
+  }).subscribe((imgBlob) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const logoBase64 = reader.result as string;
+      const doc = new jsPDF();
+
+      autoTable(doc, {
+        head: [['Nro Solicitud', 'Categoría', 'Prioridad', 'Comuna', 'Estado', 'Fecha Creación', 'Fecha Aprobación']],
+        body: this.reportesFiltradosPorTexto.map(r => [
+          r.id ?? '',
+          r.tipoReparacionNombre ?? 'N/A',
+          r.prioridadNombre ?? 'N/A',
+          r.comuna ?? 'N/A',
+          r.estadoNombre ?? 'N/A',
+          r.fechaCreacion ? formatter.format(new Date(r.fechaCreacion)) : 'N/A',
+          r.fechaAprobacion ? formatter.format(new Date(r.fechaAprobacion)) : 'N/A'
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [230, 126, 34] },
+        margin: { top: 35 },
+        didDrawPage: (data) => {
+          const pageWidth = doc.internal.pageSize.getWidth();
+          const imgSize = 25;
+          const x = (pageWidth - imgSize) / 2;
+          const y = 10;
+          doc.addImage(logoBase64, 'PNG', x, y, imgSize, imgSize);
+        }
+      });
+
+      doc.save('reportes.pdf');
+    };
+
+    reader.readAsDataURL(imgBlob);
+  });
+}
+
 }
