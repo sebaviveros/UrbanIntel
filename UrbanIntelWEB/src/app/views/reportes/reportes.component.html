@@ -74,11 +74,11 @@
     <!-- Estado (DYNAMIC) -->
     <div class="col-md-4 mb-3">
       <label for="estado">Estado</label>
-      <select id="estado" class="form-select" [(ngModel)]="filtro.estadoNombre">
-        <option [ngValue]="null">Todos</option>
-        <option *ngFor="let estado of estados" [value]="estado.nombre">
-          {{ estado.nombre }}
-        </option>
+      <select id="estado" class="form-select" [(ngModel)]="filtro.estadoId">
+      <option [ngValue]="null">Todos</option>
+      <option *ngFor="let estado of estados" [ngValue]="estado.id">
+        {{ estado.nombre }}
+      </option>
       </select>
     </div>
 
@@ -133,8 +133,8 @@
         <td>{{ reporte.prioridadNombre ?? 'N/A' }}</td>
         <td>{{ reporte.comuna ?? 'N/A' }}</td>
         <td>{{ reporte.estadoNombre ?? 'N/A' }}</td>
-        <td>{{ reporte.fechaCreacion ? (reporte.fechaCreacion | date:'short') : 'N/A' }}</td>
-        <td>{{ reporte.fechaAprobacion ? (reporte.fechaAprobacion | date:'short') : 'N/A' }}</td>
+       <td>{{ reporte.fechaCreacion ? (reporte.fechaCreacion | date:'dd/MM/yy, HH:mm') : 'N/A' }}</td>
+       <td>{{ reporte.fechaAprobacion ? (reporte.fechaAprobacion | date:'dd/MM/yy, HH:mm') : 'N/A' }}</td>
       </tr>
     </tbody>
   </table>
