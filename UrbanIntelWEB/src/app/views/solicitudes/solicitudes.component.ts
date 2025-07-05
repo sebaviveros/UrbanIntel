@@ -4,6 +4,10 @@ import Swal from 'sweetalert2';
 import { Solicitud } from '../../models/solicitud.model';
 import { GenericItem } from '../../models/generic-item.model';
 import { firstValueFrom } from 'rxjs';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { HttpClient } from '@angular/common/http';
+
 
 
 @Component({
@@ -67,7 +71,7 @@ imagenesAdjuntas: File[] = [];
 
   imagenSeleccionada: string | null = null;
 
-  constructor(private solicitudService: SolicitudService) {}
+  constructor(private solicitudService: SolicitudService, private http: HttpClient) {}
 
   async ngOnInit(): Promise<void> {
   try {
@@ -351,5 +355,41 @@ limpiarFiltros(): void {
   cerrarModal(): void {
     this.modalIndex = null;
   }
+
+exportarSolicitudPDF(solicitud: Solicitud): void {
+  const doc = new jsPDF();
+  const formatter = new Intl.DateTimeFormat('es-CL', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  });
+
+  // Título
+  doc.setFontSize(14);
+  doc.text(`Solicitud #${solicitud.id}`, 20, 20);
+
+  // Tabla de datos
+  autoTable(doc, {
+    startY: 30,
+    head: [['Campo', 'Valor']],
+    body: [
+      ['Dirección', solicitud.direccion || 'N/A'],
+      ['Comuna', solicitud.comuna || 'N/A'],
+      ['Descripción', solicitud.descripcion || 'N/A'],
+      ['Tipo Reparación', solicitud.tipoReparacionNombre || 'N/A'],
+      ['Prioridad', solicitud.prioridadNombre || 'N/A'],
+      ['Estado', solicitud.estadoNombre || 'N/A'],
+      ['Fecha de Creación', solicitud.fechaCreacion ? formatter.format(new Date(solicitud.fechaCreacion)) : 'N/A'],
+      ['Fecha de Aprobación', solicitud.fechaAprobacion ? formatter.format(new Date(solicitud.fechaAprobacion)) : 'N/A'],
+      ['Fecha de Asignación', solicitud.fechaAsignacion ? formatter.format(new Date(solicitud.fechaAsignacion)) : 'N/A']
+    ],
+    styles: { fontSize: 10 },
+    headStyles: { fillColor: [230, 126, 34] }
+  });
+
+  // Guardar PDF
+  doc.save(`solicitud-${solicitud.id}.pdf`);
+}
+
+
 
 }
