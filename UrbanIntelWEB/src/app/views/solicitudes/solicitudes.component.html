@@ -288,12 +288,12 @@
       </span>
     </div>
     <button class="btn btn-accent w-100" (click)="abrirModal(i)">Modificar</button>
-    <button class="btn btn-danger w-100 mt-2" (click)="confirmarEliminar(solicitud.id)">Eliminar Solicitud</button>
+    <!-- <button class="btn btn-danger w-100 mt-2" (click)="confirmarEliminar(solicitud.id)">Eliminar Solicitud</button>-->
     <button class="btn btn-cafe w-100 mt-2" [disabled]="!solicitud.rutCiudadano" (click)="abrirModalCiudadano(i)">
       Info Ciudadano
     </button>
-    <button class="btn btn-outline-danger w-100 mt-2" (click)="exportarSolicitudPDF(solicitud)">
-    <i class="bi bi-file-earmark-pdf"></i> Exportar Solicitud
+    <button class="btn btn-danger w-100 mt-2" (click)="exportarSolicitudPDF(solicitud)">
+    <i class="bi bi-file-earmark-pdf"></i> Exportar PDF Solicitud
     </button>
   </div>
 </div>
