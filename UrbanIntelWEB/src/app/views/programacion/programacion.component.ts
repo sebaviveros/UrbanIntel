@@ -10,6 +10,7 @@ import {
 import { EventoService, Evento } from '../../services/eventoService/evento.service';
 import { AuthService } from '../../services/authService/auth.service';
 import { ChangeDetectorRef } from '@angular/core';
+import Swal from 'sweetalert2';
 interface EventItem {
   id?:number;
   title: string;
@@ -281,7 +282,25 @@ const deleteButtons = this.eventsContainer.nativeElement.querySelectorAll('.dele
 deleteButtons.forEach((btn: HTMLElement) => {
   const index = parseInt(btn.getAttribute('data-index') || '0');
   this.renderer.listen(btn, 'click', () => {
-    this.deleteEvent(index);
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará el evento permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteEvent(index);
+        Swal.fire(
+          'Eliminado',
+          'El evento ha sido eliminado correctamente.',
+          'success'
+        );
+      }
+    });
   });
 });
 }
@@ -496,6 +515,16 @@ mostrarAlertaPersonalizada(mensaje: string): void {
   setTimeout(() => document.body.removeChild(alertaDiv), 7000); // se elimina tras 7 segundos
 }
 
+showCustomAlert(message: string): void {
+  const alert = document.createElement("div");
+  alert.classList.add("custom-alert");
+  alert.textContent = message;
 
+  document.body.appendChild(alert);
+
+  setTimeout(() => {
+    alert.remove();
+  }, 6000); // La duración coincide con tu animación CSS
+}
 
 }
