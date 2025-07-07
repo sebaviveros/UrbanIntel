@@ -7,7 +7,6 @@ import { firstValueFrom } from 'rxjs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { HttpClient } from '@angular/common/http';
-
 import { AuthService } from '../../services/authService/auth.service';
 
 
@@ -73,8 +72,9 @@ imagenesAdjuntas: File[] = [];
 
   imagenSeleccionada: string | null = null;
 
-  constructor(private solicitudService: SolicitudService, private http: HttpClient) {}
+  constructor(private solicitudService: SolicitudService, private http: HttpClient, private authService: AuthService) {}
   async ngOnInit(): Promise<void> {
+  try {
     // Cargar catálogos en paralelo
     const [tipos, prioridades, estados] = await Promise.all([
       firstValueFrom(this.solicitudService.obtenerTiposReparacion()),
@@ -96,7 +96,7 @@ imagenesAdjuntas: File[] = [];
         try {
           const imagenes = await firstValueFrom(this.solicitudService.obtenerImagenesPorSolicitud(sol.id));
           return { ...sol, imagenes };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error(`Error al obtener imágenes para solicitud ${sol.id}:`, error);
           return { ...sol, imagenes: [] };
         }
@@ -106,11 +106,11 @@ imagenesAdjuntas: File[] = [];
     this.solicitudes = solicitudesConImagenes;
     this.totalPages = Math.ceil(this.solicitudes.length / this.pageSize);
     this.actualizarPagina();
-
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error durante la carga inicial:', error);
   }
 }
+
 
 onImagenesSeleccionadas(event: any): void {
   this.imagenesAdjuntas = Array.from(event.target.files);
@@ -354,44 +354,38 @@ limpiarFiltros(): void {
     this.modalIndex = index;
   }
 
-  cerrarModal(): void {
+   cerrarModal(): void {
     this.modalIndex = null;
   }
 
-exportarSolicitudPDF(solicitud: Solicitud): void {
-  const doc = new jsPDF();
-  const formatter = new Intl.DateTimeFormat('es-CL', {
-    dateStyle: 'short',
-    timeStyle: 'short'
-  });
+  exportarSolicitudPDF(solicitud: Solicitud): void {
+    const doc = new jsPDF();
+    const formatter = new Intl.DateTimeFormat('es-CL', {
+      dateStyle: 'short',
+      timeStyle: 'short'
+    });
 
-  // Título
-  doc.setFontSize(14);
-  doc.text(`Solicitud #${solicitud.id}`, 20, 20);
+    doc.setFontSize(14);
+    doc.text(`Solicitud #${solicitud.id}`, 20, 20);
 
-  // Tabla de datos
-  autoTable(doc, {
-    startY: 30,
-    head: [['Campo', 'Valor']],
-    body: [
-      ['Dirección', solicitud.direccion || 'N/A'],
-      ['Comuna', solicitud.comuna || 'N/A'],
-      ['Descripción', solicitud.descripcion || 'N/A'],
-      ['Tipo Reparación', solicitud.tipoReparacionNombre || 'N/A'],
-      ['Prioridad', solicitud.prioridadNombre || 'N/A'],
-      ['Estado', solicitud.estadoNombre || 'N/A'],
-      ['Fecha de Creación', solicitud.fechaCreacion ? formatter.format(new Date(solicitud.fechaCreacion)) : 'N/A'],
-      ['Fecha de Aprobación', solicitud.fechaAprobacion ? formatter.format(new Date(solicitud.fechaAprobacion)) : 'N/A'],
-      ['Fecha de Asignación', solicitud.fechaAsignacion ? formatter.format(new Date(solicitud.fechaAsignacion)) : 'N/A']
-    ],
-    styles: { fontSize: 10 },
-    headStyles: { fillColor: [230, 126, 34] }
-  });
+    autoTable(doc, {
+      startY: 30,
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Dirección', solicitud.direccion || 'N/A'],
+        ['Comuna', solicitud.comuna || 'N/A'],
+        ['Descripción', solicitud.descripcion || 'N/A'],
+        ['Tipo Reparación', solicitud.tipoReparacionNombre || 'N/A'],
+        ['Prioridad', solicitud.prioridadNombre || 'N/A'],
+        ['Estado', solicitud.estadoNombre || 'N/A'],
+        ['Fecha de Creación', solicitud.fechaCreacion ? formatter.format(new Date(solicitud.fechaCreacion)) : 'N/A'],
+        ['Fecha de Aprobación', solicitud.fechaAprobacion ? formatter.format(new Date(solicitud.fechaAprobacion)) : 'N/A'],
+        ['Fecha de Asignación', solicitud.fechaAsignacion ? formatter.format(new Date(solicitud.fechaAsignacion)) : 'N/A']
+      ],
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [230, 126, 34] }
+    });
 
-  // Guardar PDF
-  doc.save(`solicitud-${solicitud.id}.pdf`);
-}
-
-
-
+    doc.save(`solicitud-${solicitud.id}.pdf`);
+  }
 }
