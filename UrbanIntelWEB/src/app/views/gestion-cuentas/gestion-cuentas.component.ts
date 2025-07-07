@@ -7,6 +7,7 @@ import { UsuarioService } from '../../services/usuarioService/usuario.service';
 import { Usuario } from '../../models/usuario.model';
 import { UsuarioPwDto } from '../../models/Dto/usuarioPwDto';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../services/authService/auth.service';
 
 @Component({
   selector: 'app-gestion-cuentas',
@@ -35,7 +36,9 @@ export class GestionCuentasComponent implements OnInit, OnDestroy {
     direccion: '', rol: ''
   };
 
-  constructor(private usuarioService: UsuarioService) {}
+  rutUsuarioLogeado: any;
+
+  constructor(private usuarioService: UsuarioService, private authService: AuthService) {}
 
   ngOnInit(): void {
     const that = this;
@@ -117,8 +120,8 @@ export class GestionCuentasComponent implements OnInit, OnDestroy {
 
   guardarUsuario(): void {
     if (this.modoEdicion) {
-      this.usuarioService.modificarUsuario(this.usuario.rut, this.usuario).subscribe({
-        next: (response) => {
+      this.usuarioService.modificarUsuario({rutUsuarioLogeado: this.authService.getRutUsuario()!,usuarioModificado: this.usuario}).subscribe({
+          next: (response) => {
           if (response.success) {
             Swal.fire('Usuario Actualizado', response.message, 'success');
             this.cerrarModal();
@@ -134,7 +137,8 @@ export class GestionCuentasComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      this.usuarioService.crearUsuario(this.usuarioDto).subscribe({
+      this.rutUsuarioLogeado = this.authService.getRutUsuario();
+      this.usuarioService.crearUsuario(this.usuarioDto,this.rutUsuarioLogeado).subscribe({
         next: (response) => {
           if (response.success) {
             Swal.fire('Usuario Creado', response.message, 'success');
@@ -163,7 +167,8 @@ export class GestionCuentasComponent implements OnInit, OnDestroy {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.usuarioService.eliminarUsuario(rut).subscribe({
+        this.rutUsuarioLogeado = this.authService.getRutUsuario();
+        this.usuarioService.eliminarUsuario(rut, this.rutUsuarioLogeado).subscribe({
           next: (response) => {
             if (response.success) {
               Swal.fire('Usuario Eliminado', response.message, 'success');

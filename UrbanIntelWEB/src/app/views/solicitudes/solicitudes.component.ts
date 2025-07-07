@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { Solicitud } from '../../models/solicitud.model';
 import { GenericItem } from '../../models/generic-item.model';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../../services/authService/auth.service';
 
 
 @Component({
@@ -43,6 +44,7 @@ nuevaSolicitud: {
   tipoReparacionId: number | null;
   prioridadId: number | null;
   estadoId: number | null;
+  rutUsuario?: string; 
   imagenes?: File[];
 } = {
   direccion: '',
@@ -67,7 +69,7 @@ imagenesAdjuntas: File[] = [];
 
   imagenSeleccionada: string | null = null;
 
-  constructor(private solicitudService: SolicitudService) {}
+  constructor(private solicitudService: SolicitudService, private authService: AuthService) {}
 
   async ngOnInit(): Promise<void> {
   try {
@@ -134,6 +136,7 @@ abrirModalCrear(): void {
 }
 
 crearNuevaSolicitud(): void {
+  this.nuevaSolicitud.rutUsuario = this.authService.getRutUsuario()!;
   const formData = new FormData();
 
   Object.entries(this.nuevaSolicitud).forEach(([key, value]) => {
@@ -141,7 +144,7 @@ crearNuevaSolicitud(): void {
       formData.append(key, String(value));  // <- corregido: fuerza todo a string
     }
   });
-
+  console.log("datos:",formData)
   this.imagenesAdjuntas.forEach(file => {
     formData.append('imagenes', file);
   });
@@ -240,6 +243,7 @@ limpiarFiltros(): void {
 
   guardarCambios(index: number): void {
     const solicitud = this.solicitudesPaginadas[index];
+    solicitud.rutUsuario = this.authService.getRutUsuario()!;
 
     Swal.fire({
       title: '¿Guardar cambios?',

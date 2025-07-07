@@ -19,6 +19,7 @@ export class Solicitud {
   apellidoCiudadano?: string;
   telefonoCiudadano?: string;
   emailCiudadano?: string;
+  rutUsuario?: string;
   imagenes: string[] = [];   
 
   constructor(init?: Partial<Solicitud>) {

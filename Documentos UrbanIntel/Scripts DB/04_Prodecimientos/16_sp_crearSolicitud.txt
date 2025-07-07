@@ -19,7 +19,7 @@ BEGIN
   VALUES (
     @p_rut_usuario, @p_direccion, @p_descripcion, @p_comuna,
     @p_tipo_reparacion_id, @p_prioridad_id, @p_estado_id,
-    GETDATE(), GETDATE()
+    dbo.GetDiaHoraChile(), dbo.GetDiaHoraChile()
   );
 
   SET @p_nueva_id = SCOPE_IDENTITY();

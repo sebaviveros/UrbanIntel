@@ -32,6 +32,7 @@ namespace UrbanIntelAPI.Controllers
             }
         }
 
+        // Metodo para crear solicitud interna
         [HttpPost("crear-interna")]
         public async Task<IActionResult> CrearSolicitudInterna([FromForm] Solicitud solicitud, [FromForm] List<IFormFile> imagenes)
         {

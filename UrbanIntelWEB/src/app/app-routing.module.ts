@@ -14,6 +14,9 @@ import { AuditoriaComponent } from './views/auditoria/auditoria.component';
 
 import { ProgramacionComponent } from './views/programacion/programacion.component';
 
+import { AuthGuard } from './guards/authGuard/auth.guard';
+import { RoleGuard } from './guards/roleGuard/role.guard';
+
 const routes: Routes = [
   // redirecciona al login si la url está vacía
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -26,18 +29,32 @@ const routes: Routes = [
   // rutas protegidas que usan layout (sidebar)
   
   {
-    path: '',
-    component: LayoutComponent,
-    children: [
-      { path: 'home', component: HomeComponent },
-      { path: 'solicitudes', component: SolicitudesComponent },
-      { path: 'gestion-cuentas', component: GestionCuentasComponent },
-      { path: 'aprobaciones', component: AprobacionesComponent },
-      { path: 'reportes', component: ReportesComponent },
-      { path: 'auditoria', component: AuditoriaComponent },
-      { path: 'programacion', component: ProgramacionComponent }
-    ]
-  },
+  path: '',
+  component: LayoutComponent,
+  canActivate: [AuthGuard, RoleGuard],
+  data: { roles: ['Administrador', 'Funcionario Municipal'] }, // Default para el grupo de rutas
+  children: [
+    { path: 'home', component: HomeComponent },
+    { path: 'solicitudes', component: SolicitudesComponent },
+    { path: 'aprobaciones', component: AprobacionesComponent },
+    { path: 'reportes', component: ReportesComponent },
+    { path: 'programacion', component: ProgramacionComponent },
+
+    // Estas dos sobrescriben roles solo para Administrador
+    { 
+      path: 'gestion-cuentas', 
+      component: GestionCuentasComponent, 
+      canActivate: [AuthGuard, RoleGuard],
+      data: { roles: ['Administrador'] }
+    },
+    { 
+      path: 'auditoria', 
+      component: AuditoriaComponent, 
+      canActivate: [AuthGuard, RoleGuard],
+      data: { roles: ['Administrador'] }
+    }
+  ]
+},
    // ruta comodin
   { path: '**', redirectTo: 'login' }
 ];

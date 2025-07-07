@@ -8,7 +8,5 @@ BEGIN
     SET NOCOUNT ON;
 
     INSERT INTO Auditoria (rut_usuario, accion_id, modulo_id, fecha, descripcion)
-    VALUES (@p_rut_usuario, @p_accion_id, @p_modulo_id, GETDATE(), @p_descripcion);
+    VALUES (@p_rut_usuario, @p_accion_id, @p_modulo_id, dbo.GetDiaHoraChile(), @p_descripcion);
 END
-
-select * from auditoria

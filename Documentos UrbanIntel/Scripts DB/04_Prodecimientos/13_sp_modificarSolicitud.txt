@@ -8,6 +8,8 @@ CREATE PROCEDURE sp_modificarSolicitud
     @p_estado_id INT = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE Solicitud
     SET 
         direccion = ISNULL(@p_direccion, direccion),
@@ -15,6 +17,11 @@ BEGIN
         comuna = ISNULL(@p_comuna, comuna),
         tipo_reparacion_id = ISNULL(@p_tipo_reparacion_id, tipo_reparacion_id),
         prioridad_id = ISNULL(@p_prioridad_id, prioridad_id),
-        estado_id = ISNULL(@p_estado_id, estado_id)
+        estado_id = ISNULL(@p_estado_id, estado_id),
+        fecha_asignacion = 
+            CASE 
+                WHEN @p_estado_id IN (1, 4) THEN dbo.GetDiaHoraChile()
+                ELSE fecha_asignacion
+            END
     WHERE id = @p_id;
-END
+END;
