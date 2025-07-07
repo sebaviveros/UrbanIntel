@@ -131,15 +131,15 @@ export class AprobacionesComponent implements OnInit {
     const solicitud = this.solicitudesPaginadas[index];
 
     Swal.fire({
-      title: '¿Deseas denegar esta solicitud?',
+      title: '¿Deseas rechazar esta solicitud?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Sí, denegar',
+      confirmButtonText: 'Sí, rechazar',
       cancelButtonText: 'Cancelar'
     }).then(result => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: 'Motivo de denegación',
+          title: 'Motivo de rechazo',
           input: 'textarea',
           inputLabel: 'Por favor, escribe una explicación (opcional):',
           inputPlaceholder: 'Motivo del rechazo...',
@@ -159,11 +159,11 @@ export class AprobacionesComponent implements OnInit {
 
             this.solicitudService.denegarSolicitud(solicitud.id, dto).subscribe({
               next: () => {
-                Swal.fire('Rechazada', 'La solicitud ha sido denegada.', 'success');
+                Swal.fire('Rechazada', 'La solicitud ha sido rechazada.', 'success');
                 this.obtenerSolicitudesPendientes();
               },
               error: () => {
-                Swal.fire('Error', 'No se pudo denegar la solicitud.', 'error');
+                Swal.fire('Error', 'No se pudo rechazar la solicitud.', 'error');
               }
             });
           }

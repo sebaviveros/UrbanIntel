@@ -76,6 +76,8 @@ imagenesAdjuntas: File[] = [];
 
   imagenSeleccionada: string | null = null;
 
+  ordenAscendente: boolean = true;
+
   constructor(private solicitudService: SolicitudService, private http: HttpClient, private authService: AuthService) {}
   async ngOnInit(): Promise<void> {
   try {
@@ -482,5 +484,13 @@ exportarSolicitudPDF(solicitud: Solicitud): void {
     reader.readAsDataURL(imgBlob);
   });
 }
+
+ordenarPorId(): void {
+    this.ordenAscendente = !this.ordenAscendente;
+    this.solicitudes.sort((a, b) =>
+      this.ordenAscendente ? a.id - b.id : b.id - a.id
+    );
+    this.actualizarPagina();
+  }
 
 }

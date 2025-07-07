@@ -177,6 +177,9 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
     return;
   }
 
+  this.resultados = []; // <-- LIMPIA resultados antes de la nueva búsqueda
+  this.cdRef.detectChanges(); // <-- Fuerza el cambio de vista
+
   const filtros: any = {};
   if (id) filtros.id = id;
   if (rut) filtros.rutCiudadano = this.normalizeRutForBackend(rut); // lo envías sin puntos

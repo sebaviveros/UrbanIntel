@@ -8,16 +8,28 @@
   <!-- Botón Crear Solicitud -->
    <div class="col-md-2"></div>
   <div class="col-auto">
-    <button class="btn btn-cafe-claro d-flex align-items-center gap-2" (click)="abrirModalCrear()" style="margin-left: 3em;">
+    <button class="btn btn-cafe-claro d-flex align-items-center gap-2" (click)="abrirModalCrear()" style="margin-left: 1em;">
   <i class="bi bi-plus-circle"></i> Crear Solicitud
 </button>
 
   </div>
 
   <!-- Buscador sensitivo -->
-  <div class="col-md-4">
+  <div class="col-md-3">
     <input type="text" class="form-control" [(ngModel)]="searchText" placeholder="Buscar..." (input)="filtrarSolicitudes()" >
     
+  </div>
+
+  <!-- botón ordenar por ID -->
+  <div class="col-auto">
+    <button class="btn btn-cafe-claro" (click)="ordenarPorId()">
+      Ordenar por ID
+      <i class="bi"
+         [ngClass]="{
+           'bi-sort-numeric-up': ordenAscendente,
+           'bi-sort-numeric-down': !ordenAscendente
+         }"></i>
+    </button>
   </div>
 
   <!-- Botón Filtros -->
@@ -300,7 +312,7 @@
     </div>
     <button class="btn btn-accent w-100" (click)="abrirModal(i)">Modificar</button>
      <!-- Botón para eliminar solicitudes -->
-    <button class="btn btn-danger w-100 mt-2" (click)="confirmarEliminar(solicitud.id)">Eliminar Solicitud</button>
+    <!-- <button class="btn btn-danger w-100 mt-2" (click)="confirmarEliminar(solicitud.id)">Eliminar Solicitud</button> -->
     <button class="btn btn-cafe w-100 mt-2" [disabled]="!solicitud.rutCiudadano" (click)="abrirModalCiudadano(i)">
       Info Ciudadano
     </button>
