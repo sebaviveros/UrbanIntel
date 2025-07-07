@@ -8,6 +8,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { HttpClient } from '@angular/common/http';
 
+import { AuthService } from '../../services/authService/auth.service';
 
 
 @Component({
@@ -47,6 +48,7 @@ nuevaSolicitud: {
   tipoReparacionId: number | null;
   prioridadId: number | null;
   estadoId: number | null;
+  rutUsuario?: string; 
   imagenes?: File[];
 } = {
   direccion: '',
@@ -72,9 +74,7 @@ imagenesAdjuntas: File[] = [];
   imagenSeleccionada: string | null = null;
 
   constructor(private solicitudService: SolicitudService, private http: HttpClient) {}
-
   async ngOnInit(): Promise<void> {
-  try {
     // Cargar catálogos en paralelo
     const [tipos, prioridades, estados] = await Promise.all([
       firstValueFrom(this.solicitudService.obtenerTiposReparacion()),
@@ -138,6 +138,7 @@ abrirModalCrear(): void {
 }
 
 crearNuevaSolicitud(): void {
+  this.nuevaSolicitud.rutUsuario = this.authService.getRutUsuario()!;
   const formData = new FormData();
 
   Object.entries(this.nuevaSolicitud).forEach(([key, value]) => {
@@ -145,7 +146,7 @@ crearNuevaSolicitud(): void {
       formData.append(key, String(value));  // <- corregido: fuerza todo a string
     }
   });
-
+  console.log("datos:",formData)
   this.imagenesAdjuntas.forEach(file => {
     formData.append('imagenes', file);
   });
@@ -244,6 +245,7 @@ limpiarFiltros(): void {
 
   guardarCambios(index: number): void {
     const solicitud = this.solicitudesPaginadas[index];
+    solicitud.rutUsuario = this.authService.getRutUsuario()!;
 
     Swal.fire({
       title: '¿Guardar cambios?',

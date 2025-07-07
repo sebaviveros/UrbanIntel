@@ -33,7 +33,7 @@ namespace UrbanIntelAPI.Controllers
                 return StatusCode(500, new { success = false, message = $"Error del servidor: {ex.Message}" });
             }
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] UsuarioPwDto usuario)
         {
@@ -68,12 +68,12 @@ namespace UrbanIntelAPI.Controllers
             }
         }
 
-        [HttpDelete("{rut}")]
-        public async Task<IActionResult> EliminarUsuario(string rut)
+        [HttpPost("eliminar")]
+        public async Task<IActionResult> EliminarUsuario([FromBody] EliminarUsuarioDto dto)
         {
             try
             {
-                var resultado = await _usuarioService.EliminarUsuarioAsync(rut);
+                var resultado = await _usuarioService.EliminarUsuarioAsync(dto.Rut, dto.RutUsuarioLogeado);
 
                 if (resultado.Contains("exitosamente"))
                     return Ok(new { success = true, message = resultado });
@@ -90,13 +90,18 @@ namespace UrbanIntelAPI.Controllers
         }
 
 
-        [HttpPut("{rut}")]
-        public async Task<IActionResult> ModificarUsuario(string rut, [FromBody] Usuario usuario)
+        [HttpPut]
+        public async Task<IActionResult> ModificarUsuario([FromBody] ModificarUsuarioDto dto)
         {
             try
             {
-                usuario.Rut = rut; // Asegurar que el RUT del body coincida con el de la ruta
-                var resultado = await _usuarioService.ModificarUsuarioAsync(usuario);
+                // Validación extra si quieres asegurarte que el RUT del modificado no venga vacío
+                if (string.IsNullOrWhiteSpace(dto.UsuarioModificado?.Rut))
+                {
+                    return BadRequest(new { success = false, message = "El RUT del usuario a modificar no fue proporcionado." });
+                }
+
+                var resultado = await _usuarioService.ModificarUsuarioAsync(dto);
 
                 if (resultado.Contains("exitosamente"))
                     return Ok(new { success = true, message = resultado });

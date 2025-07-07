@@ -1,13 +1,14 @@
 CREATE PROCEDURE sp_denegarSolicitud
     @p_id INT,
-    @p_rut_usuario VARCHAR(12),
-    @p_fecha_aprobacion DATETIME
+    @p_rut_usuario VARCHAR(12)
 AS
 BEGIN
     UPDATE Solicitud
     SET 
         estado_id = 4, -- Rechazada
         rut_usuario = @p_rut_usuario,
-        fecha_aprobacion = @p_fecha_aprobacion
+        fecha_asignacion = dbo.GetDiaHoraChile()
     WHERE id = @p_id;
 END
+
+

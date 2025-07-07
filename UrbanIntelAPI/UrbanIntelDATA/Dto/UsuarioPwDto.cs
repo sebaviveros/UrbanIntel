@@ -16,6 +16,7 @@ namespace UrbanIntelDATA.Dto
         public string Direccion { get; set; }
         public string Rol { get; set; }
         public string Password { get; set; }
+        public string RutUsuarioCreador { get; set; }
 
     }
 }

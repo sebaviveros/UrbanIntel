@@ -75,17 +75,28 @@ namespace UrbanIntelDATA.Services
                     }
                 }
 
-                // Confirmar la transacción
                 await transaction.CommitAsync();
                 Console.WriteLine($"Solicitud creada correctamente con ID: {solicitudId}");
+
+                // Enviar correo de confirmación al ciudadano
+                string asunto = "Confirmación de Solicitud Ingresada";
+                string cuerpo = $@"
+                    <p>Estimado/a {solicitud.NombreCiudadano} {solicitud.ApellidoCiudadano},</p>
+                    <p>Hemos recibido su solicitud con ID: <strong>{solicitudId}</strong>.</p>
+                    <p>Descripción: {solicitud.Descripcion}</p>
+                    <p>Será revisada por el equipo correspondiente y podrá hacer seguimiento con su RUT o el ID de la solicitud en la plataforma de Urban Intel.</p>
+                    <p>Gracias por contribuir a mejorar la ciudad.</p>
+                ";
+
+                await _smtpService.EnviarCorreoAsync(solicitud.EmailCiudadano, asunto, cuerpo);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    Console.WriteLine($"Error al crear la solicitud: {ex.Message}");
+                    throw;
+                }
             }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                Console.WriteLine($"Error al crear la solicitud: {ex.Message}");
-                throw;
-            }
-        }
 
         // Método para obtener todas las solicitudes
         public async Task<List<SolicitudCiudadana>> ObtenerSolicitudesAsync()
@@ -195,12 +206,70 @@ namespace UrbanIntelDATA.Services
 
         public async Task ModificarSolicitudAsync(int id, Solicitud solicitud)
         {
+            using var connection = _context.CreateConnection();
+            await connection.OpenAsync();
+
+            using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
+
             try
             {
-                using var connection = _context.CreateConnection();
-                await connection.OpenAsync();
+                // 1. Obtener datos anteriores
+                Solicitud? anterior = null;
+                using (var getCmd = new SqlCommand("sp_filtrarSolicitudes", connection, transaction))
+                {
+                    getCmd.CommandType = CommandType.StoredProcedure;
+                    getCmd.Parameters.AddWithValue("@p_id", id);
 
-                using var command = new SqlCommand("sp_modificarSolicitud", connection)
+                    using var reader = await getCmd.ExecuteReaderAsync();
+                    if (await reader.ReadAsync())
+                    {
+                        anterior = new Solicitud
+                        {
+                            Direccion = reader.GetString(reader.GetOrdinal("direccion")),
+                            Descripcion = reader.GetString(reader.GetOrdinal("descripcion")),
+                            Comuna = reader.GetString(reader.GetOrdinal("comuna")),
+                            TipoReparacionId = reader.IsDBNull(reader.GetOrdinal("tipo_reparacion_id")) ? null : reader.GetInt32(reader.GetOrdinal("tipo_reparacion_id")),
+                            PrioridadId = reader.IsDBNull(reader.GetOrdinal("prioridad_id")) ? null : reader.GetInt32(reader.GetOrdinal("prioridad_id")),
+                            EstadoId = reader.IsDBNull(reader.GetOrdinal("estado_id")) ? null : reader.GetInt32(reader.GetOrdinal("estado_id"))
+                        };
+                    }
+                }
+
+                if (anterior == null)
+                    throw new Exception("No se encontró la solicitud para modificar.");
+
+                // 2. Obtener catálogos
+                var tipos = await ObtenerTiposReparacionAsync();
+                var prioridades = await ObtenerPrioridadesAsync();
+                var estados = await ObtenerEstadosAsync();
+
+                string? Cambio(string campo, string? antes, string? despues)
+                {
+                    return antes != despues ? $"- {campo}: '{antes}' a '{despues}'\n" : null;
+                }
+
+                // 3. Comparaciones
+                var cambios = new List<string?>
+                {
+                    Cambio("Dirección", anterior.Direccion, solicitud.Direccion),
+                    Cambio("Descripción", anterior.Descripcion, solicitud.Descripcion),
+                    Cambio("Comuna", anterior.Comuna, solicitud.Comuna),
+                    Cambio("Tipo de reparación",
+                        tipos.FirstOrDefault(x => x.Id == anterior.TipoReparacionId)?.Nombre,
+                        tipos.FirstOrDefault(x => x.Id == solicitud.TipoReparacionId)?.Nombre),
+                    Cambio("Prioridad",
+                        prioridades.FirstOrDefault(x => x.Id == anterior.PrioridadId)?.Nombre,
+                        prioridades.FirstOrDefault(x => x.Id == solicitud.PrioridadId)?.Nombre),
+                    Cambio("Estado",
+                        estados.FirstOrDefault(x => x.Id == anterior.EstadoId)?.Nombre,
+                        estados.FirstOrDefault(x => x.Id == solicitud.EstadoId)?.Nombre)
+                };
+
+                string descripcionAuditoria = $"El usuario RUT: {solicitud.RutUsuario} modifico la solicitud con ID: {id}. Datos:\n" +
+                                              string.Join("", cambios.Where(c => c != null));
+
+                // 4. Ejecutar modificación
+                using var command = new SqlCommand("sp_modificarSolicitud", connection, transaction)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -214,9 +283,28 @@ namespace UrbanIntelDATA.Services
                 command.Parameters.AddWithValue("@p_estado_id", solicitud.EstadoId ?? (object)DBNull.Value);
 
                 await command.ExecuteNonQueryAsync();
+
+                // 5. Insertar en auditoría solo si hubo cambios
+                if (cambios.Any(c => c != null))
+                {
+                    using var auditCmd = new SqlCommand("sp_insertarAuditoria", connection, transaction)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+
+                    auditCmd.Parameters.AddWithValue("@p_rut_usuario", solicitud.RutUsuario);
+                    auditCmd.Parameters.AddWithValue("@p_accion_id", 2); // 2 = Modificar
+                    auditCmd.Parameters.AddWithValue("@p_modulo_id", 2); // 2 = Solicitudes
+                    auditCmd.Parameters.AddWithValue("@p_descripcion", descripcionAuditoria);
+
+                    await auditCmd.ExecuteNonQueryAsync();
+                }
+
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 Console.WriteLine($"Error en ModificarSolicitudAsync: {ex.Message}");
                 throw;
             }
@@ -374,6 +462,38 @@ namespace UrbanIntelDATA.Services
                     await imgCommand.ExecuteNonQueryAsync();
                 }
 
+                // Obtener los catálogos
+                var tiposReparacion = await ObtenerTiposReparacionAsync();
+                var prioridades = await ObtenerPrioridadesAsync();
+                var estados = await ObtenerEstadosAsync();
+
+                // Buscar nombres por ID
+                string tipoReparacionNombre = tiposReparacion.FirstOrDefault(t => t.Id == solicitud.TipoReparacionId)?.Nombre ?? "Desconocido";
+                string prioridadNombre = prioridades.FirstOrDefault(p => p.Id == solicitud.PrioridadId)?.Nombre ?? "Desconocido";
+                string estadoNombre = estados.FirstOrDefault(e => e.Id == solicitud.EstadoId)?.Nombre ?? "Desconocido";
+
+
+                // Insertar en auditoría
+                string descripcionAuditoria = $@"
+                    El usuario con RUT: {solicitud.RutUsuario} creó una solicitud con ID: {nuevaId}, 
+                    Dirección: {solicitud.Direccion}, 
+                    Descripción: {solicitud.Descripcion}, 
+                    Tipo Reparación: {tipoReparacionNombre}, 
+                    Prioridad: {prioridadNombre}, 
+                    Estado: {estadoNombre}.";
+
+                using var auditCmd = new SqlCommand("sp_insertarAuditoria", connection, transaction)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                auditCmd.Parameters.AddWithValue("@p_rut_usuario", solicitud.RutUsuario);
+                auditCmd.Parameters.AddWithValue("@p_accion_id", 1); // 1 = Crear
+                auditCmd.Parameters.AddWithValue("@p_modulo_id", 2); // 2 = Solicitudes
+                auditCmd.Parameters.AddWithValue("@p_descripcion", descripcionAuditoria);
+
+                await auditCmd.ExecuteNonQueryAsync();
+
                 await transaction.CommitAsync();
                 return nuevaId;
             }
@@ -406,6 +526,10 @@ namespace UrbanIntelDATA.Services
                     correoCiudadano = reader.GetString(reader.GetOrdinal("email_ciudadano"));
                 }
 
+                // Obtener hora actual de Chile
+                var chileTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific SA Standard Time");
+                var horaChile = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, chileTimeZone);
+
                 // Actualizar solicitud
                 using var cmd = new SqlCommand("sp_aprobarSolicitud", connection, transaction)
                 {
@@ -416,7 +540,7 @@ namespace UrbanIntelDATA.Services
                 cmd.Parameters.AddWithValue("@p_rut_usuario", dto.RutUsuario);
                 cmd.Parameters.AddWithValue("@p_tipo_reparacion_id", dto.TipoReparacionId);
                 cmd.Parameters.AddWithValue("@p_prioridad_id", dto.PrioridadId);
-                cmd.Parameters.AddWithValue("@p_fecha_aprobacion", DateTime.Now);
+                cmd.Parameters.AddWithValue("@p_fecha_aprobacion", horaChile);
 
                 await cmd.ExecuteNonQueryAsync();
 
@@ -484,8 +608,7 @@ namespace UrbanIntelDATA.Services
 
                 cmd.Parameters.AddWithValue("@p_id", solicitudId);
                 cmd.Parameters.AddWithValue("@p_rut_usuario", rutUsuario);
-                cmd.Parameters.AddWithValue("@p_fecha_aprobacion", DateTime.Now);
-
+                
                 await cmd.ExecuteNonQueryAsync();
 
                 // enviar correo con motivo rechazo
