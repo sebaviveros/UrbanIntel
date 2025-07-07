@@ -6,7 +6,7 @@
 
 <!-- contenedor de acciones superiores -->
 <div class="row mb-4 align-items-center gx-2">
-  <div class="col-md-3"></div>
+  <div class="col-md-2"></div>
 
   <!-- buscador sensitivo -->
   <div class="col-md-4">
@@ -17,14 +17,26 @@
            (input)="filtrarSolicitudes()" />
   </div>
 
-  <!-- boton filtros -->
+  <!-- botón ordenar por ID -->
+  <div class="col-auto">
+    <button class="btn btn-cafe-claro" (click)="ordenarPorId()">
+      Ordenar por ID
+      <i class="bi"
+         [ngClass]="{
+           'bi-sort-numeric-up': ordenAscendente,
+           'bi-sort-numeric-down': !ordenAscendente
+         }"></i>
+    </button>
+  </div>
+
+  <!-- botón filtros -->
   <div class="col-auto">
     <button class="btn btn-cafe-claro d-flex align-items-center gap-1" (click)="abrirFiltro()">
       <i class="bi bi-funnel"></i> Filtros
     </button>
   </div>
 
-  <!-- boton actualizar -->
+  <!-- botón actualizar -->
   <div class="col-auto">
     <button class="btn btn-cafe-claro d-flex align-items-center gap-2" (click)="actualizarAprobaciones()">
       <i class="bi bi-arrow-clockwise fs-5"></i>
@@ -37,14 +49,22 @@
 <div class="container filtro-aprobaciones">
   <div *ngIf="filtrosVisibles" class="card mb-3 p-3 border border-primary bg-light mt-3">
     <div class="row g-2">
-      <div class="col-md-6">
-        <input class="form-control filtro" placeholder="ID" [(ngModel)]="filtro.id">
-      </div>
-      <div class="col-md-6">
-        <input class="form-control filtro" placeholder="Comuna" [(ngModel)]="filtro.comuna">
-      </div>
-    </div>
+  <div class="col-md-3">
+    <input class="form-control filtro" placeholder="ID" [(ngModel)]="filtro.id">
+  </div>
+  <div class="col-md-3">
+    <input class="form-control filtro" placeholder="Comuna" [(ngModel)]="filtro.comuna">
+  </div>
+  <div class="col-md-3">
+    <input class="form-control filtro" placeholder="Desde(dd-mm-aaaa)" [(ngModel)]="filtro.fechaDesde" />
+  </div>
+  <div class="col-md-3">
+    <input class="form-control filtro" placeholder="Hasta(dd-mm-aaaa)" [(ngModel)]="filtro.fechaHasta" />
+  </div>
+</div>
 
+
+    <!-- Botones -->
     <div class="d-flex justify-content-center gap-3 mt-4">
       <button class="btn btn-primary d-flex align-items-center gap-2" (click)="buscarPorFiltros()">
         <i class="bi bi-search"></i> Buscar
@@ -69,7 +89,7 @@
           <div class="w-100 d-flex justify-content-between align-items-center">
             <div class="text-start">
               <div><strong>ID:</strong> {{ solicitud.id }}</div>
-              <div><strong>Direccion:</strong> {{ solicitud.direccion }}</div>
+              <div><strong>Dirección:</strong> {{ solicitud.direccion }}</div>
             </div>
             <span class="badge"
               [ngClass]="{
@@ -95,7 +115,7 @@
             <p><strong>Comuna:</strong> {{ solicitud.comuna }}</p>
             <p><strong>Descripción:</strong> {{ solicitud.descripcion }}</p>
 
-            <!-- imagenes -->
+            <!-- imágenes -->
             <div *ngIf="solicitud.imagenes?.length"
                  class="mb-3 d-flex flex-wrap gap-2 justify-content-start imagenes-container">
               <img *ngFor="let img of solicitud.imagenes"
@@ -109,7 +129,7 @@
           <!-- columna derecha -->
           <div class="col-md-4">
             <div class="mb-3">
-              <label class="form-label"><strong>Tipo de reparacion</strong></label>
+              <label class="form-label"><strong>Tipo de reparación</strong></label>
               <select class="form-select" [(ngModel)]="solicitud.tipoReparacionId">
                 <option [ngValue]="null" disabled>Seleccionar tipo</option>
                 <option *ngFor="let tipo of tiposReparacion" [ngValue]="tipo.id">{{ tipo.nombre }}</option>
@@ -136,7 +156,7 @@
     </div>
   </div>
 
-  <!-- paginacion -->
+  <!-- paginación -->
   <nav class="mt-4">
     <ul class="pagination justify-content-center">
       <li class="page-item" [class.disabled]="currentPage === 1">

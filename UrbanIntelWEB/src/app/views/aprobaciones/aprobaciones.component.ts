@@ -18,6 +18,7 @@ interface Solicitud {
   emailCiudadano: string;
   estadoNombre: string;
   comuna: string;
+  fechaCreacion: string;
 }
 
 @Component({
@@ -27,29 +28,24 @@ interface Solicitud {
 })
 export class AprobacionesComponent implements OnInit {
 
-  // datos de solicitudes
   solicitudes: Solicitud[] = [];
   solicitudesPaginadas: Solicitud[] = [];
 
-  // paginacion
   currentPage: number = 1;
   pageSize: number = 5;
   totalPages: number = 0;
-
-  // estado del acordeon
   activeIndex: number | null = null;
 
-  // datos de filtros y busqueda
   filtrosVisibles: boolean = false;
-  filtro = { id: '', comuna: '' };
+  filtro = { id: '', comuna: '', fechaDesde: '', fechaHasta: '' };
   searchText: string = '';
 
-  // opciones para selects
   tiposReparacion: GenericItem[] = [];
   prioridades: GenericItem[] = [];
 
-  // modal de imagen
   imagenSeleccionada: string | null = null;
+
+  ordenAscendente: boolean = true;
 
   constructor(
     private solicitudService: SolicitudService,
@@ -62,7 +58,6 @@ export class AprobacionesComponent implements OnInit {
     this.obtenerPrioridades();
   }
 
-  // obtiene solicitudes con estado pendiente y sus imagenes
   obtenerSolicitudesPendientes(): void {
     const filtros = { estadoId: 2 };
     this.solicitudService.obtenerSolicitudPorFiltro(filtros).subscribe(async solicitudes => {
@@ -78,21 +73,18 @@ export class AprobacionesComponent implements OnInit {
     });
   }
 
-  // obtiene listado de tipos de reparacion
   obtenerTiposReparacion(): void {
     this.solicitudService.obtenerTiposReparacion().subscribe(data => {
       this.tiposReparacion = data;
     });
   }
 
-  // obtiene listado de prioridades
   obtenerPrioridades(): void {
     this.solicitudService.obtenerPrioridades().subscribe(data => {
       this.prioridades = data;
     });
   }
 
-  // aprueba una solicitud
   aprobarSolicitud(index: number): void {
     const solicitud = this.solicitudesPaginadas[index];
 
@@ -135,7 +127,6 @@ export class AprobacionesComponent implements OnInit {
     });
   }
 
-  // deniega una solicitud
   denegarSolicitud(index: number): void {
     const solicitud = this.solicitudesPaginadas[index];
 
@@ -157,8 +148,8 @@ export class AprobacionesComponent implements OnInit {
         }).then(res => {
           if (res.isConfirmed) {
             const motivo = res.value?.trim() || "N/A";
-
             const rut = this.authService.obtenerRutUsuario();
+
             if (!rut) {
               Swal.fire('Error', 'No se pudo obtener el RUT del usuario.', 'error');
               return;
@@ -181,23 +172,19 @@ export class AprobacionesComponent implements OnInit {
     });
   }
 
-  // abre modal de imagen
   abrirImagen(imagen: string): void {
     this.imagenSeleccionada = imagen;
   }
 
-  // cierra modal de imagen
   cerrarImagen(): void {
     this.imagenSeleccionada = null;
   }
 
-  // cambia de pagina
   cambiarPagina(pagina: number): void {
     this.currentPage = pagina;
     this.actualizarPagina();
   }
 
-  // actualiza la pagina con las solicitudes visibles
   actualizarPagina(): void {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
@@ -205,25 +192,27 @@ export class AprobacionesComponent implements OnInit {
     this.activeIndex = null;
   }
 
-  // alterna visibilidad de acordeon
   toggleAcordeon(index: number): void {
-    if (this.activeIndex === index) {
-      this.activeIndex = null;
-    } else {
-      this.activeIndex = index;
+    this.activeIndex = this.activeIndex === index ? null : index;
+    if (this.activeIndex !== null) {
       this.solicitudesPaginadas[index].tipoReparacionId = null!;
       this.solicitudesPaginadas[index].prioridadId = null!;
     }
   }
 
-  // alterna visibilidad de filtros
   abrirFiltro(): void {
     this.filtrosVisibles = !this.filtrosVisibles;
   }
 
-  // aplica filtros por id y comuna
+  limpiarFiltros(): void {
+    this.filtro = { id: '', comuna: '', fechaDesde: '', fechaHasta: '' };
+    this.currentPage = 1;
+    this.actualizarPagina();
+    this.filtrosVisibles = false;
+  }
+
   buscarPorFiltros(): void {
-    const { id, comuna } = this.filtro;
+    const { id, comuna, fechaDesde, fechaHasta } = this.filtro;
 
     const normalizar = (texto: string) =>
       texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -231,7 +220,23 @@ export class AprobacionesComponent implements OnInit {
     const filtradas = this.solicitudes.filter(sol => {
       const coincideId = id ? sol.id.toString().includes(id) : true;
       const coincideComuna = comuna ? normalizar(sol.direccion).includes(normalizar(comuna)) : true;
-      return coincideId && coincideComuna;
+
+      let coincideFecha = true;
+      if (fechaDesde || fechaHasta) {
+        const fechaSolicitud = new Date(sol.fechaCreacion);
+        const desde = fechaDesde ? new Date(fechaDesde) : null;
+        const hasta = fechaHasta ? new Date(fechaHasta) : null;
+
+        // ✅ Ajustar hora del "hasta" al final del día
+        if (hasta) {
+          hasta.setHours(23, 59, 59, 999);
+        }
+
+        if (desde && fechaSolicitud < desde) coincideFecha = false;
+        if (hasta && fechaSolicitud > hasta) coincideFecha = false;
+      }
+
+      return coincideId && coincideComuna && coincideFecha;
     });
 
     this.totalPages = Math.ceil(filtradas.length / this.pageSize);
@@ -241,13 +246,6 @@ export class AprobacionesComponent implements OnInit {
     this.filtrosVisibles = false;
   }
 
-  // limpia filtros aplicados
-  limpiarFiltros(): void {
-    this.filtro = { id: '', comuna: '' };
-    this.actualizarPagina();
-  }
-
-  // busca texto en direccion, descripcion, comuna e id
   filtrarSolicitudes(): void {
     const texto = this.searchText.toLowerCase();
 
@@ -264,7 +262,14 @@ export class AprobacionesComponent implements OnInit {
     this.activeIndex = null;
   }
 
-  // actualiza todas las solicitudes
+  ordenarPorId(): void {
+    this.ordenAscendente = !this.ordenAscendente;
+    this.solicitudes.sort((a, b) =>
+      this.ordenAscendente ? a.id - b.id : b.id - a.id
+    );
+    this.actualizarPagina();
+  }
+
   actualizarAprobaciones(): void {
     this.obtenerSolicitudesPendientes();
   }

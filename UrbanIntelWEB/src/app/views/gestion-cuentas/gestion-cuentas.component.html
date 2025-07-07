@@ -52,8 +52,8 @@
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
-      <button type="button" class="btn btn-primary" (click)="guardarUsuario()">
+      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cerrar</button>
+      <button type="button" class="btn-aceptar" (click)="guardarUsuario()">
         {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
       </button>
     </div>

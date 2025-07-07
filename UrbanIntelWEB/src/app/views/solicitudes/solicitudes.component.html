@@ -38,47 +38,58 @@
 </div>
 
 <!-- Filtro desplegable -->
- <div class="container filtro-solicitudes">
-<div *ngIf="filtrosVisibles" class="card mb-3 p-3 border border-primary bg-light mt-3">
-  <br>
-  <div class="row g-2">
-    <div class="col-md-2">
-      <input class="form-control" placeholder="ID" [(ngModel)]="filtro.id">
+<div class="container filtro-solicitudes">
+  <div *ngIf="filtrosVisibles" class="card mb-3 p-3 border border-primary bg-light mt-3">
+    <br>
+    <div class="row g-2">
+      <div class="col-md-2">
+        <input class="form-control" placeholder="ID" [(ngModel)]="filtro.id">
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" placeholder="Comuna" [(ngModel)]="filtro.comuna">
+      </div>
+      <div class="col-md-2">
+        <select class="form-select" [(ngModel)]="filtro.estadoId">
+          <option [ngValue]="null" disabled selected>Estado...</option>
+          <option *ngFor="let estado of estados" [value]="estado.id">{{ estado.nombre }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="filtro.tipoReparacionId">
+          <option [ngValue]="null" disabled selected>Tipo reparación...</option>
+          <option *ngFor="let tipo of tiposReparacion" [value]="tipo.id">{{ tipo.nombre }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="filtro.prioridadId">
+          <option [ngValue]="null" disabled selected>Prioridad...</option>
+          <option *ngFor="let p of prioridades" [value]="p.id">{{ p.nombre }}</option>
+        </select>
+      </div>
     </div>
-    <div class="col-md-2">
-      <input class="form-control" placeholder="Comuna" [(ngModel)]="filtro.comuna">
-    </div>
-    <div class="col-md-2">
-      <select class="form-select" [(ngModel)]="filtro.estadoId">
-  <option [ngValue]="null" disabled selected>Estado...</option>
-  <option *ngFor="let estado of estados" [value]="estado.id">{{ estado.nombre }}</option>
-</select>
-    </div>
-    <div class="col-md-3">
-      <select class="form-select" [(ngModel)]="filtro.tipoReparacionId">
-  <option [ngValue]="null" disabled selected>Tipo reparación...</option>
-  <option *ngFor="let tipo of tiposReparacion" [value]="tipo.id">{{ tipo.nombre }}</option>
-</select>
-    </div>
-    <div class="col-md-3">
-      <select class="form-select" [(ngModel)]="filtro.prioridadId">
-  <option [ngValue]="null" disabled selected>Prioridad...</option>
-  <option *ngFor="let p of prioridades" [value]="p.id">{{ p.nombre }}</option>
-</select>
-    </div>
-  </div>
 
-  <!-- Botones centrados -->
-  <div class="d-flex justify-content-center gap-3 mt-4">
-    <button class="btn btn-primary d-flex align-items-center gap-2" (click)="buscarPorFiltros()">
-      <i class="bi bi-search"></i> Buscar
-    </button>
-    <button class="btn btn-danger d-flex align-items-center gap-2" (click)="limpiarFiltros()">
-      <i class="bi bi-x-circle"></i> Limpiar
-    </button>
+    <!-- Fila de fechas -->
+    <div class="row g-2 mt-3">
+      <div class="col-md-3">
+        <input type="date" class="form-control" placeholder="Desde(dd-mm-aaaa)" [(ngModel)]="filtro.fechaDesde">
+      </div>
+      <div class="col-md-3">
+        <input type="date" class="form-control" placeholder="Hasta(dd-mm-aaaa)" [(ngModel)]="filtro.fechaHasta">
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-4">
+      <button class="btn btn-primary d-flex align-items-center gap-2" (click)="buscarPorFiltros()">
+        <i class="bi bi-search"></i> Buscar
+      </button>
+      <button class="btn btn-danger d-flex align-items-center gap-2" (click)="limpiarFiltros()">
+        <i class="bi bi-x-circle"></i> Limpiar
+      </button>
+    </div>
   </div>
 </div>
-</div>
+
 <!-- Modal Crear Solicitud -->
 <div *ngIf="modalCrearVisible" class="custom-modal-backdrop">
   <div class="custom-modal">
@@ -129,8 +140,8 @@
     </div>
 
     <div class="d-flex justify-content-end gap-2">
-      <button class="btn btn-outline-secondary" (click)="cerrarModalCrear()">Cancelar</button>
-      <button class="btn btn-success" (click)="crearNuevaSolicitud()">Crear</button>
+      <button class="btn-cancelar" (click)="cerrarModalCrear()">Cancelar</button>
+      <button class="btn-aceptar" (click)="crearNuevaSolicitud()">Crear</button>
     </div>
   </div>
 </div>
@@ -140,7 +151,7 @@
 <!-- Modal de Información del Ciudadano -->
 <div *ngIf="modalCiudadanoIndex !== null" class="custom-modal-backdrop">
   <div class="custom-modal">
-    <h5>Ciudadano - Solicitud #{{ solicitudesPaginadas[modalCiudadanoIndex].id }}</h5>
+    <h5>Ciudadano - Solicitud N°{{ solicitudesPaginadas[modalCiudadanoIndex].id }}</h5>
 
     <div class="mb-2"><label>RUT</label>
       <input class="form-control" [(ngModel)]="solicitudesPaginadas[modalCiudadanoIndex].rutCiudadano" />
@@ -170,7 +181,7 @@
   <div class="custom-modal">
     <!-- Header del modal -->
     <div class="custom-modal-header">
-      <h5>Modificar Solicitud #{{ solicitudesPaginadas[modalIndex].id }}</h5>
+      <h5>Modificar Solicitud N°{{ solicitudesPaginadas[modalIndex].id }}</h5>
     </div>
 
     <!-- Cuerpo del modal -->
@@ -288,7 +299,8 @@
       </span>
     </div>
     <button class="btn btn-accent w-100" (click)="abrirModal(i)">Modificar</button>
-    <!-- <button class="btn btn-danger w-100 mt-2" (click)="confirmarEliminar(solicitud.id)">Eliminar Solicitud</button>-->
+     <!-- Botón para eliminar solicitudes -->
+    <button class="btn btn-danger w-100 mt-2" (click)="confirmarEliminar(solicitud.id)">Eliminar Solicitud</button>
     <button class="btn btn-cafe w-100 mt-2" [disabled]="!solicitud.rutCiudadano" (click)="abrirModalCiudadano(i)">
       Info Ciudadano
     </button>

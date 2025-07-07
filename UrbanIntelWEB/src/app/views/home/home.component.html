@@ -1,31 +1,35 @@
-<div class="filtro-container">
-  <button (click)="mostrarFiltros = !mostrarFiltros" class="btn-toggle">
-    Filtros
-  </button>
-
-  <div *ngIf="mostrarFiltros" class="filtros-row">
-    <select [(ngModel)]="filtro.tipoReparacion" class="form-control">
-      <option value="">-- Tipo de Reparación --</option>
-      <option *ngFor="let tipo of tiposReparacion" [value]="tipo">{{ tipo }}</option>
-    </select>
-
-    <select [(ngModel)]="filtro.prioridad" class="form-control">
-      <option value="">-- Tipo de Prioridad --</option>
-      <option *ngFor="let prioridad of tiposPrioridad" [value]="prioridad">{{ prioridad }}</option>
-    </select>
-
-    <button class="btn btn-primary" (click)="filtrar()">Buscar</button>
-    <button class="btn btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+<!-- CONTENEDOR FILTROS ESTÁTICO -->
+<div class="container filtro-home">
+  <div class="row align-items-end g-3">
+    <div class="col-md-4">
+      <select [(ngModel)]="filtro.tipoReparacion" class="form-control">
+        <option value="">-- Tipo de Reparación --</option>
+        <option *ngFor="let tipo of tiposReparacion" [value]="tipo">{{ tipo }}</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select [(ngModel)]="filtro.prioridad" class="form-control">
+        <option value="">-- Tipo de Prioridad --</option>
+        <option *ngFor="let prioridad of tiposPrioridad" [value]="prioridad">{{ prioridad }}</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100" (click)="filtrar()">
+        <i class="bi bi-search"></i> Buscar
+      </button>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-danger w-100" (click)="limpiarFiltros()">
+        <i class="bi bi-x-circle"></i> Limpiar
+      </button>
+    </div>
   </div>
 </div>
-<br>
-<br>
-<br>
-<br>
-<br>
-<div #map class="mapa-container"></div>
+  <br>
+  <br>
+
+  <div class="map-container">
+    <div #map id="map"></div>
+  </div>
 
 
-<div class="map-container">
-  <div #map id="map"></div>
-</div>

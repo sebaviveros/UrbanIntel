@@ -30,12 +30,16 @@ export class SolicitudesComponent implements OnInit {
   estadoId?: number | null;
   tipoReparacionId?: number | null;
   prioridadId?: number | null;
+  fechaDesde?: string | null;
+  fechaHasta?: string | null;
 } = {
   id: null,
   comuna: null,
   estadoId: null,
   tipoReparacionId: null,
-  prioridadId: null
+  prioridadId: null,
+  fechaDesde: null,
+  fechaHasta: null
 };
 
 modalCrearVisible: boolean = false;
@@ -185,7 +189,9 @@ limpiarFiltros(): void {
     comuna: null,
     estadoId: null,
     tipoReparacionId: null,
-    prioridadId: null
+    prioridadId: null,
+    fechaDesde: null,
+    fechaHasta: null
   };
 }
 
@@ -300,32 +306,65 @@ limpiarFiltros(): void {
   this.filtrosVisibles = !this.filtrosVisibles;
   }
 
-  async buscarPorFiltros(): Promise<void> {
+ async buscarPorFiltros(): Promise<void> {
   try {
-    const filtrosLimpiados = Object.fromEntries(
-      Object.entries(this.filtro).filter(([_, v]) => v !== null && v !== '')
-    );
+    const { id, comuna, estadoId, tipoReparacionId, prioridadId, fechaDesde, fechaHasta } = this.filtro;
 
-    const solicitudes = await firstValueFrom(
-      this.solicitudService.obtenerSolicitudPorFiltro(filtrosLimpiados)
-    );
+    // Validación de fechas
+    if (fechaDesde && fechaHasta) {
+      const desde = new Date(fechaDesde);
+      const hasta = new Date(fechaHasta);
+      if (hasta < desde) {
+        Swal.fire('Rango inválido', 'La fecha final no puede ser menor a la inicial.', 'warning');
+        return;
+      }
+    }
 
+    // Filtros sin fechas (solo los que debe manejar el backend)
+    const filtrosBackend: any = {};
+    if (id) filtrosBackend.id = id;
+    if (comuna) filtrosBackend.comuna = comuna;
+    if (estadoId) filtrosBackend.estadoId = estadoId;
+    if (tipoReparacionId) filtrosBackend.tipoReparacionId = tipoReparacionId;
+    if (prioridadId) filtrosBackend.prioridadId = prioridadId;
+
+    // Petición al backend
+    const solicitudes = await firstValueFrom(this.solicitudService.obtenerSolicitudPorFiltro(filtrosBackend));
+    let solicitudesFiltradas = solicitudes.filter(sol => sol.estadoNombre !== 'Pendiente');
+
+    // Filtro de fechas (solo si se usan)
+    if (fechaDesde || fechaHasta) {
+      const desde = fechaDesde ? new Date(fechaDesde) : null;
+      const hasta = fechaHasta ? new Date(fechaHasta) : null;
+
+      if (hasta) hasta.setHours(23, 59, 59, 999);
+
+      solicitudesFiltradas = solicitudesFiltradas.filter(sol => {
+        const fecha = new Date(sol.fechaCreacion);
+        return (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
+      });
+    }
+
+    // Cargar imágenes
     const solicitudesConImagenes = await Promise.all(
-      solicitudes.map(async (sol) => {
+      solicitudesFiltradas.map(async (sol) => {
         const imagenes = await firstValueFrom(this.solicitudService.obtenerImagenesPorSolicitud(sol.id));
         return { ...sol, imagenes };
       })
     );
 
     this.solicitudes = solicitudesConImagenes;
-    this.currentPage = 1;
     this.totalPages = Math.ceil(this.solicitudes.length / this.pageSize);
+    this.currentPage = 1;
     this.actualizarPagina();
     this.filtrosVisibles = false;
+
   } catch (error) {
     console.error('Error al buscar por filtros:', error);
+    Swal.fire('Error', 'Ocurrió un problema al aplicar los filtros.', 'error');
   }
 }
+
 
 
   filtrarSolicitudes(): void {
@@ -358,34 +397,90 @@ limpiarFiltros(): void {
     this.modalIndex = null;
   }
 
-  exportarSolicitudPDF(solicitud: Solicitud): void {
-    const doc = new jsPDF();
-    const formatter = new Intl.DateTimeFormat('es-CL', {
-      dateStyle: 'short',
-      timeStyle: 'short'
-    });
+exportarSolicitudPDF(solicitud: Solicitud): void {
+  const formatter = new Intl.DateTimeFormat('es-CL', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  });
 
-    doc.setFontSize(14);
-    doc.text(`Solicitud #${solicitud.id}`, 20, 20);
+  this.http.get('assets/imagenes/7cff6bf4-c274-4c75-be64-e9b65939ffd4-removebg-preview.png', {
+    responseType: 'blob'
+  }).subscribe((imgBlob) => {
+    const reader = new FileReader();
 
-    autoTable(doc, {
-      startY: 30,
-      head: [['Campo', 'Valor']],
-      body: [
-        ['Dirección', solicitud.direccion || 'N/A'],
-        ['Comuna', solicitud.comuna || 'N/A'],
-        ['Descripción', solicitud.descripcion || 'N/A'],
-        ['Tipo Reparación', solicitud.tipoReparacionNombre || 'N/A'],
-        ['Prioridad', solicitud.prioridadNombre || 'N/A'],
-        ['Estado', solicitud.estadoNombre || 'N/A'],
-        ['Fecha de Creación', solicitud.fechaCreacion ? formatter.format(new Date(solicitud.fechaCreacion)) : 'N/A'],
-        ['Fecha de Aprobación', solicitud.fechaAprobacion ? formatter.format(new Date(solicitud.fechaAprobacion)) : 'N/A'],
-        ['Fecha de Asignación', solicitud.fechaAsignacion ? formatter.format(new Date(solicitud.fechaAsignacion)) : 'N/A']
-      ],
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [230, 126, 34] }
-    });
+    reader.onload = async () => {
+      const logoBase64 = reader.result as string;
+      const doc = new jsPDF();
 
-    doc.save(`solicitud-${solicitud.id}.pdf`);
-  }
+      // Agregar logo al centro superior
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const imgSize = 25;
+      const x = (pageWidth - imgSize) / 2;
+      const y = 10;
+      doc.addImage(logoBase64, 'PNG', x, y, imgSize, imgSize);
+
+      // Título debajo del logo
+      doc.setFontSize(14);
+      doc.text(`Solicitud N°${solicitud.id}`, 20, y + imgSize + 5);
+
+      // Tabla de datos
+      autoTable(doc, {
+        startY: y + imgSize + 15,
+        head: [['Campo', 'Valor']],
+        body: [
+          ['Dirección', solicitud.direccion || 'N/A'],
+          ['Comuna', solicitud.comuna || 'N/A'],
+          ['Descripción', solicitud.descripcion || 'N/A'],
+          ['Tipo Reparación', solicitud.tipoReparacionNombre || 'N/A'],
+          ['Prioridad', solicitud.prioridadNombre || 'N/A'],
+          ['Estado', solicitud.estadoNombre || 'N/A'],
+          ['Fecha de Creación', solicitud.fechaCreacion ? formatter.format(new Date(solicitud.fechaCreacion)) : 'N/A'],
+          ['Fecha de Aprobación', solicitud.fechaAprobacion ? formatter.format(new Date(solicitud.fechaAprobacion)) : 'N/A'],
+          ['Fecha de Asignación', solicitud.fechaAsignacion ? formatter.format(new Date(solicitud.fechaAsignacion)) : 'N/A']
+        ],
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [230, 126, 34] }
+      });
+
+      // Cargar imágenes de la solicitud (si tiene)
+      const imagenes = solicitud.imagenes?.slice(0, 3) || [];
+
+      if (imagenes.length > 0) {
+        const yStart = (doc as any).lastAutoTable?.finalY || 50;
+        const imgWidth = 50;
+        const imgHeight = 50;
+        const spacing = 10;
+
+        const cargarImagenComoBase64 = async (url: string): Promise<string | null> => {
+          try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            return await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(blob);
+            });
+          } catch (error) {
+            console.warn('Error al cargar imagen como base64:', url, error);
+            return null;
+          }
+        };
+
+        const base64s = await Promise.all(imagenes.map(url => cargarImagenComoBase64(url)));
+
+        base64s.forEach((base64, index) => {
+          if (base64) {
+            const x = 20 + index * (imgWidth + spacing);
+            doc.addImage(base64, 'JPEG', x, yStart + 10, imgWidth, imgHeight);
+          }
+        });
+      }
+
+      doc.save(`solicitud-${solicitud.id}.pdf`);
+    };
+
+    reader.readAsDataURL(imgBlob);
+  });
+}
+
 }
