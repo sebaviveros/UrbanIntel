@@ -25,49 +25,39 @@
   }
 }
 
+.filtro-home {
+  background-color: transparent;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 
-.filtro-container {
-  position: absolute;
-  top: 20px;
-  left: 55%;
-  transform: translateX(-50%);
-  z-index: 999;
-  background: rgba(0, 0, 0, 0.85);
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.btn-toggle {
-  color: white;
-  background: #f7941d;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  cursor: pointer;
-}
-
-.filtros-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 5px;
-
-  select {
-    min-width: 200px;
-    padding: 6px;
-    border-radius: 4px;
+  select.form-control {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
     border: 1px solid #ccc;
   }
 
   .btn {
-    padding: 6px 12px;
+    font-weight: 600;
+    border-radius: 0.5rem;
+  }
+
+  .btn i {
+    margin-right: 4px;
   }
 }
 
 .mapa-container {
-  width: 100%;
-  height: 80vh;
+  height: 75vh;
+
+  #map {
+    width: 100%;
+    height: 100%;
+    border-radius: 0.75rem;
+    border: 2px solid #222;
+  }
 }
+
+

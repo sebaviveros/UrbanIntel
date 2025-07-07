@@ -20,8 +20,10 @@
 // contenedor filtros
 .container.filtro-aprobaciones {
   padding-bottom: 1em;
-  max-width: 40em;
+  max-width: 1000px; // ✅ suficiente para 4 columnas
+  width: 100%;
 }
+
 
 // acordeon
 .accordion-item {

@@ -137,33 +137,35 @@ export class HomeComponent implements AfterViewInit {
     const iconUrl = this.getIconoPorTipo(solicitud.tipoReparacionNombre || '');
 
     const contenidoHTML = `
-      <div style="max-width: 260px; background-color: #1e1e1e; color: #ffffff; padding: 10px; border-radius: 8px;">
-        <h5 style="margin:0; color: #f7941d;">${solicitud.tipoReparacionNombre}</h5>
-        <p style="margin:0;"><strong>Dirección:</strong> ${solicitud.direccion}, ${solicitud.comuna}</p>
-        <p style="margin:0;"><strong>Estado:</strong> ${solicitud.estadoNombre}</p>
-        <p style="margin:0;"><strong>Prioridad:</strong> ${solicitud.prioridadNombre}</p>
-        <p style="margin:0;"><strong>Fecha:</strong> ${new Date(solicitud.fechaCreacion!).toLocaleDateString()}</p>
-        <p style="margin:0;"><strong>Descripción:</strong> ${solicitud.descripcion}</p>
+  <div style="max-width: 260px; background-color: #1e1e1e; color: #ffffff; padding: 10px; border-radius: 8px;">
+    <h4 style="margin:0; color: #f7941d; font-weight:bold;">ID Solicitud N°${solicitud.id}</h4>
+    <p style="margin:0 0 5px; font-size: 0.9rem;"><strong>Tipo:</strong> ${solicitud.tipoReparacionNombre}</p>
+    <p style="margin:0;"><strong>Dirección:</strong> ${solicitud.direccion}, ${solicitud.comuna}</p>
+    <p style="margin:0;"><strong>Estado:</strong> ${solicitud.estadoNombre}</p>
+    <p style="margin:0;"><strong>Prioridad:</strong> ${solicitud.prioridadNombre}</p>
+    <p style="margin:0;"><strong>Fecha:</strong> ${new Date(solicitud.fechaCreacion!).toLocaleDateString()}</p>
+    <p style="margin:0;"><strong>Descripción:</strong> ${solicitud.descripcion}</p>
 
-        ${solicitud.imagenes?.length ? `
-          <div id="carousel-${solicitud.id}" class="carousel slide" data-bs-ride="carousel" style="margin-top:10px;">
-            <div class="carousel-inner">
-              ${solicitud.imagenes.map((img, idx) => `
-                <div class="carousel-item ${idx === 0 ? 'active' : ''}">
-                  <img src="${img}" class="d-block w-100" style="height:150px;object-fit:cover;border-radius:4px;">
-                </div>
-              `).join('')}
+    ${solicitud.imagenes?.length ? `
+      <div id="carousel-${solicitud.id}" class="carousel slide" data-bs-ride="carousel" style="margin-top:10px;">
+        <div class="carousel-inner">
+          ${solicitud.imagenes.map((img, idx) => `
+            <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+              <img src="${img}" class="d-block w-100" style="height:150px;object-fit:cover;border-radius:4px;">
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${solicitud.id}" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel-${solicitud.id}" data-bs-slide="next">
-              <span class="carousel-control-next-icon"></span>
-            </button>
-          </div>
-        ` : ''}
+          `).join('')}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${solicitud.id}" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel-${solicitud.id}" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
       </div>
-    `;
+    ` : ''}
+  </div>
+`;
+
 
     const infoWindow = new google.maps.InfoWindow({ content: contenidoHTML });
 

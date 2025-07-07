@@ -41,10 +41,11 @@
 
   <!-- Botones -->
   <div class="d-flex justify-content-start mt-3 gap-2">
-    <button class="btn-buscar" (click)="buscarAuditorias()">Buscar</button>
-    <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
+    <button class="btn btn-primary me-2" (click)="buscarAuditorias()">Buscar</button>
+    <button class="btn btn-danger" (click)="limpiarFiltros()">Limpiar</button>
   </div>
 </div>
+
 
 <!-- Búsqueda -->
 <input type="text"
@@ -52,6 +53,15 @@
        placeholder="Búsqueda sensitiva..."
        [ngModel]="busqueda"
        (ngModelChange)="busquedaTexto = $event" />
+
+
+<div class="d-flex justify-content-end mb-2">
+  <button class="btn btn-outline-success me-2" (click)="exportarExcel()">
+    <i class="bi bi-file-earmark-excel-fill"></i> Exportar Excel
+  </button>
+</div>
+
+
 
 
 <!-- Tabla -->
