@@ -226,3 +226,81 @@
 
 </div>
 
+<!-- DASHBOARD DE INDICADORES -->
+<div class="dashboard-container row text-white mt-4">
+  <!-- Total solicitudes -->
+  <div class="col-md-3 mb-3">
+    <div class="dashboard-card bg-dark p-3 rounded text-center">
+      <h6>Total Solicitudes</h6>
+      <h3>{{ reportes.length }}</h3>
+    </div>
+  </div>
+
+  <!-- Categoría más frecuente -->
+  <div class="col-md-3 mb-3">
+    <div class="dashboard-card bg-dark p-3 rounded text-center" *ngIf="graficoTiposReparacion.length">
+      <h6>Categoría más frecuente</h6>
+      <h5>{{ graficoTiposReparacion[0].tipo }}</h5>
+      <p>{{ graficoTiposReparacion[0].cantidad }} solicitudes</p>
+    </div>
+  </div>
+
+  <!-- Comuna más frecuente -->
+  <div class="col-md-3 mb-3">
+    <div class="dashboard-card bg-dark p-3 rounded text-center" *ngIf="graficoComunas.length">
+      <h6>Comuna más frecuente</h6>
+      <h5>{{ graficoComunas[0].comuna }}</h5>
+      <p>{{ graficoComunas[0].cantidad }} solicitudes</p>
+    </div>
+  </div>
+
+  <!-- Estado más común -->
+  <div class="col-md-3 mb-3">
+    <div class="dashboard-card bg-dark p-3 rounded text-center" *ngIf="graficoEstados.length">
+      <h6>Estado más común</h6>
+      <h5>{{ graficoEstados[0].estado }}</h5>
+      <p>{{ graficoEstados[0].cantidad }} solicitudes</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- DASHBOARD ANALÍTICO -->
+<div class="row mt-5 text-white">
+  <!-- Comparativa Mensual -->
+  <div class="col-md-6 mb-4">
+    <div class="dashboard-card bg-dark p-3 rounded">
+      <h6 class="text-orange">Solicitudes este mes</h6>
+      <h3>{{ solicitudesEsteMes }}</h3>
+      <p [ngClass]="tendenciaMes >= 0 ? 'text-success' : 'text-danger'">
+        {{ tendenciaMes >= 0 ? '+' : '' }}{{ tendenciaMes }}% respecto al mes pasado
+      </p>
+    </div>
+  </div>
+
+  <!-- Tiempo Promedio -->
+  <div class="col-md-6 mb-4">
+    <div class="dashboard-card bg-dark p-3 rounded">
+      <h6 class="text-orange">Tiempo promedio de aprobación</h6>
+      <h3>{{ tiempoPromedioAprobacion }} días</h3>
+    </div>
+  </div>
+
+  <!-- Porcentaje Aprobadas -->
+  <div class="col-md-6 mb-4">
+    <div class="dashboard-card bg-dark p-3 rounded">
+      <h6 class="text-orange">% de solicitudes aprobadas</h6>
+      <h3>{{ porcentajeAprobadas }}%</h3>
+    </div>
+  </div>
+
+  <!-- Top 3 comunas -->
+  <div class="col-md-6 mb-4">
+    <div class="dashboard-card bg-dark p-3 rounded">
+      <h6 class="text-orange">Top 3 comunas con más solicitudes</h6>
+      <ol class="mb-0">
+        <li *ngFor="let comuna of top3Comunas">{{ comuna.comuna }} ({{ comuna.cantidad }})</li>
+      </ol>
+    </div>
+  </div>
+</div>

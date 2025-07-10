@@ -81,3 +81,83 @@ h5 {
   &:hover {
     background-color: #a6663a;
   }}
+
+
+  .dashboard-container {
+  .dashboard-card {
+    background-color: #2c2c2c;
+    border-left: 6px solid #f7941d;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 10px rgba(255, 128, 0, 0.5);
+    }
+
+    h6 {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    h5, h3 {
+      color: #f7941d;
+      margin: 0.3rem 0;
+    }
+
+    p {
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  }
+}
+
+
+// Estilo para el dashboard de indicadores
+.dashboard-card {
+  background-color: #1e1e1e; // Fondo oscuro
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+  min-height: 130px;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  h6 {
+    font-size: 0.95rem;
+    color: #f7941d;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  h3, h5 {
+    color: white;
+    margin: 0;
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+  }
+
+  ol {
+    padding-left: 1.1rem;
+    margin: 0.5rem 0 0;
+
+    li {
+      font-size: 0.85rem;
+      color: #fff;
+    }
+  }
+}
+
+// Colores para tendencias
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}

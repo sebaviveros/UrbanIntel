@@ -23,14 +23,14 @@ export class ReportesComponent implements OnInit {
   prioridades: any[] = [];
   estados: any[] = [];
 
-  filtro: {
-    tipoReparacionId?: number | null;
-    prioridadId?: number | null;
-    comuna?: string | null;
-    estadoId?: number | null;
-    fechaCreacion?: string | null;
-    fechaAprobacion?: string | null;
-  } = {
+  // Indicadores analíticos
+  solicitudesEsteMes: number = 0;
+  tendenciaMes: number = 0;
+  tiempoPromedioAprobacion: number = 0;
+  porcentajeAprobadas: number = 0;
+  top3Comunas: { comuna: string, cantidad: number }[] = [];
+
+  filtro = {
     tipoReparacionId: null,
     prioridadId: null,
     comuna: null,
@@ -55,13 +55,12 @@ export class ReportesComponent implements OnInit {
       this.prioridades = await firstValueFrom(this.solicitudService.obtenerPrioridades());
       this.estados = await firstValueFrom(this.solicitudService.obtenerEstados());
 
-      const solicitudes = await firstValueFrom(
-        this.solicitudService.obtenerSolicitudPorFiltro({})
-      );
+      const solicitudes = await firstValueFrom(this.solicitudService.obtenerSolicitudPorFiltro({}));
 
       this.reportes = solicitudes;
       this.reportesOriginales = [...solicitudes];
       this.calcularDistribuciones();
+      this.calcularIndicadoresDashboard();
     } catch (error) {
       console.error('Error al cargar los reportes:', error);
     }
@@ -73,13 +72,11 @@ export class ReportesComponent implements OnInit {
         Object.entries(this.filtro).filter(([_, val]) => val !== null && val !== '')
       );
 
-      const solicitudes = await firstValueFrom(
-        this.solicitudService.obtenerSolicitudPorFiltro(filtrosLimpios)
-      );
-
+      const solicitudes = await firstValueFrom(this.solicitudService.obtenerSolicitudPorFiltro(filtrosLimpios));
       this.reportes = solicitudes;
       this.paginaActual = 1;
       this.calcularDistribuciones();
+      this.calcularIndicadoresDashboard();
     } catch (error) {
       console.error('Error al buscar:', error);
     }
@@ -120,26 +117,68 @@ export class ReportesComponent implements OnInit {
     this.graficoTiposReparacion = Object.entries(conteoTipos).map(([tipo, cantidad]) => ({
       tipo,
       cantidad,
-      porcentaje: Math.round((cantidad / total) * 100)
+      porcentaje: total ? Math.round((cantidad / total) * 100) : 0
     }));
 
     this.graficoPrioridades = Object.entries(conteoPrioridades).map(([prioridad, cantidad]) => ({
       prioridad,
       cantidad,
-      porcentaje: Math.round((cantidad / total) * 100)
+      porcentaje: total ? Math.round((cantidad / total) * 100) : 0
     }));
 
     this.graficoComunas = Object.entries(conteoComunas).map(([comuna, cantidad]) => ({
       comuna,
       cantidad,
-      porcentaje: Math.round((cantidad / total) * 100)
+      porcentaje: total ? Math.round((cantidad / total) * 100) : 0
     }));
 
     this.graficoEstados = Object.entries(conteoEstados).map(([estado, cantidad]) => ({
       estado,
       cantidad,
-      porcentaje: Math.round((cantidad / total) * 100)
+      porcentaje: total ? Math.round((cantidad / total) * 100) : 0
     }));
+  }
+
+  private calcularIndicadoresDashboard(): void {
+    const now = new Date();
+    const mesActual = now.getMonth();
+    const mesAnterior = (mesActual === 0) ? 11 : mesActual - 1;
+    const anioActual = now.getFullYear();
+    const anioAnterior = mesActual === 0 ? anioActual - 1 : anioActual;
+
+    const solicitudesMesActual = this.reportes.filter(r => {
+      const fecha = r.fechaCreacion ? new Date(r.fechaCreacion) : null;
+      return fecha && fecha.getMonth() === mesActual && fecha.getFullYear() === anioActual;
+    });
+
+    const solicitudesMesAnterior = this.reportes.filter(r => {
+      const fecha = r.fechaCreacion ? new Date(r.fechaCreacion) : null;
+      return fecha && fecha.getMonth() === mesAnterior && fecha.getFullYear() === anioAnterior;
+    });
+
+    this.solicitudesEsteMes = solicitudesMesActual.length;
+
+    const anterior = solicitudesMesAnterior.length || 1; // evitar división por cero
+    this.tendenciaMes = Math.round(((this.solicitudesEsteMes - anterior) / anterior) * 100);
+
+    const aprobadas = this.reportes.filter(r => r.fechaAprobacion != null);
+    const totalAprobadas = aprobadas.length;
+    this.porcentajeAprobadas = this.reportes.length
+      ? Math.round((totalAprobadas / this.reportes.length) * 100)
+      : 0;
+
+    const sumaDias = aprobadas.reduce((acc, r) => {
+      const f1 = new Date(r.fechaCreacion!);
+      const f2 = new Date(r.fechaAprobacion!);
+      const diferenciaMs = f2.getTime() - f1.getTime();
+      return acc + diferenciaMs / (1000 * 60 * 60 * 24); // días
+    }, 0);
+
+    this.tiempoPromedioAprobacion = totalAprobadas ? Math.round(sumaDias / totalAprobadas) : 0;
+
+    this.top3Comunas = [...this.graficoComunas]
+      .sort((a, b) => b.cantidad - a.cantidad)
+      .slice(0, 3);
   }
 
   get reportesFiltradosPorTexto(): Solicitud[] {
@@ -154,7 +193,6 @@ export class ReportesComponent implements OnInit {
         r.estadoNombre?.toLowerCase().includes(texto) ||
         new Date(r.fechaCreacion!).toLocaleString().toLowerCase().includes(texto) ||
         new Date(r.fechaAprobacion!).toLocaleString().toLowerCase().includes(texto)
-
       );
     });
   }
@@ -180,79 +218,78 @@ export class ReportesComponent implements OnInit {
   }
 
   exportToExcel(): void {
-  const formatter = new Intl.DateTimeFormat('es-CL', {
-    dateStyle: 'short',
-    timeStyle: 'short'
-  });
+    const formatter = new Intl.DateTimeFormat('es-CL', {
+      dateStyle: 'short',
+      timeStyle: 'short'
+    });
 
-  const dataExportada = this.reportesFiltradosPorTexto.map(r => ({
-    'Nro Solicitud': r.id ?? '',
-    'Categoría': r.tipoReparacionNombre ?? '',
-    'Prioridad': r.prioridadNombre ?? '',
-    'Comuna': r.comuna ?? 'N/A',
-    'Estado': r.estadoNombre ?? 'N/A',
-    'Fecha Creación': r.fechaCreacion
-      ? formatter.format(new Date(r.fechaCreacion))
-      : 'N/A',
-    'Fecha Aprobación': r.fechaAprobacion
-      ? formatter.format(new Date(r.fechaAprobacion))
-      : 'N/A'
-  }));
+    const dataExportada = this.reportesFiltradosPorTexto.map(r => ({
+      'Nro Solicitud': r.id ?? '',
+      'Categoría': r.tipoReparacionNombre ?? '',
+      'Prioridad': r.prioridadNombre ?? '',
+      'Comuna': r.comuna ?? 'N/A',
+      'Estado': r.estadoNombre ?? 'N/A',
+      'Fecha Creación': r.fechaCreacion
+        ? formatter.format(new Date(r.fechaCreacion))
+        : 'N/A',
+      'Fecha Aprobación': r.fechaAprobacion
+        ? formatter.format(new Date(r.fechaAprobacion))
+        : 'N/A'
+    }));
 
-  const worksheet = XLSX.utils.json_to_sheet(dataExportada);
-  worksheet['!cols'] = [
-    { wch: 15 }, { wch: 25 }, { wch: 15 },
-    { wch: 25 }, { wch: 20 }, { wch: 25 }, { wch: 25 }
-  ];
+    const worksheet = XLSX.utils.json_to_sheet(dataExportada);
+    worksheet['!cols'] = [
+      { wch: 15 }, { wch: 25 }, { wch: 15 },
+      { wch: 25 }, { wch: 20 }, { wch: 25 }, { wch: 25 }
+    ];
 
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reportes');
-  XLSX.writeFile(workbook, 'reportes.xlsx');
-}
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reportes');
+    XLSX.writeFile(workbook, 'reportes.xlsx');
+  }
 
-exportToPDF(): void {
-  const formatter = new Intl.DateTimeFormat('es-CL', {
-    dateStyle: 'short',
-    timeStyle: 'short'
-  });
+  exportToPDF(): void {
+    const formatter = new Intl.DateTimeFormat('es-CL', {
+      dateStyle: 'short',
+      timeStyle: 'short'
+    });
 
-  this.http.get('assets/imagenes/7cff6bf4-c274-4c75-be64-e9b65939ffd4-removebg-preview.png', {
-    responseType: 'blob'
-  }).subscribe((imgBlob) => {
-    const reader = new FileReader();
+    this.http.get('assets/imagenes/7cff6bf4-c274-4c75-be64-e9b65939ffd4-removebg-preview.png', {
+      responseType: 'blob'
+    }).subscribe((imgBlob) => {
+      const reader = new FileReader();
 
-    reader.onload = () => {
-      const logoBase64 = reader.result as string;
-      const doc = new jsPDF();
+      reader.onload = () => {
+        const logoBase64 = reader.result as string;
+        const doc = new jsPDF();
 
-      autoTable(doc, {
-        head: [['Nro Solicitud', 'Categoría', 'Prioridad', 'Comuna', 'Estado', 'Fecha Creación', 'Fecha Aprobación']],
-        body: this.reportesFiltradosPorTexto.map(r => [
-          r.id ?? '',
-          r.tipoReparacionNombre ?? 'N/A',
-          r.prioridadNombre ?? 'N/A',
-          r.comuna ?? 'N/A',
-          r.estadoNombre ?? 'N/A',
-          r.fechaCreacion ? formatter.format(new Date(r.fechaCreacion)) : 'N/A',
-          r.fechaAprobacion ? formatter.format(new Date(r.fechaAprobacion)) : 'N/A'
-        ]),
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [230, 126, 34] },
-        margin: { top: 35 },
-        didDrawPage: (data) => {
-          const pageWidth = doc.internal.pageSize.getWidth();
-          const imgSize = 25;
-          const x = (pageWidth - imgSize) / 2;
-          const y = 10;
-          doc.addImage(logoBase64, 'PNG', x, y, imgSize, imgSize);
-        }
-      });
+        autoTable(doc, {
+          head: [['Nro Solicitud', 'Categoría', 'Prioridad', 'Comuna', 'Estado', 'Fecha Creación', 'Fecha Aprobación']],
+          body: this.reportesFiltradosPorTexto.map(r => [
+            r.id ?? '',
+            r.tipoReparacionNombre ?? 'N/A',
+            r.prioridadNombre ?? 'N/A',
+            r.comuna ?? 'N/A',
+            r.estadoNombre ?? 'N/A',
+            r.fechaCreacion ? formatter.format(new Date(r.fechaCreacion)) : 'N/A',
+            r.fechaAprobacion ? formatter.format(new Date(r.fechaAprobacion)) : 'N/A'
+          ]),
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [230, 126, 34] },
+          margin: { top: 35 },
+          didDrawPage: () => {
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const imgSize = 25;
+            const x = (pageWidth - imgSize) / 2;
+            const y = 10;
+            doc.addImage(logoBase64, 'PNG', x, y, imgSize, imgSize);
+          }
+        });
 
-      doc.save('reportes.pdf');
-    };
+        doc.save('reportes.pdf');
+      };
 
-    reader.readAsDataURL(imgBlob);
-  });
-}
-
+      reader.readAsDataURL(imgBlob);
+    });
+  }
 }
